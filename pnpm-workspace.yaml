@@ -1,0 +1,30 @@
+packages:
+  - packages/*
+
+ignoredBuiltDependencies:
+  - esbuild
+
+catalogs:
+  build:
+    vite: ^6.3.5
+    typescript: ^5.9.2
+  format:
+    '@ianvs/prettier-plugin-sort-imports': ^4.6.1
+    prettier-plugin-packagejson: ^2.5.19
+    prettier: ^3.6.2
+  lint:
+    '@eslint/js': ^9.33.0
+    '@eslint/eslintrc': ^3.3.1
+    eslint-plugin-react-hooks: ^5.2.0
+    eslint-plugin-react: ^7.37.5
+    eslint: ^9.33.0
+    typescript-eslint: ^8.39.0
+    jiti: ^2.5.1
+  test:
+    vitest: ^3.2.4
+    '@vitest/browser': ^3.2.4
+    '@playwright/test': ^1.54.2
+  types:
+    '@types/node': ^22.17.1
+  script:
+    'taze': '^19.1.0'

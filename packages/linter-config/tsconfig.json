@@ -1,0 +1,7 @@
+{
+  "extends": "@janis.me/typescript-config/base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["*.ts"]
+}

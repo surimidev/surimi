@@ -1,0 +1,19 @@
+{
+  "name": "@janis.me/linter-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:lint",
+    "@janis.me/typescript-config": "workspace:*",
+    "@types/node": "catalog:types",
+    "eslint": "catalog:lint",
+    "eslint-plugin-react": "catalog:lint",
+    "eslint-plugin-react-hooks": "catalog:lint",
+    "typescript": "catalog:build",
+    "typescript-eslint": "catalog:lint"
+  }
+}
