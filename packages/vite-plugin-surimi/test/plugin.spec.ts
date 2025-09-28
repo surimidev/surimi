@@ -48,7 +48,24 @@ describe('Surimi Vite Plugin', () => {
 
       const plugin = surimiPlugin(options);
       expect(plugin.name).toBe('vite-plugin-surimi');
-      expect(plugin).toBeDefined();
+    });
+
+    it('should accept manual mode configuration', () => {
+      const optionsInline = {
+        mode: 'manual' as const,
+        manualMode: { output: 'inline' as const },
+      };
+
+      const optionsChunk = {
+        mode: 'manual' as const,
+        manualMode: { output: 'chunk' as const },
+      };
+
+      const pluginInline = surimiPlugin(optionsInline);
+      const pluginChunk = surimiPlugin(optionsChunk);
+
+      expect(pluginInline.name).toBe('vite-plugin-surimi');
+      expect(pluginChunk.name).toBe('vite-plugin-surimi');
     });
 
     it('should use default options when none provided', () => {

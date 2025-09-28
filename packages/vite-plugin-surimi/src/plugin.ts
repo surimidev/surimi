@@ -16,6 +16,7 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
     exclude = ['node_modules/**', '**/*.d.ts'],
     autoExternal = true,
     mode = 'manual',
+    manualMode = { output: 'inline' },
     virtualModuleId = 'virtual:surimi.css',
   } = options;
 
@@ -25,6 +26,9 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
   const filter = createFilter(include, exclude);
   let root: string;
   let lastCSS = '';
+
+  // Store extracted CSS for virtual modules
+  const cssCache = new Map<string, string>();
 
   return {
     name: 'vite-plugin-surimi',
@@ -65,6 +69,12 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
       if (id === VIRTUAL_MODULE_ID) {
         return RESOLVED_VIRTUAL_MODULE_ID;
       }
+
+      // Resolve CSS imports from manual mode
+      if (id.includes('.css.ts.css') || id.includes('.css.js.css')) {
+        // Return the id as-is so our load hook can handle it
+        return id;
+      }
     },
 
     async load(id: string) {
@@ -75,6 +85,26 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
           return css;
         }
         return '';
+      }
+
+      // Handle CSS chunks for manual mode
+      // Check if this is a CSS file we generated
+      if (id.includes('.css.ts.css') || id.includes('.css.js.css')) {
+        // Remove query parameters to get the base CSS id
+        const baseId = id.split('?')[0];
+        if (!baseId) return;
+
+        const cachedCss = cssCache.get(baseId);
+
+        if (cachedCss) {
+          // Return raw CSS - Vite will process it through its CSS pipeline
+          // Whether it's ?inline or regular import, Vite handles the processing
+          return cachedCss;
+        } else {
+          // Debug: log what we're looking for vs what we have
+          console.log('Missing CSS cache for:', baseId);
+          console.log('Available keys:', Array.from(cssCache.keys()));
+        }
       }
     },
 
@@ -88,11 +118,31 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
       const css = await extractCssFromFile(id);
 
       if (css) {
-        // Replace the surimi file with just a CSS injection
-        // This eliminates the surimi runtime calls from the bundle
-        return {
-          code: `// CSS extracted from ${normalizedId} at build time
-const css = ${JSON.stringify(css)};
+        if (manualMode.output === 'chunk') {
+          // Generate CSS chunk that Vite will process
+          const cssId = id + '.css';
+
+          // Store CSS for later retrieval via load hook
+          cssCache.set(cssId, css);
+
+          // Let Vite handle the CSS file by returning an import
+          // Vite will process this CSS through its pipeline (minification, PostCSS, etc.)
+          return {
+            code: `// CSS extracted from ${normalizedId} at build time
+import '${cssId}';`,
+            map: null,
+          };
+        } else {
+          // Inline mode - create a CSS import with ?inline query
+          // This tells Vite to process the CSS and return it as a string
+          const virtualCssId = id + '.css?inline';
+
+          // Store CSS for the virtual module
+          cssCache.set(id + '.css', css);
+
+          return {
+            code: `// CSS extracted from ${normalizedId} at build time  
+import css from '${virtualCssId}';
 if (typeof document !== 'undefined') {
   const styleId = 'surimi-${id.replace(/[^a-zA-Z0-9]/g, '-')}';
   if (!document.getElementById(styleId)) {
@@ -102,8 +152,9 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(style);
   }
 }`,
-          map: null,
-        };
+            map: null,
+          };
+        }
       }
 
       // If no CSS was extracted, return empty module

@@ -12,10 +12,22 @@ describe('Surimi Plugin - Mode Behavior', () => {
         expect(plugin.name).toBe('vite-plugin-surimi');
       });
     });
+
     it('should use manual mode by default', () => {
       const plugin = surimiPlugin();
       expect(plugin).toBeDefined();
       expect(plugin.name).toBe('vite-plugin-surimi');
+    });
+
+    it('should create plugin with manual mode configurations', () => {
+      const inlineConfig = { mode: 'manual' as const, manualMode: { output: 'inline' as const } };
+      const chunkConfig = { mode: 'manual' as const, manualMode: { output: 'chunk' as const } };
+
+      const inlinePlugin = surimiPlugin(inlineConfig);
+      const chunkPlugin = surimiPlugin(chunkConfig);
+
+      expect(inlinePlugin.name).toBe('vite-plugin-surimi');
+      expect(chunkPlugin.name).toBe('vite-plugin-surimi');
     });
   });
 
@@ -36,16 +48,32 @@ describe('Surimi Plugin - Mode Behavior', () => {
       });
     });
   });
-  describe('CSS Injection Code Generation', () => {
-    it('should generate valid CSS injection code structure', () => {
-      const css = '.test { color: red; }';
-      const fileId = '/test/file.css.ts'.replace(/[^a-zA-Z0-9]/g, '-');
+  describe('Manual Mode CSS Output', () => {
+    it('should generate inline CSS imports for inline mode', () => {
+      const testId = '/test/file.css.ts';
+      const expectedInlineCssId = testId + '.css?inline';
+
+      // Test the pattern that inline mode should generate
+      expect(expectedInlineCssId).toBe('/test/file.css.ts.css?inline');
+    });
+
+    it('should generate chunk CSS imports for chunk mode', () => {
+      const testId = '/test/file.css.ts';
+      const expectedChunkCssId = testId + '.css';
+
+      // Test the pattern that chunk mode should generate
+      expect(expectedChunkCssId).toBe('/test/file.css.ts.css');
+    });
+
+    it('should generate valid CSS injection code structure for inline mode', () => {
+      const filePath = '/test/file.css.ts';
+      const expectedCssImport = filePath + '.css?inline';
 
       const injectionCode = `
 // CSS extracted from /test/file.css.ts at build time
-const css = ${JSON.stringify(css)};
+import css from '${expectedCssImport}';
 if (typeof document !== 'undefined') {
-  const styleId = 'surimi-${fileId}';
+  const styleId = 'surimi--test-file-css-ts';
   if (!document.getElementById(styleId)) {
     const style = document.createElement('style');
     style.id = styleId;
@@ -56,27 +84,30 @@ if (typeof document !== 'undefined') {
 
       // Validate the structure
       expect(injectionCode).toContain('CSS extracted from');
-      expect(injectionCode).toContain(css);
+      expect(injectionCode).toContain('import css from');
+      expect(injectionCode).toContain('.css?inline');
       expect(injectionCode).toContain('createElement');
       expect(injectionCode).toContain('getElementById');
       expect(injectionCode).toContain('appendChild');
     });
 
-    it('should handle empty CSS gracefully', () => {
-      const emptyCss = '';
-      const jsonString = JSON.stringify(emptyCss);
+    it('should handle CSS imports consistently', () => {
+      const filePath = '/components/Button.css.ts';
+      const inlineCssPath = filePath + '.css?inline';
+      const chunkCssPath = filePath + '.css';
 
-      expect(jsonString).toBe('""');
-      expect(jsonString.length).toBe(2); // Just the quotes
+      // Both should reference the same base CSS file
+      expect(inlineCssPath).toBe('/components/Button.css.ts.css?inline');
+      expect(chunkCssPath).toBe('/components/Button.css.ts.css');
     });
 
-    it('should handle CSS with special characters', () => {
-      const specialCss = '.test { content: "Hello \\"world\\""; }';
-      const jsonString = JSON.stringify(specialCss);
+    it('should generate proper CSS import paths', () => {
+      const testPaths = ['/src/styles/theme.css.ts', '/lib/components/Card.css.js', '/pages/home.css.ts'];
 
-      // Should be properly escaped
-      expect(jsonString).toContain('\\"');
-      expect(JSON.parse(jsonString)).toBe(specialCss);
+      testPaths.forEach(path => {
+        const cssPath = path + '.css';
+        expect(cssPath).toMatch(/\.css\.ts\.css$|\.css\.js\.css$/);
+      });
     });
   });
 

@@ -26,7 +26,20 @@ export interface SurimiPluginOptions {
   mode?: 'manual' | 'virtual';
 
   /**
+   * Manual mode configuration. Only used when mode is 'manual'.
+   */
+  manualMode?: {
+    /**
+     * How to handle CSS output in manual mode:
+     * - 'inline': Inject CSS directly into JS as style tags (default)
+     * - 'chunk': Generate separate CSS files that are imported by JS
+     */
+    output?: 'inline' | 'chunk';
+  };
+
+  /**
    * Virtual module name that needs to be imported to include all discovered CSS.
+   * Only used in 'virtual' mode.
    * @default 'virtual:surimi.css'
    */
   virtualModuleId?: string;
