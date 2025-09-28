@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown --watch",
+    "build:watch": "tsdown --watch",
     "format": "prettier . --write"
   },
   "dependencies": {
