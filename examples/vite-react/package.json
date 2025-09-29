@@ -1,0 +1,25 @@
+{
+  "name": "vite-react-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@janis.me/linter-config": "workspace:*",
+    "@janis.me/typescript-config": "workspace:*",
+    "@types/react": "^19.1.15",
+    "@types/react-dom": "^19.1.9",
+    "surimi": "workspace:*",
+    "vite": "catalog:build",
+    "vite-bundle-analyzer": "catalog:utils",
+    "vite-plugin-surimi": "workspace:*"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}

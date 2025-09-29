@@ -6,21 +6,39 @@ import { normalizePath } from 'vite';
 
 import type { SurimiPluginOptions } from './types.js';
 
-function isSurimiFile(filePath: string): boolean {
-  return /\.css\.(ts|js)$/.test(filePath);
+function isSurimiCSSFile(id: string, filter: (id: string) => boolean): boolean {
+  // Check if this is a generated CSS file from a surimi file
+  // We use a specific suffix to identify our generated CSS files
+  if (id.includes('.surimi.css')) {
+    // Get the original file path by removing our specific suffix and query parameters
+    const originalPath = id.replace(/\.surimi\.css(\?.*)?$/, '').split('?')[0];
+    if (!originalPath) return false;
+    return filter(normalizePath(originalPath));
+  }
+  return false;
 }
 
 export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
   const {
-    include = ['**/*.css.{ts,js}'],
-    exclude = ['node_modules/**', '**/*.d.ts'],
     autoExternal = true,
     mode = 'manual',
-    manualMode = { output: 'inline' },
-    virtualModuleId = 'virtual:surimi.css',
+    manualMode,
+    virtualMode,
+    include = ['**/*.css.{ts,js}'],
+    exclude = ['node_modules/**', '**/*.d.ts'],
   } = options;
 
-  const VIRTUAL_MODULE_ID = virtualModuleId;
+  const virtualModeConfig = {
+    moduleId: 'virtual:surimi.css',
+    ...virtualMode,
+  };
+
+  const manualModeConfig = {
+    output: 'chunk',
+    ...manualMode,
+  };
+
+  const VIRTUAL_MODULE_ID = virtualModeConfig.moduleId;
   const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID;
 
   const filter = createFilter(include, exclude);
@@ -71,7 +89,7 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
       }
 
       // Resolve CSS imports from manual mode
-      if (id.includes('.css.ts.css') || id.includes('.css.js.css')) {
+      if (isSurimiCSSFile(id, filter)) {
         // Return the id as-is so our load hook can handle it
         return id;
       }
@@ -80,7 +98,7 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
     async load(id: string) {
       if (id === RESOLVED_VIRTUAL_MODULE_ID) {
         if (mode === 'virtual') {
-          const css = await generateCSS(root, filter);
+          const css = await generateCSS(include, root, filter);
           lastCSS = css;
           return css;
         }
@@ -89,7 +107,7 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
 
       // Handle CSS chunks for manual mode
       // Check if this is a CSS file we generated
-      if (id.includes('.css.ts.css') || id.includes('.css.js.css')) {
+      if (isSurimiCSSFile(id, filter)) {
         // Remove query parameters to get the base CSS id
         const baseId = id.split('?')[0];
         if (!baseId) return;
@@ -111,47 +129,35 @@ export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
     async transform(_code: string, id: string) {
       const normalizedId = normalizePath(id);
 
-      // Only process .css.ts/.css.js files in manual mode
-      if (mode !== 'manual' || !isSurimiFile(normalizedId)) return null;
+      // Only process files that match our include/exclude patterns in manual mode
+      if (mode !== 'manual' || !filter(normalizedId)) return null;
 
       // Extract CSS at build time
       const css = await extractCssFromFile(id);
 
       if (css) {
-        if (manualMode.output === 'chunk') {
-          // Generate CSS chunk that Vite will process
-          const cssId = id + '.css';
+        // Generate a unique CSS file ID for this module with our specific suffix
+        const cssId = id + '.surimi.css';
 
-          // Store CSS for later retrieval via load hook
-          cssCache.set(cssId, css);
+        // Store CSS for later retrieval via load hook
+        cssCache.set(cssId, css);
 
-          // Let Vite handle the CSS file by returning an import
-          // Vite will process this CSS through its pipeline (minification, PostCSS, etc.)
+        if (manualModeConfig.output === 'chunk') {
+          // Regular CSS chunk - Vite will process and emit as separate CSS file
           return {
             code: `// CSS extracted from ${normalizedId} at build time
 import '${cssId}';`,
             map: null,
           };
         } else {
-          // Inline mode - create a CSS import with ?inline query
-          // This tells Vite to process the CSS and return it as a string
-          const virtualCssId = id + '.css?inline';
-
-          // Store CSS for the virtual module
-          cssCache.set(id + '.css', css);
-
+          // Inline mode - inject CSS directly as JavaScript that creates style tags
+          const escapedCSS = css.replace(/`/g, '\\`').replace(/\$/g, '\\$');
           return {
-            code: `// CSS extracted from ${normalizedId} at build time  
-import css from '${virtualCssId}';
-if (typeof document !== 'undefined') {
-  const styleId = 'surimi-${id.replace(/[^a-zA-Z0-9]/g, '-')}';
-  if (!document.getElementById(styleId)) {
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = css;
-    document.head.appendChild(style);
-  }
-}`,
+            code: `// CSS extracted from ${normalizedId} at build time
+const css = \`${escapedCSS}\`;
+const style = document.createElement('style');
+style.textContent = css;
+document.head.appendChild(style);`,
             map: null,
           };
         }
@@ -171,7 +177,7 @@ if (typeof document !== 'undefined') {
       }
 
       // Regenerate CSS when files change
-      const newCSS = await generateCSS(root, filter);
+      const newCSS = await generateCSS(include, root, filter);
 
       if (newCSS !== lastCSS) {
         lastCSS = newCSS;
@@ -188,9 +194,13 @@ if (typeof document !== 'undefined') {
   };
 }
 
-async function generateCSS(root: string, filter: (id: string) => boolean): Promise<string> {
+async function generateCSS(
+  includePattern: string | string[],
+  root: string,
+  filter: (id: string) => boolean,
+): Promise<string> {
   // Find all CSS files matching our patterns
-  const files = await fastGlob(['**/*.css.{ts,js}'], {
+  const files = await fastGlob(includePattern, {
     cwd: root,
     absolute: true,
   });
