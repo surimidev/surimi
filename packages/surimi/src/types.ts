@@ -194,7 +194,9 @@ export interface IMediaQueryBuilder<TQuery extends string = ''> {
   raw<TRaw extends string>(query: TRaw): IMediaQueryBuilder<TRaw>;
 
   // Select elements within media context - returns unified selector builder
-  select<TSelectors extends readonly string[]>(...selectors: TSelectors): ISelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>>;
+  select<TSelectors extends readonly string[]>(
+    ...selectors: TSelectors
+  ): ISelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>>;
 }
 
 /**
@@ -222,6 +224,4 @@ export interface BuilderContext {
  * Select function signature supporting multiple selector formats
  * Returns a builder with the joined selectors as the target type
  */
-export type SelectFunction = <T extends readonly string[]>(
-  ...selectors: T
-) => ISelectorBuilder<JoinSelectors<T>>;
+export type SelectFunction = <T extends readonly string[]>(...selectors: T) => ISelectorBuilder<JoinSelectors<T>>;

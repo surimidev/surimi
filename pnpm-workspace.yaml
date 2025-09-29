@@ -4,7 +4,7 @@ packages:
 
 catalogs:
   build:
-    "@rollup/pluginutils": ^5.3.0
+    '@rollup/pluginutils': ^5.3.0
     chokidar: ^4.0.3
     esbuild: ^0.25.10
     fast-glob: ^3.3.3
@@ -14,12 +14,12 @@ catalogs:
     typescript: ^5.9.2
     vite: 7.1.7
   format:
-    "@ianvs/prettier-plugin-sort-imports": ^4.7.0
+    '@ianvs/prettier-plugin-sort-imports': ^4.7.0
     prettier: ^3.6.2
     prettier-plugin-packagejson: ^2.5.19
   lint:
-    "@eslint/eslintrc": ^3.3.1
-    "@eslint/js": ^9.36.0
+    '@eslint/eslintrc': ^3.3.1
+    '@eslint/js': ^9.36.0
     eslint: ^9.36.0
     eslint-plugin-react: ^7.37.5
     eslint-plugin-react-hooks: ^5.2.0
@@ -30,15 +30,15 @@ catalogs:
     postcss: ^8.5.6
   script:
     taze: ^19.7.0
-    concurrently: "^9.2.1"
+    concurrently: '^9.2.1'
   test:
-    "@playwright/test": ^1.55.1
-    "@vitest/browser": ^3.2.4
-    "@vitest/coverage-v8": ^3.2.4
-    "@vitest/ui": ^3.2.4
+    '@playwright/test': ^1.55.1
+    '@vitest/browser': ^3.2.4
+    '@vitest/coverage-v8': ^3.2.4
+    '@vitest/ui': ^3.2.4
     vitest: 3.2.4
   types:
-    "@types/node": ^22.18.6
+    '@types/node': ^22.18.6
   utils:
     vite-bundle-analyzer: ^1.2.3
 

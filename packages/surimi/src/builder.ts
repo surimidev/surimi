@@ -1,7 +1,14 @@
 import postcss from 'postcss';
 
 import { buildSelectorWithRelationship, combineSelector, createDeclarations } from './css-generator';
-import type { BuilderContext, CSSProperties, IMediaQueryBuilder, ISelectorBuilder, JoinSelectors, WithMediaContext } from './types';
+import type {
+  BuilderContext,
+  CSSProperties,
+  IMediaQueryBuilder,
+  ISelectorBuilder,
+  JoinSelectors,
+  WithMediaContext,
+} from './types';
 
 /**
  * Unified selector builder that handles both regular selectors and media-scoped selectors
@@ -212,7 +219,9 @@ export class MediaQueryBuilder<TQuery extends string = ''> implements IMediaQuer
     return new MediaQueryBuilder(this.root, [query]);
   }
 
-  select<TSelectors extends readonly string[]>(...selectors: TSelectors): ISelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>> {
+  select<TSelectors extends readonly string[]>(
+    ...selectors: TSelectors
+  ): ISelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>> {
     const mediaQuery = this.buildQuery();
     const joinedSelector = selectors.join(', ');
     const context = {
@@ -221,7 +230,9 @@ export class MediaQueryBuilder<TQuery extends string = ''> implements IMediaQuer
       pseudoElements: [],
       mediaQuery: mediaQuery,
     };
-    return new SelectorBuilder(context, this.root) as ISelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>>;
+    return new SelectorBuilder(context, this.root) as ISelectorBuilder<
+      WithMediaContext<JoinSelectors<TSelectors>, TQuery>
+    >;
   }
 
   private buildQuery(): string {
