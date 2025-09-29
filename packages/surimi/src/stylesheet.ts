@@ -1,8 +1,8 @@
 import postcss from 'postcss';
 
-import { SelectorBuilder } from '#builder';
+import { MediaQueryBuilder, SelectorBuilder } from '#builder';
 import { joinSelectors } from '#css-generator';
-import type { ISelectorBuilder } from '#types';
+import type { IMediaQueryBuilder, ISelectorBuilder, JoinSelectors } from '#types';
 
 /**
  * Surimi CSS builder with global stylesheet management
@@ -18,18 +18,32 @@ export abstract class Surimi {
   /**
    * Create a selector builder for the given selectors
    */
-  static select(...selectors: string[]): ISelectorBuilder {
+  static select<T extends readonly string[]>(...selectors: T): ISelectorBuilder<JoinSelectors<T>> {
     const normalizedSelector = joinSelectors(...selectors);
 
-    // Reuse existing selector builder if it exists, or create new one
-    const existing = this.selectors.get(normalizedSelector);
-    if (existing) {
-      return existing;
-    }
+    // Create builder context
+    const context = {
+      baseSelector: normalizedSelector,
+      pseudoClasses: [],
+      pseudoElements: [],
+      mediaQuery: undefined,
+    };
 
-    const builder = new SelectorBuilder(normalizedSelector, this.root);
+    const builder = new SelectorBuilder(context, this.root);
     this.selectors.set(normalizedSelector, builder);
-    return builder;
+    return builder as ISelectorBuilder<JoinSelectors<T>>;
+  }
+
+  /**
+   * Create a media query builder for responsive design
+   */
+  static media(): IMediaQueryBuilder;
+  static media<TQuery extends string>(query: TQuery): IMediaQueryBuilder<TQuery>;
+  static media<TQuery extends string>(query?: TQuery): IMediaQueryBuilder<TQuery> | IMediaQueryBuilder {
+    if (query !== undefined) {
+      return new MediaQueryBuilder(this.root, [query]);
+    }
+    return new MediaQueryBuilder(this.root, []);
   }
 
   /**

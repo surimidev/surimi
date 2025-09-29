@@ -9,7 +9,7 @@ describe('Media Queries', () => {
 
   describe('Simple Media Queries', () => {
     it('should support basic media queries', () => {
-      s.select('.container').media('(min-width: 768px)').style({
+      s.media('(min-width: 768px)').select('.container').style({
         flexDirection: 'row',
       });
 
@@ -22,7 +22,7 @@ describe('Media Queries', () => {
     });
 
     it('should support max-width media queries', () => {
-      s.select('.mobile-nav').media('(max-width: 767px)').style({
+      s.media('(max-width: 767px)').select('.mobile-nav').style({
         display: 'block',
       });
 
@@ -35,7 +35,7 @@ describe('Media Queries', () => {
     });
 
     it('should support complex media query conditions', () => {
-      s.select('.tablet-layout').media('(min-width: 768px) and (max-width: 1024px)').style({
+      s.media('(min-width: 768px) and (max-width: 1024px)').select('.tablet-layout').style({
         columns: 2,
       });
 
@@ -48,7 +48,7 @@ describe('Media Queries', () => {
     });
 
     it('should support print media queries', () => {
-      s.select('.no-print').media('print').style({
+      s.media('print').select('.no-print').style({
         display: 'none',
       });
 
@@ -63,12 +63,53 @@ describe('Media Queries', () => {
 
   describe('Media Query Chaining', () => {
     it('should combine basic selectors with pseudo-classes and media queries', () => {
-      s.select('.button').hover().media('(min-width: 768px)').style({ backgroundColor: 'blue' });
+      s.media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
 
       expect(s.build()).toBe(`\
 @media (min-width: 768px) {
     .button:hover {
         background-color: blue
+    }
+}`);
+    });
+  });
+
+  describe('Media query builder', () => {
+    it('should support minWidth and maxWidth methods', () => {
+      s.media().minWidth('600px').maxWidth('1200px').select('.responsive').style({
+        fontSize: '18px',
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-width: 600px) and (max-width: 1200px) {
+    .responsive {
+        font-size: 18px
+    }
+}`);
+    });
+
+    it('should support orientation method', () => {
+      s.media().orientation('landscape').select('.landscape-only').style({
+        display: 'block',
+      });
+
+      expect(s.build()).toBe(`\
+@media (orientation: landscape) {
+    .landscape-only {
+        display: block
+    }
+}`);
+    });
+
+    it('should support raw method', () => {
+      s.media().raw('(min-resolution: 2dppx)').select('.high-res').style({
+        border: '1px solid black',
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-resolution: 2dppx) {
+    .high-res {
+        border: 1px solid black
     }
 }`);
     });

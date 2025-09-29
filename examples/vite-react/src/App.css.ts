@@ -1,17 +1,28 @@
 import s from 'surimi';
 
-s.select('button')
+import { theme } from '#styles/theme.css';
+
+const app = s.select('#app').style({
+  width: '100vw',
+  height: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+app
+  .descendant('a')
   .style({
-    fontSize: '1.5rem',
-    padding: '0.5rem 1rem',
-    borderRadius: '8px',
-    border: 'none',
-    backgroundColor: '#61dafb',
-    color: '#000',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
+    color: theme.colors.primaryDark,
+    textDecoration: 'none',
+    fontWeight: 'bold',
+    margin: '0 0.5rem',
   })
   .hover()
   .style({
-    backgroundColor: '#21a1f1',
+    textDecoration: 'underline',
   });
+
+s.media('(max-width: 600px)').select('#app').style({
+  flexDirection: 'column',
+});

@@ -62,7 +62,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support multiple style applications on the same selector', () => {
       s.select('.multi-style').style({ display: 'flex' });
       s.select('.multi-style').hover().style({ backgroundColor: 'gray' });
-      s.select('.multi-style').media('(max-width: 768px)').style({ flexDirection: 'column' });
+      s.media('(max-width: 768px)').select('.multi-style').style({ flexDirection: 'column' });
 
       expect(s.build()).toBe(`\
 .multi-style {
@@ -101,12 +101,9 @@ describe('Nesting and Complex Combinations', () => {
     });
 
     it('should support even more style calls in one chain', () => {
-      s.select('.complex')
-        .style({ color: 'red' })
-        .hover()
-        .style({ color: 'blue' })
-        .media('(max-width: 600px)')
-        .style({ color: 'green' });
+      s.select('.complex').style({ color: 'red' });
+      s.select('.complex').hover().style({ color: 'blue' });
+      s.media('(max-width: 600px)').select('.complex').style({ color: 'green' });
 
       expect(s.build()).toBe(`\
 .complex {
@@ -123,13 +120,9 @@ describe('Nesting and Complex Combinations', () => {
     });
 
     it('should handle complex chaining with structural selectors correctly', () => {
-      s.select('.parent')
-        .child('a')
-        .style({ color: 'black' })
-        .hover()
-        .style({ color: 'blue' })
-        .media('(max-width: 600px)')
-        .style({ color: 'red' });
+      s.select('.parent').child('a').style({ color: 'black' });
+      s.select('.parent').child('a').hover().style({ color: 'blue' });
+      s.media('(max-width: 600px)').select('.parent').child('a').style({ color: 'red' });
 
       expect(s.build()).toBe(`\
 .parent > a {

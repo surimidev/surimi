@@ -1,3 +1,3 @@
-export { default as surimiPlugin } from './plugin.js';
+export { default as surimi } from './plugin.js';
 export { default } from './plugin.js';
-export type { SurimiPluginOptions } from './types.js';
+export type { SurimiOptions } from './types.js';

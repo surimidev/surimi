@@ -271,17 +271,17 @@ a:hover {
       });
 
       // Mobile first approach
-      s.select('.container').media('(min-width: 640px)').style({
+      s.media('(min-width: 640px)').select('.container').style({
         maxWidth: '640px',
         margin: '0 auto',
       });
 
-      s.select('.container').media('(min-width: 768px)').style({
+      s.media('(min-width: 768px)').select('.container').style({
         maxWidth: '768px',
         padding: '2rem',
       });
 
-      s.select('.container').media('(min-width: 1024px)').style({
+      s.media('(min-width: 1024px)').select('.container').style({
         maxWidth: '1024px',
       });
 
@@ -290,18 +290,18 @@ a:hover {
         fontSize: '2rem',
       });
 
-      s.select('h1').media('(min-width: 768px)').style({
+      s.media('(min-width: 768px)').select('h1').style({
         fontSize: '3rem',
       });
 
       // Dark mode support
-      s.select('body').media('(prefers-color-scheme: dark)').style({
+      s.media('(prefers-color-scheme: dark)').select('body').style({
         backgroundColor: '#1f2937',
         color: '#f9fafb',
       });
 
       // Print styles
-      s.select('.no-print').media('print').style({
+      s.media('print').select('.no-print').style({
         display: 'none',
       });
 
@@ -348,18 +348,18 @@ h1 {
 
     it('should handle pseudo-classes within media queries', () => {
       // Button hover in desktop
-      s.select('.btn').media('(min-width: 1024px)').hover().style({
+      s.media('(min-width: 1024px)').select('.btn').hover().style({
         transform: 'scale(1.05)',
         transition: 'transform 0.2s ease',
       });
 
       // Touch devices - remove hover effects
-      s.select('.btn').media('(hover: none)').style({
+      s.media('(hover: none)').select('.btn').style({
         transform: 'none',
       });
 
       // Focus styles for keyboard navigation
-      s.select('.btn').media('(prefers-reduced-motion: no-preference)').focus().style({
+      s.media('(prefers-reduced-motion: no-preference)').select('.btn').focus().style({
         outline: '2px solid #3b82f6',
         outlineOffset: '2px',
         transition: 'outline 0.2s ease',
@@ -418,8 +418,8 @@ h1 {
       s.select('.bg-gray-100').style({ backgroundColor: '#f3f4f6' });
 
       // Responsive utilities
-      s.select('.md\\:flex').media('(min-width: 768px)').style({ display: 'flex' });
-      s.select('.lg\\:text-xl').media('(min-width: 1024px)').style({ fontSize: '1.25rem' });
+      s.media('(min-width: 768px)').select('.md\\:flex').style({ display: 'flex' });
+      s.media('(min-width: 1024px)').select('.lg\\:text-xl').style({ fontSize: '1.25rem' });
 
       expect(s.build()).toBe(`\
 .p-4 {

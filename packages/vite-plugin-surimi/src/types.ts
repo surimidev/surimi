@@ -1,4 +1,4 @@
-export interface SurimiPluginOptions {
+export interface SurimiOptions {
   /**
    * Automatically externalize surimi and postcss in build mode (default: true)
    * This makes sure to not include any useless code in the final bundle.

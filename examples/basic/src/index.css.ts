@@ -31,3 +31,5 @@ s.select('.btn').hover().style({
 s.select('.btn').active().style({
   transform: 'translateY(1px)',
 });
+
+console.log(s.build());

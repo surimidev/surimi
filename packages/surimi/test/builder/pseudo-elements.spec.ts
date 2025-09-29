@@ -58,6 +58,20 @@ describe('Pseudo-classes and Pseudo-elements', () => {
     });
   });
 
+  describe('Pseudo-classes and nesting', () => {
+    it('should fall back to the main selector after a pseudo class', () => {
+      s.select('.card').hover().style({ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }).style({ fontWeight: 'bold' });
+
+      expect(s.build()).toBe(`\
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
+}
+.card {
+    font-weight: bold
+}`);
+    });
+  });
+
   describe('Basic Pseudo-elements', () => {
     it('should support ::before pseudo-element', () => {
       s.select('.text').before().style({ content: '"→"' });

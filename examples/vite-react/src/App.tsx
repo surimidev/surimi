@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
+import Button from '#components/button';
+
 import './App.css.ts';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
+    <div id="app">
       <div>
         <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           vite
@@ -15,21 +17,18 @@ function App() {
           react
         </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1>Surimi + Vite + React</h1>
       <div className="card">
-        <button
+        <Button
+          kind="primary"
           onClick={() => {
             setCount(count => count + 1);
           }}
         >
           count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        </Button>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    </div>
   );
 }
 

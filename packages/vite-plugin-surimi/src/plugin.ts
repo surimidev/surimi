@@ -4,7 +4,7 @@ import fastGlob from 'fast-glob';
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { normalizePath } from 'vite';
 
-import type { SurimiPluginOptions } from './types.js';
+import type { SurimiOptions } from './types.js';
 
 function isSurimiCSSFile(id: string, filter: (id: string) => boolean): boolean {
   // Check if this is a generated CSS file from a surimi file
@@ -18,7 +18,7 @@ function isSurimiCSSFile(id: string, filter: (id: string) => boolean): boolean {
   return false;
 }
 
-export function surimiPlugin(options: SurimiPluginOptions = {}): Plugin {
+export function surimi(options: SurimiOptions = {}): Plugin {
   const {
     autoExternal = true,
     mode = 'manual',
@@ -249,4 +249,4 @@ async function extractCssFromFile(filePath: string): Promise<string> {
 }
 
 // Export the plugin as default
-export default surimiPlugin;
+export default surimi;
