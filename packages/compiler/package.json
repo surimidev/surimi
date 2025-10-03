@@ -1,16 +1,14 @@
 {
-  "name": "surimi",
+  "name": "@surimi/compiler",
   "version": "0.1.0",
-  "private": false,
-  "description": "Next generation CSS-preprocessor (using typescript)",
+  "description": "Compile surimi ts files to css",
   "keywords": [
     "css",
     "surimi",
-    "css-in-js",
-    "ts-in-css"
+    "css-in-js"
   ],
   "license": "MIT",
-  "author": "Janis jansen <oss@janis.me>",
+  "author": "Janis Jansen <oss@janis.me>",
   "type": "module",
   "imports": {
     "#*": [
@@ -35,15 +33,19 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "format": "prettier . --write"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "csstype": "catalog:prod",
-    "postcss": "catalog:prod"
+    "@rollup/pluginutils": "catalog:build",
+    "rolldown": "catalog:build"
   },
   "devDependencies": {
-    "@janis.me/linter-config": "workspace:*",
-    "@janis.me/typescript-config": "workspace:*",
-    "tsdown": "catalog:build"
+    "@types/node": "catalog:types",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build"
+  },
+  "peerDependencies": {
+    "surimi": "workspace:*",
+    "vite": "*7.0.0"
   }
 }

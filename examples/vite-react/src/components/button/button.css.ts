@@ -1,6 +1,6 @@
 import s from 'surimi';
 
-import { theme } from '#styles/theme.css';
+import { theme } from '#styles/theme';
 
 const button = s.select('.button').style({
   padding: '0.5rem 1rem',

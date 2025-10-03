@@ -10,8 +10,16 @@
     "css-in-js"
   ],
   "license": "MIT",
-  "author": "Janis",
+  "author": "Janis jansen <oss@janis.me>",
   "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/*/index.ts"
+    ]
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -31,6 +39,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "catalog:build",
+    "@surimi/compiler": "workspace:*",
     "chokidar": "catalog:build",
     "esbuild": "catalog:build",
     "fast-glob": "catalog:build"
