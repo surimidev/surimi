@@ -19,7 +19,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   let server: ViteDevServer | undefined;
 
   // Build cache for production builds
-  const buildCache = new Map<string, { css: string; source: string; cssFileId?: string }>();
+  const buildCache = new Map<string, { css: string; js: string; cssFileId?: string }>();
 
   // Dependency mapping: dependency file -> Set of CSS files that depend on it
   const dependencyMap = new Map<string, Set<string>>();
@@ -202,7 +202,7 @@ if (import.meta.hot) {
             if (cached) {
               console.log('Using cached compilation for:', id);
               css = cached.css;
-              source = cached.source;
+              source = cached.js;
               cssFileId = cached.cssFileId;
 
               // Reconstruct filename from cached data if not inlining
@@ -223,12 +223,13 @@ if (import.meta.hot) {
               });
 
               css = result.css;
-              source = code;
+              source = result.js; // Use the transformed JS from compiler
               console.log('Compiled CSS:', css);
+              console.log('Compiled JS:', result.js);
 
               if (inlineCss) {
                 // Store in cache without emitting asset
-                buildCache.set(id, { css, source });
+                buildCache.set(id, { css, js: source });
                 cssFileId = undefined;
               } else {
                 // Generate a unique CSS filename - handle .css.ts files correctly
@@ -244,10 +245,11 @@ if (import.meta.hot) {
                 });
 
                 // Store the compilation result in cache
-                buildCache.set(id, { css, source, cssFileId });
+                buildCache.set(id, { css, js: source, cssFileId });
               }
             }
 
+            // Use the transformed JS from the compiler (source now contains the processed exports)
             // Return JavaScript based on inline mode
             let jsCode: string;
 
@@ -266,7 +268,7 @@ if (existingStyle) {
   existingStyle.remove();
 }
 
-// Create and inject new style elementcopilot
+// Create and inject new style element
 const styleElement = document.createElement('style');
 styleElement.id = styleId;
 styleElement.textContent = css;

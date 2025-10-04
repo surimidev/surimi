@@ -67,4 +67,28 @@ export abstract class Surimi {
   static getRoot(): postcss.Root {
     return this.root;
   }
+
+  /**
+   * Create a class name string that can be exported and used in components
+   * This will be preserved during compilation while other Surimi code is removed
+   * @param name The class name to create
+   * @returns A string with the class name and a special symbol marking it for export preservation
+   */
+  static class(name: string): string {
+    const symbol = `.${name}`;
+
+    return symbol;
+  }
+
+  /**
+   * Create an ID string that can be exported and used in components
+   * This will be preserved during compilation while other Surimi code is removed
+   * @param name The ID to create
+   * @returns A string with the ID and a special symbol marking it for export preservation
+   */
+  static id(name: string): string {
+    const symbol = `#${name}`;
+
+    return symbol;
+  }
 }
