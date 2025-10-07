@@ -1,0 +1,37 @@
+{
+  "name": "janis.me",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/*/index.ts"
+    ]
+  },
+  "scripts": {
+    "astro": "astro",
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "catalog:docs",
+    "@fortawesome/fontawesome-svg-core": "catalog:docs",
+    "@fortawesome/free-brands-svg-icons": "catalog:docs",
+    "@fortawesome/free-solid-svg-icons": "catalog:docs",
+    "@janis.me/linter-config": "workspace:*",
+    "@janis.me/typescript-config": "workspace:*",
+    "@types/node": "catalog:types",
+    "astro": "catalog:docs",
+    "cssnano": "catalog:docs",
+    "include-media": "catalog:docs",
+    "sanitize.css": "catalog:docs",
+    "sharp": "catalog:docs",
+    "surimi": "workspace:*",
+    "typescript": "catalog:build",
+    "vite-plugin-surimi": "workspace:*"
+  }
+}

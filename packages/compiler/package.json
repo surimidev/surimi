@@ -1,0 +1,53 @@
+{
+  "name": "@surimi/compiler",
+  "version": "0.1.0",
+  "description": "Compile surimi ts files to css",
+  "keywords": [
+    "css",
+    "surimi",
+    "css-in-js"
+  ],
+  "license": "MIT",
+  "author": "Janis Jansen <oss@janis.me>",
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/*/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "catalog:build",
+    "rolldown": "catalog:build"
+  },
+  "devDependencies": {
+    "@janis.me/linter-config": "workspace:*",
+    "@janis.me/typescript-config": "workspace:*",
+    "@types/node": "catalog:types",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build"
+  },
+  "peerDependencies": {
+    "surimi": "workspace:*",
+    "vite": "*7.0.0"
+  }
+}

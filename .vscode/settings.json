@@ -9,6 +9,5 @@
   "eslint.useFlatConfig": true,
   // Enable if you have issues with the eslint plugin
   "eslint.debug": false,
-  "eslint.runtime": "node",
   "eslint.run": "onType"
 }

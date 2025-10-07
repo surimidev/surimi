@@ -1,0 +1,117 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import s from '../../src/index';
+
+describe('Media Queries', () => {
+  beforeEach(() => {
+    s.clear();
+  });
+
+  describe('Simple Media Queries', () => {
+    it('should support basic media queries', () => {
+      s.media('(min-width: 768px)').select('.container').style({
+        flexDirection: 'row',
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row
+    }
+}`);
+    });
+
+    it('should support max-width media queries', () => {
+      s.media('(max-width: 767px)').select('.mobile-nav').style({
+        display: 'block',
+      });
+
+      expect(s.build()).toBe(`\
+@media (max-width: 767px) {
+    .mobile-nav {
+        display: block
+    }
+}`);
+    });
+
+    it('should support complex media query conditions', () => {
+      s.media('(min-width: 768px) and (max-width: 1024px)').select('.tablet-layout').style({
+        columns: 2,
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-width: 768px) and (max-width: 1024px) {
+    .tablet-layout {
+        columns: 2
+    }
+}`);
+    });
+
+    it('should support print media queries', () => {
+      s.media('print').select('.no-print').style({
+        display: 'none',
+      });
+
+      expect(s.build()).toBe(`\
+@media print {
+    .no-print {
+        display: none
+    }
+}`);
+    });
+  });
+
+  describe('Media Query Chaining', () => {
+    it('should combine basic selectors with pseudo-classes and media queries', () => {
+      s.media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
+
+      expect(s.build()).toBe(`\
+@media (min-width: 768px) {
+    .button:hover {
+        background-color: blue
+    }
+}`);
+    });
+  });
+
+  describe('Media query builder', () => {
+    it('should support minWidth and maxWidth methods', () => {
+      s.media().minWidth('600px').maxWidth('1200px').select('.responsive').style({
+        fontSize: '18px',
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-width: 600px) and (max-width: 1200px) {
+    .responsive {
+        font-size: 18px
+    }
+}`);
+    });
+
+    it('should support orientation method', () => {
+      s.media().orientation('landscape').select('.landscape-only').style({
+        display: 'block',
+      });
+
+      expect(s.build()).toBe(`\
+@media (orientation: landscape) {
+    .landscape-only {
+        display: block
+    }
+}`);
+    });
+
+    it('should support raw method', () => {
+      s.media().raw('(min-resolution: 2dppx)').select('.high-res').style({
+        border: '1px solid black',
+      });
+
+      expect(s.build()).toBe(`\
+@media (min-resolution: 2dppx) {
+    .high-res {
+        border: 1px solid black
+    }
+}`);
+    });
+  });
+});

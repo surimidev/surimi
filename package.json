@@ -9,7 +9,10 @@
   "author": "Janis Jansen",
   "type": "module",
   "scripts": {
+    "build": "pnpm -r build",
+    "build:watch": "pnpm -r build:watch",
     "deps": "pnpm taze",
+    "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm -r dev\"",
     "format": "prettier --write .",
     "lint": "eslint --flag unstable_config_lookup_from_file .",
     "test": "vitest"
@@ -20,6 +23,8 @@
     "@janis.me/typescript-config": "workspace:*",
     "@playwright/test": "catalog:test",
     "@vitest/browser": "catalog:test",
+    "@vitest/ui": "catalog:test",
+    "concurrently": "catalog:script",
     "eslint": "catalog:lint",
     "jiti": "catalog:lint",
     "prettier": "catalog:format",
@@ -28,7 +33,7 @@
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.18.1",
   "engines": {
     "node": ">=22.11.0"
   }

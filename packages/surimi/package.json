@@ -1,0 +1,50 @@
+{
+  "name": "surimi",
+  "version": "0.3.0",
+  "private": false,
+  "description": "Next generation CSS-preprocessor (using typescript)",
+  "keywords": [
+    "css",
+    "surimi",
+    "css-in-js",
+    "ts-in-css"
+  ],
+  "license": "MIT",
+  "author": "Janis jansen <oss@janis.me>",
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/*/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "format": "prettier . --write"
+  },
+  "dependencies": {
+    "@emotion/hash": "catalog:prod",
+    "csstype": "catalog:prod",
+    "postcss": "catalog:prod"
+  },
+  "devDependencies": {
+    "@janis.me/linter-config": "workspace:*",
+    "@janis.me/typescript-config": "workspace:*",
+    "tsdown": "catalog:build"
+  }
+}

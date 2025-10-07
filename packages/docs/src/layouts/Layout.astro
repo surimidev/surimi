@@ -1,0 +1,32 @@
+---
+import plexMono from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
+
+import '#styles/index.css.ts';
+
+import Header from '#components/Header/Header.astro';
+
+const { title, description } = Astro.props;
+
+const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
+---
+
+<html lang="en" data-theme="janis-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={metaDescription} />
+    <meta name="keywords" content="surimi, css, ts-in-css, css-in-js, typescript, css preprocessor" />
+    <meta name="robots" content="index, follow, max-snippet:[120], max-image-preview:[large]" />
+
+    <title>{title}</title>
+
+    <link rel="preload" as="font" type="font/woff2" href={plexMono} crossorigin="anonymous" />
+  </head>
+
+  <body>
+    <Header />
+    <slot />
+  </body>
+</html>
