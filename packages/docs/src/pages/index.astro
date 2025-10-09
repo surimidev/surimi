@@ -1,5 +1,16 @@
 ---
+import CodeSection from '#components/index/CodeSection/CodeSection.astro';
+import FeaturesSection from '#components/index/FeaturesSection/FeaturesSection.astro';
+import Hero from '#components/index/Hero/Hero.astro';
+import InstallSection from '#components/index/InstallSection/InstallSection.astro';
 import Layout from '#layouts/Layout.astro';
 ---
 
-<Layout title="home"> hey </Layout>
+<Layout title="Home">
+  <div class="home">
+    <Hero />
+    <FeaturesSection />
+    <CodeSection />
+    <InstallSection />
+  </div>
+</Layout>

@@ -1,0 +1,54 @@
+---
+import { BoltIcon, CodeIcon, LightbulbIcon, ShieldHalvedIcon } from '../../icons';
+
+import './FeaturesSection.css';
+
+const features = [
+  {
+    icon: ShieldHalvedIcon,
+    title: 'Type Safety',
+    description: "Catch CSS errors at compile time with TypeScript's powerful type system. No more runtime surprises.",
+  },
+  {
+    icon: LightbulbIcon,
+    title: 'IntelliSense Everywhere',
+    description: 'Get autocomplete, hover information, and inline documentation right in your editor as you type.',
+  },
+  {
+    icon: BoltIcon,
+    title: 'Enhanced Developer Experience',
+    description:
+      'Share styles, selectors, themes like you are used to. And if you need, export them to JS with ease. All that with zero runtime.',
+  },
+  {
+    icon: CodeIcon,
+    title: 'Zero learning curve',
+    description:
+      'If you already know CSS and TypeScript, you know Surimi. And if not, the information is just one hover away.',
+  },
+];
+---
+
+<section class="features-section">
+  <div class="features-section__container">
+    <h2 class="features-section__title">Why Choose Surimi?</h2>
+    <p class="features-section__subtitle">
+      CSS preprocessors like SCSS are great, but with CSS getting more and more features, it's time for a new approach
+      to <b>supercharge</b> CSS. We figured out the typing and the programming part already... with typescript.
+      <br />
+      <b>So let's use typescript to write composable, maintainable styles.</b>
+    </p>
+
+    <div class="features-section__grid">
+      {
+        features.map(feature => (
+          <div class="features-section-card">
+            <div class="features-section-card__icon" set:html={feature.icon.html} />
+            <h3 class="features-section-card__title">{feature.title}</h3>
+            <p class="features-section-card__description">{feature.description}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

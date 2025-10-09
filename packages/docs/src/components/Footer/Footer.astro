@@ -1,0 +1,87 @@
+---
+import './Footer.css';
+
+import { BlueskyIcon, DiscordIcon, GithubIcon } from '../icons';
+
+const footerSections = [
+  {
+    title: 'RESOURCES',
+    links: [
+      { label: 'Documentation', href: '#' },
+      { label: 'Getting Started', href: '#' },
+      { label: 'Examples', href: '#' },
+      { label: 'API Reference', href: '#' },
+    ],
+  },
+  {
+    title: 'COMMUNITY',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/janis-me/surimi' },
+      { label: 'Discord', href: '#' },
+      { label: 'Twitter', href: '#' },
+      { label: 'Discussions', href: '#' },
+    ],
+  },
+  {
+    title: 'ABOUT',
+    links: [
+      { label: 'Team', href: '#' },
+      { label: 'Blog', href: '#' },
+      { label: 'Changelog', href: '#' },
+      { label: 'License', href: '#' },
+    ],
+  },
+];
+---
+
+<footer class="footer">
+  <div class="footer__container">
+    <div class="footer__content">
+      <!-- Logo and description -->
+      <div class="footer__brand">
+        <div class="footer__logo">
+          <span class="footer__logo-icon">🍣</span>
+          <span class="footer__logo-text">surimi</span>
+        </div>
+        <p class="footer__description">The next-generation TypeScript-in-CSS library for modern web development.</p>
+        <div class="footer__social">
+          <a href="https://github.com/janis-me/surimi" class="footer__social-link" aria-label="GitHub">
+            <span set:html={GithubIcon.html} />
+          </a>
+          <a href="#" class="footer__social-link" aria-label="Twitter">
+            <span set:html={BlueskyIcon.html} />
+          </a>
+          <a href="#" class="footer__social-link" aria-label="Discord">
+            <span set:html={DiscordIcon.html} />
+          </a>
+        </div>
+      </div>
+
+      <!-- Links sections -->
+      <div class="footer__links">
+        {
+          footerSections.map(section => (
+            <div class="footer__section">
+              <h3 class="footer__section-title">{section.title}</h3>
+              <ul class="footer__section-list">
+                {section.links.map(link => (
+                  <li class="footer__section-item">
+                    <a href={link.href} class="footer__section-link">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer__bottom">
+      <p class="footer__copyright">© 2025 Surimi. Built with love for the developer community.</p>
+      <div class="footer__made-with">Made with Astro and Surimi 🍣</div>
+    </div>
+  </div>
+</footer>
