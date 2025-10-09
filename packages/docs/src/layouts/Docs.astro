@@ -1,0 +1,14 @@
+---
+import Sidebar from '#components/_docs/Sidebar/Sidebar.astro';
+
+import Main from './Main.astro';
+
+import './Docs.css';
+---
+
+<Main class="docs">
+  <Sidebar />
+  <main class="docs__content">
+    <slot />
+  </main>
+</Main>

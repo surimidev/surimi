@@ -6,7 +6,7 @@ import '#styles/index.css.ts';
 import Footer from '#components/Footer/Footer.astro';
 import Header from '#components/Header/Header.astro';
 
-const { title, description } = Astro.props;
+const { title, description, class: className } = Astro.props;
 
 const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
 ---
@@ -27,8 +27,12 @@ const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
   </head>
 
   <body>
-    <Header />
-    <slot />
-    <Footer />
+    <div id="app">
+      <Header />
+      <div class={className}>
+        <slot />
+      </div>
+      <Footer />
+    </div>
   </body>
 </html>

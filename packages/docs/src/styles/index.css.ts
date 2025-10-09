@@ -17,6 +17,7 @@ select('html, body').style({
   padding: 0,
   fontFamily: 'IBM Plex Mono, sans-serif',
   backgroundColor: theme.bg.subtle,
+  color: theme.text.default,
 });
 
 select('html').style({
@@ -51,7 +52,6 @@ select('ul, ol, dl')
   .style({
     margin: 0,
     padding: 0,
-    listStylePosition: 'inside',
   })
   .descendant('ul, ol, dl')
   .style({

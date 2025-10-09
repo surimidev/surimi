@@ -1,0 +1,35 @@
+---
+title: Getting Started With Surimi
+category: gettingStarted
+layout: ../../layouts/Docs.astro
+---
+
+# {frontmatter.title}
+
+Welcome to Surimi! This guide is a quick guide to get you started with Surimi. For a more in-depth explaination of Surimi's concepts, check out the [How it works](/docs/how-it-works) section.
+
+Surimi is a TS-in-CSS library to write type-safe, zero-runtime CSS in typescript. It is meant as a modern, hybrid approach between CSS preprocessors like SCSS and CSS-in-JS libraries like Vanilla Extract.
+
+## Installation
+
+Install Surimi with your package manager of choice:
+
+```bash
+npm install -D surimi
+# or
+yarn add -D surimi
+# or
+pnpm add -D surimi
+```
+
+Next, you will need to run the surimi compiler somehow. While you can do that manually through the `@surimi/compiler` package, we recommend using the vite plugin.
+
+```bash
+npm install -D vite-plugin-surimi
+# or
+yarn add -D vite-plugin-surimi
+# or
+pnpm add -D vite-plugin-surimi
+```
+
+Note that both are installed as dev dependencies, as they are only needed at build time. Surimi does not (currently) need any runtime.

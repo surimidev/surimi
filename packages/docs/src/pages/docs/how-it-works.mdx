@@ -1,0 +1,14 @@
+---
+title: How It Works
+category: gettingStarted
+layout: ../../layouts/Docs.astro
+---
+
+# {frontmatter.title}
+
+Surimi is a **TS-in-CSS** library to write type-safe, zero-runtime CSS in typescript. It is meant as a modern, hybrid approach between CSS preprocessors like [SCSS](https://sass-lang.com/)
+and CSS-in-JS libraries like [Vanilla Extract](https://vanilla-extract.style/).
+We put the **TS** first, as Surimi's main feature is a fully type-safe, annotated API to write CSS in TS.
+
+At it's core, Surimi is comprised of a query-builder API that assembles a CSS [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) via [PostCSS](https://postcss.org/),
+and a compiler that runs the user code and emits the resulting CSS, while preserving exports from the file, so you can export your theme, class names etc.
