@@ -17,6 +17,12 @@ export interface CompileResult {
   dependencies: string[];
 }
 
+/**
+ * Use rolldown to compile Surimi code to CSS and transformed JS (to preserve exports).
+ * Also, returns a list of all imported files for watch mode.
+ * @param options
+ * @returns
+ */
 export default async function compile(options: CompileOptions): Promise<CompileResult> {
   const { inputPath, cwd, include, exclude } = options;
 
@@ -75,12 +81,7 @@ async function execute(code: string): Promise<{ css: string; js: string }> {
     const exports: string[] = [];
     for (const [key, value] of Object.entries(module)) {
       if (key !== 'default' && key !== '__SURIMI_GENERATED_CSS__') {
-        // Handle Surimi selector classes specially
-        if (value && typeof value === 'object' && 'toString' in value && 'toSelector' in value) {
-          // This is a ClassSelector or IdSelector - export the raw name (toString())
-          const stringValue = (value as { toString(): string }).toString();
-          exports.push(`export const ${key} = ${JSON.stringify(stringValue)};`);
-        } else if (typeof value === 'string') {
+        if (typeof value === 'string') {
           // Regular string export
           exports.push(`export const ${key} = ${JSON.stringify(value)};`);
         } else if (typeof value === 'object' && value !== null) {

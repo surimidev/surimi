@@ -1,36 +1,122 @@
-import postcss from 'postcss';
+import postcss, { type Declaration } from 'postcss';
 
-import { buildSelectorWithRelationship, combineSelector, createDeclarations } from './css-generator';
 import type {
   BuilderContext,
   CSSProperties,
-  IAttributeBuilder,
-  IMediaQueryBuilder,
-  ISelectorBuilder,
+  ExtractParentSelector,
+  ExtractRootSelector,
+  ExtractSelector,
   JoinSelectors,
-  NormalizeSelectorArray,
+  ResetToBase,
   SelectorInput,
+  WithAttribute,
+  WithAttributeExistence,
+  WithContextualSelector,
   WithMediaContext,
+  WithPseudoClass,
+  WithPseudoElement,
+  WithRelationship,
 } from './types';
 
 /**
- * Utility function to normalize selector inputs to strings
+ * CSS generation utilities for PostCSS AST manipulation.
  */
-function normalizeSelector(selector: SelectorInput): string {
-  return typeof selector === 'string' ? selector : selector.toSelector();
+
+/**
+ * Formats a camelCase property name to kebab-case for CSS
+ */
+function formatPropertyName(property: string): string {
+  return property.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 
 /**
- * Unified selector builder that handles both regular selectors and media-scoped selectors
- * The context determines whether we're in a media query or not
+ * Formats a property value to a string suitable for CSS
  */
-export class SelectorBuilder<TContext extends string = string> implements ISelectorBuilder<TContext> {
+function formatPropertyValue(value: unknown): string {
+  if (typeof value === 'number') {
+    return value.toString();
+  }
+  return String(value);
+}
+
+/**
+ * Creates PostCSS declaration nodes from CSS properties object
+ */
+function createDeclarations(properties: CSSProperties): Declaration[] {
+  const declarations: Declaration[] = [];
+
+  for (const [property, value] of Object.entries(properties)) {
+    if (value !== undefined && value !== null) {
+      const formattedProperty = formatPropertyName(property);
+      const formattedValue = formatPropertyValue(value);
+
+      const declaration = postcss.decl({
+        prop: formattedProperty,
+        value: formattedValue,
+      });
+
+      declarations.push(declaration);
+    }
+  }
+
+  return declarations;
+}
+
+/**
+ * Combines a base selector with pseudo-classes and pseudo-elements
+ */
+function combineSelector(baseSelector: string, pseudoClasses: string[] = [], pseudoElements: string[] = []): string {
+  let selector = baseSelector;
+
+  for (const pseudoClass of pseudoClasses) {
+    selector += `:${pseudoClass}`;
+  }
+
+  for (const pseudoElement of pseudoElements) {
+    selector += `::${pseudoElement}`;
+  }
+
+  return selector;
+}
+
+/**
+ * Builds a selector with a relationship combinator
+ */
+function buildSelectorWithRelationship(
+  baseSelector: string,
+  relationship: 'child' | 'descendant' | 'adjacent' | 'sibling',
+  targetSelector: string,
+): string {
+  switch (relationship) {
+    case 'child':
+      return `${baseSelector} > ${targetSelector}`;
+    case 'descendant':
+      return `${baseSelector} ${targetSelector}`;
+    case 'adjacent':
+      return `${baseSelector} + ${targetSelector}`;
+    case 'sibling':
+      return `${baseSelector} ~ ${targetSelector}`;
+    default:
+      return `${baseSelector} ${targetSelector}`;
+  }
+}
+
+/**
+ * Unified selector builder that handles both regular selectors and media-scoped selectors.
+ * The context determines whether we're in a media query or not.
+ *
+ * @template TContext - Tracks the complete selector context including media queries
+ */
+export class SelectorBuilder<TContext extends string = string> {
   constructor(
     private context: BuilderContext,
     private postcssRoot: postcss.Root,
   ) {}
 
-  style(properties: CSSProperties): ISelectorBuilder<TContext> {
+  /**
+   * Apply CSS properties to the current selector
+   */
+  style(properties: CSSProperties): SelectorBuilder<ResetToBase<ExtractSelector<TContext>>> {
     const rule = this.getOrCreateRule();
     const declarations = createDeclarations(properties);
     declarations.forEach(decl => rule.append(decl));
@@ -39,56 +125,90 @@ export class SelectorBuilder<TContext extends string = string> implements ISelec
     return this.createResetInstance();
   }
 
-  hover(): ISelectorBuilder<`${TContext}:hover`> {
+  /**
+   * Add :hover pseudo-class to the selector
+   */
+  hover(): SelectorBuilder<WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'hover'>>> {
     return this.addPseudoClass('hover');
   }
 
-  focus(): ISelectorBuilder<`${TContext}:focus`> {
+  /**
+   * Add :focus pseudo-class to the selector
+   */
+  focus(): SelectorBuilder<WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'focus'>>> {
     return this.addPseudoClass('focus');
   }
 
-  active(): ISelectorBuilder<`${TContext}:active`> {
+  /**
+   * Add :active pseudo-class to the selector
+   */
+  active(): SelectorBuilder<WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'active'>>> {
     return this.addPseudoClass('active');
   }
 
-  disabled(): ISelectorBuilder<`${TContext}:disabled`> {
+  /**
+   * Add :disabled pseudo-class to the selector
+   */
+  disabled(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'disabled'>>
+  > {
     return this.addPseudoClass('disabled');
   }
 
-  before(): ISelectorBuilder<`${TContext}::before`> {
+  /**
+   * Add ::before pseudo-element to the selector
+   */
+  before(): SelectorBuilder<WithContextualSelector<TContext, WithPseudoElement<ExtractSelector<TContext>, 'before'>>> {
     return this.addPseudoElement('before');
   }
 
-  after(): ISelectorBuilder<`${TContext}::after`> {
+  /**
+   * Add ::after pseudo-element to the selector
+   */
+  after(): SelectorBuilder<WithContextualSelector<TContext, WithPseudoElement<ExtractSelector<TContext>, 'after'>>> {
     return this.addPseudoElement('after');
   }
 
-  child(selector: SelectorInput): ISelectorBuilder<`${TContext} > ${string}`> {
+  /**
+   * Select direct child elements
+   */
+  child<TChild extends SelectorInput>(
+    selector: TChild,
+  ): SelectorBuilder<WithContextualSelector<TContext, WithRelationship<ExtractSelector<TContext>, 'child', TChild>>> {
     const currentBaseSelector = combineSelector(
       this.context.baseSelector,
       this.context.pseudoClasses,
       this.context.pseudoElements,
     );
 
-    const normalizedSelector = normalizeSelector(selector);
-    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'child', normalizedSelector);
+    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'child', selector);
     return this.createChildInstance(newSelector);
   }
 
-  descendant(selector: SelectorInput): ISelectorBuilder<`${TContext} ${string}`> {
+  /**
+   * Select descendant elements
+   */
+  descendant<TDescendant extends SelectorInput>(
+    selector: TDescendant,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithRelationship<ExtractSelector<TContext>, 'descendant', TDescendant>>
+  > {
     const currentBaseSelector = combineSelector(
       this.context.baseSelector,
       this.context.pseudoClasses,
       this.context.pseudoElements,
     );
 
-    const normalizedSelector = normalizeSelector(selector);
-    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'descendant', normalizedSelector);
+    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'descendant', selector);
     return this.createChildInstance(newSelector);
   }
 
-  // Complex selector combinations
-  and(selector: string): ISelectorBuilder<`${TContext}${string}`> {
+  /**
+   * Combine with another selector (compound selector)
+   */
+  and<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<WithContextualSelector<TContext, `${ExtractSelector<TContext>}${TSelector}`>> {
     const newContext = {
       ...this.context,
       baseSelector: this.context.baseSelector + selector,
@@ -96,67 +216,124 @@ export class SelectorBuilder<TContext extends string = string> implements ISelec
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  is(selector: string): ISelectorBuilder<`${TContext}:is(${string})`> {
+  /**
+   * Add :is() pseudo-class
+   */
+  is<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `is(${TSelector})`>>> {
     return this.addPseudoClass(`is(${selector})`);
   }
 
-  where(selector: string): ISelectorBuilder<`${TContext}:where(${string})`> {
+  /**
+   * Add :where() pseudo-class
+   */
+  where<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `where(${TSelector})`>>
+  > {
     return this.addPseudoClass(`where(${selector})`);
   }
 
-  not(selector: string): ISelectorBuilder<`${TContext}:not(${string})`> {
+  /**
+   * Add :not() pseudo-class
+   */
+  not<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `not(${TSelector})`>>
+  > {
     return this.addPseudoClass(`not(${selector})`);
   }
 
-  // Combinator selectors
-  adjacent(selector: SelectorInput): ISelectorBuilder<`${TContext} + ${string}`> {
+  /**
+   * Select adjacent sibling elements
+   */
+  adjacent<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithRelationship<ExtractSelector<TContext>, 'adjacent', TSelector>>
+  > {
     const currentBaseSelector = combineSelector(
       this.context.baseSelector,
       this.context.pseudoClasses,
       this.context.pseudoElements,
     );
 
-    const normalizedSelector = normalizeSelector(selector);
-    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'adjacent', normalizedSelector);
+    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'adjacent', selector);
     return this.createChildInstance(newSelector);
   }
 
-  sibling(selector: SelectorInput): ISelectorBuilder<`${TContext} ~ ${string}`> {
+  /**
+   * Select general sibling elements
+   */
+  sibling<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithRelationship<ExtractSelector<TContext>, 'sibling', TSelector>>
+  > {
     const currentBaseSelector = combineSelector(
       this.context.baseSelector,
       this.context.pseudoClasses,
       this.context.pseudoElements,
     );
 
-    const normalizedSelector = normalizeSelector(selector);
-    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'sibling', normalizedSelector);
+    const newSelector = buildSelectorWithRelationship(currentBaseSelector, 'sibling', selector);
     return this.createChildInstance(newSelector);
   }
 
-  // Advanced pseudo-selectors
-  nthChild(value: number | string): ISelectorBuilder<`${TContext}:nth-child(${string})`> {
+  /**
+   * Add :nth-child() pseudo-class
+   */
+  nthChild<TValue extends number | string>(
+    value: TValue,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `nth-child(${TValue})`>>
+  > {
     return this.addPseudoClass(`nth-child(${String(value)})`);
   }
 
-  firstChild(): ISelectorBuilder<`${TContext}:first-child`> {
+  /**
+   * Add :first-child pseudo-class
+   */
+  firstChild(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'first-child'>>
+  > {
     return this.addPseudoClass('first-child');
   }
 
-  lastChild(): ISelectorBuilder<`${TContext}:last-child`> {
+  /**
+   * Add :last-child pseudo-class
+   */
+  lastChild(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, 'last-child'>>
+  > {
     return this.addPseudoClass('last-child');
   }
 
-  nthOfType(value: number | string): ISelectorBuilder<`${TContext}:nth-of-type(${string})`> {
+  /**
+   * Add :nth-of-type() pseudo-class
+   */
+  nthOfType<TValue extends number | string>(
+    value: TValue,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `nth-of-type(${TValue})`>>
+  > {
     return this.addPseudoClass(`nth-of-type(${String(value)})`);
   }
 
-  // Attribute selectors
-  attr(attribute: string) {
+  /**
+   * Create attribute selector builder
+   */
+  attr<TAttr extends string>(attribute: TAttr): AttributeBuilder<WithAttributeExistence<TContext, TAttr>, TAttr> {
     return new AttributeBuilder(this.context, this.postcssRoot, attribute);
   }
 
-  // Enhanced navigation
-  parent(): ISelectorBuilder {
+  /**
+   * Navigate to parent selector
+   */
+  parent(): SelectorBuilder<ExtractParentSelector<TContext>> {
     const parentSelector = this.extractParentSelector(this.context.baseSelector);
     if (!parentSelector) {
       throw new Error('No parent selector found');
@@ -171,7 +348,10 @@ export class SelectorBuilder<TContext extends string = string> implements ISelec
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  root(): ISelectorBuilder {
+  /**
+   * Navigate to root selector
+   */
+  root(): SelectorBuilder<ExtractRootSelector<TContext>> {
     const rootSelector = this.extractRootSelector(this.context.baseSelector);
 
     // If we're already at root (no relationship combinators), return this instance
@@ -180,7 +360,7 @@ export class SelectorBuilder<TContext extends string = string> implements ISelec
       this.context.pseudoClasses.length === 0 &&
       this.context.pseudoElements.length === 0
     ) {
-      return this;
+      return this as SelectorBuilder<ExtractRootSelector<TContext>>;
     }
 
     const newContext = {
@@ -324,9 +504,11 @@ export class SelectorBuilder<TContext extends string = string> implements ISelec
 }
 
 /**
- * Fluent media query builder for constructing media queries
+ * Fluent media query builder for constructing responsive CSS.
+ *
+ * @template TQuery - Tracks the current media query conditions for type safety
  */
-export class MediaQueryBuilder<TQuery extends string = ''> implements IMediaQueryBuilder<TQuery> {
+export class MediaQueryBuilder<TQuery extends string = ''> {
   private conditions: string[] = [];
   private postcssRoot: postcss.Root;
 
@@ -335,61 +517,84 @@ export class MediaQueryBuilder<TQuery extends string = ''> implements IMediaQuer
     this.conditions = initialConditions ?? [];
   }
 
-  maxWidth(value: string): IMediaQueryBuilder {
+  /**
+   * Add max-width media query condition
+   */
+  maxWidth(value: string): MediaQueryBuilder {
     const newConditions = [...this.conditions, `(max-width: ${value})`];
     return new MediaQueryBuilder(this.postcssRoot, newConditions);
   }
 
-  minWidth(value: string): IMediaQueryBuilder {
+  /**
+   * Add min-width media query condition
+   */
+  minWidth(value: string): MediaQueryBuilder {
     const newConditions = [...this.conditions, `(min-width: ${value})`];
     return new MediaQueryBuilder(this.postcssRoot, newConditions);
   }
 
-  maxHeight(value: string): IMediaQueryBuilder {
+  /**
+   * Add max-height media query condition
+   */
+  maxHeight(value: string): MediaQueryBuilder {
     const newConditions = [...this.conditions, `(max-height: ${value})`];
     return new MediaQueryBuilder(this.postcssRoot, newConditions);
   }
 
-  minHeight(value: string): IMediaQueryBuilder {
+  /**
+   * Add min-height media query condition
+   */
+  minHeight(value: string): MediaQueryBuilder {
     const newConditions = [...this.conditions, `(min-height: ${value})`];
     return new MediaQueryBuilder(this.postcssRoot, newConditions);
   }
 
-  orientation(value: 'landscape' | 'portrait'): IMediaQueryBuilder {
+  /**
+   * Add orientation media query condition
+   */
+  orientation(value: 'landscape' | 'portrait'): MediaQueryBuilder {
     const newConditions = [...this.conditions, `(orientation: ${value})`];
     return new MediaQueryBuilder(this.postcssRoot, newConditions);
   }
 
-  and(): IMediaQueryBuilder<TQuery> {
+  /**
+   * Logical AND operator (implicit in condition chaining)
+   */
+  and(): this {
     // 'and' is implicit in our conditions array
     return this;
   }
 
-  or(): IMediaQueryBuilder<TQuery> {
+  /**
+   * Logical OR operator (for future implementation)
+   */
+  or(): this {
     // TODO: For now, return this - full OR logic can be implemented later
     return this;
   }
 
-  raw(query: string): IMediaQueryBuilder {
+  /**
+   * Add a raw media query string
+   */
+  raw(query: string): MediaQueryBuilder {
     return new MediaQueryBuilder(this.postcssRoot, [query]);
   }
 
+  /**
+   * Select elements within this media query context
+   */
   select<TSelectors extends readonly SelectorInput[]>(
     ...selectors: TSelectors
-  ): ISelectorBuilder<WithMediaContext<JoinSelectors<NormalizeSelectorArray<TSelectors>>, TQuery>> {
+  ): SelectorBuilder<WithMediaContext<JoinSelectors<TSelectors>, TQuery>> {
     const mediaQuery = this.buildQuery();
-    // Normalize selector inputs to strings
-    const normalizedSelectors = selectors.map(selector => normalizeSelector(selector));
-    const joinedSelector = normalizedSelectors.join(', ');
+    const joinedSelector = selectors.join(', ');
     const context = {
       baseSelector: joinedSelector,
       pseudoClasses: [],
       pseudoElements: [],
       mediaQuery: mediaQuery,
     };
-    return new SelectorBuilder(context, this.postcssRoot) as ISelectorBuilder<
-      WithMediaContext<JoinSelectors<NormalizeSelectorArray<TSelectors>>, TQuery>
-    >;
+    return new SelectorBuilder(context, this.postcssRoot);
   }
 
   private buildQuery(): string {
@@ -398,18 +603,22 @@ export class MediaQueryBuilder<TQuery extends string = ''> implements IMediaQuer
 }
 
 /**
- * Attribute builder for creating attribute selectors
+ * Attribute builder for creating CSS attribute selectors.
+ *
+ * @template TContext - The current selector context
+ * @template TAttribute - The attribute name being targeted
  */
-export class AttributeBuilder<TContext extends string, TAttribute extends string>
-  implements IAttributeBuilder<TContext, TAttribute>
-{
+export class AttributeBuilder<TContext extends string, TAttribute extends string> {
   constructor(
     private context: BuilderContext,
     private postcssRoot: postcss.Root,
     private attribute: TAttribute,
   ) {}
 
-  style(properties: CSSProperties): ISelectorBuilder {
+  /**
+   * Apply CSS properties to the attribute selector
+   */
+  style(properties: CSSProperties): SelectorBuilder<ResetToBase<ExtractSelector<TContext>>> {
     const rule = this.getOrCreateRule();
     const declarations = createDeclarations(properties);
     declarations.forEach(decl => rule.append(decl));
@@ -417,36 +626,54 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     return this.createResetInstance();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- needed for proper type hints
-  equals<TValue extends string>(value: TValue): ISelectorBuilder {
+  /**
+   * Create attribute equals selector [attr="value"]
+   */
+  equals<TValue extends string>(value: TValue): SelectorBuilder<WithAttribute<TContext, TAttribute, 'equals', TValue>> {
     const newSelector = this.buildAttributeSelector('equals', value);
     const newContext = this.updateContextWithAttribute(newSelector);
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- needed for proper type hints
-  startsWith<TValue extends string>(value: TValue): ISelectorBuilder {
+  /**
+   * Create attribute starts-with selector [attr^="value"]
+   */
+  startsWith<TValue extends string>(
+    value: TValue,
+  ): SelectorBuilder<WithAttribute<TContext, TAttribute, 'starts-with', TValue>> {
     const newSelector = this.buildAttributeSelector('starts-with', value);
     const newContext = this.updateContextWithAttribute(newSelector);
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- needed for proper type hints
-  endsWith<TValue extends string>(value: TValue): ISelectorBuilder {
+  /**
+   * Create attribute ends-with selector [attr$="value"]
+   */
+  endsWith<TValue extends string>(
+    value: TValue,
+  ): SelectorBuilder<WithAttribute<TContext, TAttribute, 'ends-with', TValue>> {
     const newSelector = this.buildAttributeSelector('ends-with', value);
     const newContext = this.updateContextWithAttribute(newSelector);
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- needed for proper type hints
-  contains<TValue extends string>(value: TValue): ISelectorBuilder {
+  /**
+   * Create attribute contains selector [attr*="value"]
+   */
+  contains<TValue extends string>(
+    value: TValue,
+  ): SelectorBuilder<WithAttribute<TContext, TAttribute, 'contains', TValue>> {
     const newSelector = this.buildAttributeSelector('contains', value);
     const newContext = this.updateContextWithAttribute(newSelector);
     return new SelectorBuilder(newContext, this.postcssRoot);
   }
 
-  // Continue building with attribute existence
-  hover(): ISelectorBuilder {
+  /**
+   * Add :hover to the attribute selector
+   */
+  hover(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'hover'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -457,7 +684,12 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  focus(): ISelectorBuilder {
+  /**
+   * Add :focus to the attribute selector
+   */
+  focus(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'focus'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -468,7 +700,12 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  active(): ISelectorBuilder {
+  /**
+   * Add :active to the attribute selector
+   */
+  active(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'active'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -479,7 +716,12 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  disabled(): ISelectorBuilder {
+  /**
+   * Add :disabled to the attribute selector
+   */
+  disabled(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'disabled'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -490,13 +732,25 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  attr<TAttr extends string>(attribute: TAttr) {
+  /**
+   * Chain another attribute selector
+   */
+  attr<TAttr extends string>(attribute: TAttr): AttributeBuilder<WithAttributeExistence<TContext, TAttribute>, TAttr> {
     const newContext = this.updateContextWithAttributeExistence();
     return new AttributeBuilder(newContext, this.postcssRoot, attribute);
   }
 
-  // Advanced pseudo-selectors
-  nthChild(value: number | string): ISelectorBuilder {
+  /**
+   * Add :nth-child() to the attribute selector
+   */
+  nthChild(
+    value: number | string,
+  ): SelectorBuilder<
+    WithContextualSelector<
+      TContext,
+      WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, `nth-child(${string})`>
+    >
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -507,7 +761,12 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  firstChild(): ISelectorBuilder {
+  /**
+   * Add :first-child to the attribute selector
+   */
+  firstChild(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'first-child'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -518,7 +777,12 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  lastChild(): ISelectorBuilder {
+  /**
+   * Add :last-child to the attribute selector
+   */
+  lastChild(): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, 'last-child'>>
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -529,7 +793,17 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     );
   }
 
-  nthOfType(value: number | string): ISelectorBuilder {
+  /**
+   * Add :nth-of-type() to the attribute selector
+   */
+  nthOfType(
+    value: number | string,
+  ): SelectorBuilder<
+    WithContextualSelector<
+      TContext,
+      WithPseudoClass<WithAttributeExistence<TContext, TAttribute>, `nth-of-type(${string})`>
+    >
+  > {
     const newContext = this.updateContextWithAttributeExistence();
     return new SelectorBuilder(
       {
@@ -621,7 +895,7 @@ export class AttributeBuilder<TContext extends string, TAttribute extends string
     return rule;
   }
 
-  private createResetInstance(): ISelectorBuilder {
+  private createResetInstance(): SelectorBuilder<ResetToBase<ExtractSelector<TContext>>> {
     const newContext = {
       baseSelector: this.context.baseSelector,
       pseudoClasses: [],

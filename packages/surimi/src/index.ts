@@ -1,3 +1,2 @@
-export { Surimi as default } from '#stylesheet';
-export { ClassSelector, IdSelector } from '#selectors';
-export type { ISurimiSelector, SelectorInput } from '#types';
+export { Surimi as default, select, media } from './surimi';
+export type { SelectorInput } from './types';

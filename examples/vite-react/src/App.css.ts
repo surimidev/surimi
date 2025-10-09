@@ -2,9 +2,7 @@ import s from 'surimi';
 
 import { theme } from '#styles/theme';
 
-export const app = s.id('app');
-
-const _app = s.select(app).style({
+const _app = s.select('#app').style({
   width: '100vw',
   height: '100vh',
   display: 'flex',
@@ -27,6 +25,6 @@ _app
     textDecoration: 'underline',
   });
 
-s.media('(max-width: 600px)').select(app).style({
+s.media('(max-width: 600px)').select('#app').style({
   gap: 0,
 });

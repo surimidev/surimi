@@ -2,10 +2,7 @@ import s from 'surimi';
 
 import { theme } from '#styles/theme';
 
-export const button = s.class('button');
-export const input = s.class('input');
-
-const buttonElem = s.select(button).style({
+const buttonElem = s.select('.button').style({
   padding: '0.5rem 1rem',
   border: 'none',
   borderRadius: '4px',

@@ -35,7 +35,8 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "prepack": "pnpm -c exec ../../scripts/replace-symlinks.sh"
   },
   "dependencies": {
     "@emotion/hash": "catalog:prod",
