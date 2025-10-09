@@ -31,6 +31,7 @@ catalogs:
     "@emotion/hash": "^0.9.2"
   script:
     taze: ^19.7.0
+    tinyexec: "^1.0.1"
     concurrently: "^9.2.1"
   test:
     "@playwright/test": ^1.55.1

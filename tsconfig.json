@@ -1,5 +1,5 @@
 {
   "extends": "@janis.me/typescript-config/base.json",
-  "include": ["*.config.ts"],
+  "include": ["*.config.ts", "./scripts/*.ts"],
   "exclude": ["node_modules"]
 }

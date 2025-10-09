@@ -15,6 +15,7 @@
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm -r dev\"",
     "format": "prettier --write .",
     "lint": "eslint --flag unstable_config_lookup_from_file .",
+    "publish-ci": "jiti ./scripts/publish-ci.ts",
     "test": "vitest"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "@janis.me/linter-config": "workspace:*",
     "@janis.me/typescript-config": "workspace:*",
     "@playwright/test": "catalog:test",
+    "@types/node": "catalog:types",
     "@vitest/browser": "catalog:test",
     "@vitest/ui": "catalog:test",
     "concurrently": "catalog:script",
@@ -30,6 +32,7 @@
     "prettier": "catalog:format",
     "prettier-plugin-packagejson": "catalog:format",
     "taze": "catalog:script",
+    "tinyexec": "catalog:script",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
