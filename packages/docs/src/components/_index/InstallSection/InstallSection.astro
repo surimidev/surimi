@@ -1,0 +1,169 @@
+---
+import { CopyIcon, DocumentationIcon } from '../../icons';
+
+import './InstallSection.css';
+
+const installCommands = [
+  {
+    id: 'npm',
+    manager: 'npm',
+    command: 'npm install surimi',
+  },
+  {
+    id: 'yarn',
+    manager: 'yarn',
+    command: 'yarn add surimi',
+  },
+  {
+    id: 'pnpm',
+    manager: 'pnpm',
+    command: 'pnpm add surimi',
+  },
+];
+
+const quickStartSteps = [
+  {
+    number: 1,
+    text: 'Install Surimi using one of the commands above',
+  },
+  {
+    number: 2,
+    text: 'Import our vite plugin (works with React, Astro, Vue and more) and use it in your vite config',
+  },
+  {
+    number: 3,
+    text: 'Create a `.css.ts` file and start using Surimi!',
+  },
+  {
+    number: 4,
+    text: 'Import the .css.ts file into any other file of your app... done! 🎉',
+  },
+];
+---
+
+<section class="install-section">
+  <div class="install-section__container">
+    <div class="install-section__header">
+      <span class="install-section__badge">Ready to get started?</span>
+      <h2 class="install-section__title">Install Surimi Today</h2>
+      <p class="install-section__subtitle">Get up and running in seconds with your favorite package manager</p>
+    </div>
+
+    <div class="install-section__commands">
+      {
+        installCommands.map(cmd => (
+          <div class="install-command">
+            <div class="install-command__content">
+              <span class="install-command__prompt">$</span>
+              <code class="install-command__text">{cmd.command}</code>
+            </div>
+            <button class="install-command__copy" data-copy={cmd.id}>
+              <span set:html={CopyIcon.html} />
+              Copy
+            </button>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="install-section__quickstart">
+      <h3 class="install-section__quickstart-title">Quick Start</h3>
+      <ol class="install-section__steps">
+        {
+          quickStartSteps.map(step => (
+            <li class="install-section__step">
+              <span class="install-section__step-number">{step.number}</span>
+              <span class="install-section__step-text">{step.text}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <a href="/docs/getting-started" class="install-section__docs-link">
+        <span set:html={DocumentationIcon.html} />
+        Read the documentation →
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Copy functionality for install commands
+  document.addEventListener('DOMContentLoaded', () => {
+    const copyButtons = document.querySelectorAll('.install-command__copy');
+
+    // Command mapping for copy functionality
+    const commands: Record<string, string> = {
+      npm: 'npm install surimi',
+      yarn: 'yarn add surimi',
+      pnpm: 'pnpm add surimi',
+    };
+
+    copyButtons.forEach(button => {
+      button.addEventListener('click', async e => {
+        e.preventDefault();
+
+        const copyId = button.getAttribute('data-copy');
+        if (!copyId || !commands[copyId]) return;
+
+        const command = commands[copyId];
+        const btnElement = button as HTMLButtonElement;
+
+        try {
+          await navigator.clipboard.writeText(command);
+
+          // Visual feedback
+          const originalHTML = btnElement.innerHTML;
+          btnElement.textContent = 'Copied!';
+          btnElement.style.backgroundColor = '#10b981';
+          btnElement.style.color = 'white';
+
+          // Reset after 2 seconds
+          setTimeout(() => {
+            btnElement.innerHTML = originalHTML;
+            btnElement.style.backgroundColor = '';
+            btnElement.style.color = '';
+          }, 2000);
+        } catch (err) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = command;
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+
+          try {
+            document.execCommand('copy');
+
+            // Visual feedback for fallback
+            const originalHTML = btnElement.innerHTML;
+            btnElement.textContent = 'Copied!';
+            btnElement.style.backgroundColor = '#10b981';
+            btnElement.style.color = 'white';
+
+            setTimeout(() => {
+              btnElement.innerHTML = originalHTML;
+              btnElement.style.backgroundColor = '';
+              btnElement.style.color = '';
+            }, 2000);
+          } catch (fallbackErr) {
+            console.error('Failed to copy text: ', fallbackErr);
+
+            // Error feedback
+            const originalHTML = btnElement.innerHTML;
+            btnElement.textContent = 'Failed';
+            btnElement.style.backgroundColor = '#ef4444';
+            btnElement.style.color = 'white';
+
+            setTimeout(() => {
+              btnElement.innerHTML = originalHTML;
+              btnElement.style.backgroundColor = '';
+              btnElement.style.color = '';
+            }, 2000);
+          }
+
+          document.body.removeChild(textArea);
+        }
+      });
+    });
+  });
+</script>

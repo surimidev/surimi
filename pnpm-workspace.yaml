@@ -40,12 +40,12 @@ catalogs:
     "@vitest/ui": ^3.2.4
     vitest: 3.2.4
   types:
-    "@types/node": ^22.18.8
+    "@types/node": ^22.18.9
   docs:
     include-media: "^2.0.0"
     sanitize.css: "^13.0.0"
     cssnano: ^7.1.1
-    astro: "^5.14.1"
+    astro: "^5.14.3"
     sharp: "^0.34.4"
     "@fontsource/ibm-plex-mono": "^5.2.7"
     "@fortawesome/fontawesome-svg-core": "^6.7.2"

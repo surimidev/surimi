@@ -1,0 +1,78 @@
+---
+import './CodeSection.css';
+
+const codeBlocks = [
+  {
+    id: 'before',
+    label: 'Before',
+    className: '',
+    code: `\
+#container {
+  display: flex;
+  padding: 20px;
+  background-color: var(--bg-color);
+}
+
+#container > .button {
+  color: var(--primary-color);
+}
+
+#container > .button:hover {
+  color: var(--primary-hover-color);
+}
+`,
+  },
+  {
+    id: 'surimi',
+    label: 'With Surimi',
+    className: 'code-block--surimi',
+    code: `\
+const container = select('#container').style({
+  display: 'flex',
+  padding: '20px',
+  backgroundColor: theme.colors.background,
+});
+
+container.child('.button')
+  .style({
+    color: theme.colors.primary,
+  })
+  .hover().style({
+    color: theme.colors.primaryHover,
+  });
+`,
+  },
+];
+---
+
+<section class="code-section">
+  <h2>See It In Action</h2>
+  <p class="section-subtitle">
+    CSS is nice and (somewhat) simple. But it's lacking things we're used to in coding, like <b>re-usable</b> selectors,
+    <b>compile-time</b> and <b>type safety</b>, a direct <b>JS interface</b>, <b>composability</b> and other things that
+    make coding great.
+    <br />
+    <br />
+    This is how <b>surimi</b> solves these issues:
+  </p>
+
+  <div class="code-comparison">
+    {
+      codeBlocks.map(block => (
+        <div class={`code-block ${block.className}`}>
+          <div class="code-header">
+            <span class="code-label">{block.label}</span>
+          </div>
+          {/* prettier-ignore */}
+          <pre><code id={`${block.id}-code`}>{block.code}</code></pre>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="pro-tip">
+    <strong>Pro Tip:</strong> With Surimi, you get full TypeScript type checking, autocomplete for property names and values,
+    and instant feedback on typos or invalid CSS. If you change a selector (like <code>.container</code>), all related
+    styles update automatically.
+  </div>
+</section>

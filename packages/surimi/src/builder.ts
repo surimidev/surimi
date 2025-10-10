@@ -226,6 +226,17 @@ export class SelectorBuilder<TContext extends string = string> {
   }
 
   /**
+   * Add :has() pseudo-class
+   */
+  has<TSelector extends string>(
+    selector: TSelector,
+  ): SelectorBuilder<
+    WithContextualSelector<TContext, WithPseudoClass<ExtractSelector<TContext>, `has(${TSelector})`>>
+  > {
+    return this.addPseudoClass(`has(${selector})`);
+  }
+
+  /**
    * Add :where() pseudo-class
    */
   where<TSelector extends string>(

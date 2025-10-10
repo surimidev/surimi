@@ -88,3 +88,5 @@ export const select = Surimi.select.bind(Surimi);
  * Convenience function that delegates to Surimi.media().
  */
 export const media = Surimi.media.bind(Surimi);
+
+export default Surimi;

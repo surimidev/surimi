@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+
+import type { DocsCategory } from '../../../content.config';
+
+import './Sidebar.css';
+
+const docs = await getCollection('docs');
+
+const SIDEBAR_LABELS = {
+  gettingStarted: 'Getting Started',
+  guides: 'Guides',
+  apiReference: 'API Reference',
+} satisfies Record<DocsCategory, string>;
+
+const groupedDocs = Object.entries(SIDEBAR_LABELS).reduce(
+  (acc, [category, label]) => {
+    acc[label] = docs.filter(doc => doc.data.category === (category as DocsCategory));
+    return acc;
+  },
+  {} as Record<string, typeof docs>,
+);
+---
+
+<nav class="sidebar">
+  <ul class="sidebar__list">
+    {
+      Object.entries(groupedDocs).map(([category, docs]) => (
+        <li class="sidebar__category">
+          <p class="sidebar__category-title">{category}</p>
+          <ul class="sidebar__category-list">
+            {docs
+              .sort((a, b) => (a.data.categoryOrderId ?? Infinity) - (b.data.categoryOrderId ?? Infinity))
+              .map(doc => (
+                <li class="sidebar__doc-item">
+                  <a href={`/docs/${doc.id}`} class="sidebar__doc-link">
+                    {doc.data.title}
+                  </a>
+                </li>
+              ))}
+
+            {docs.length === 0 ? (
+              <li class="sidebar__doc-item sidebar__doc-item--empty">No documents available.</li>
+            ) : null}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

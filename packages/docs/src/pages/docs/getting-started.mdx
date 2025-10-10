@@ -1,0 +1,87 @@
+---
+title: Getting Started With Surimi
+category: gettingStarted
+categoryOrderId: 0
+layout: ../../layouts/Docs/Docs.astro
+---
+
+# {frontmatter.title}
+
+Welcome to Surimi! This guide is a quick guide to get you started with Surimi. For a more in-depth explaination of Surimi's concepts, check out the [How it works](/docs/how-it-works) section.
+
+Surimi is a TS-in-CSS library to write type-safe, zero-runtime CSS in typescript. It is meant as a modern, hybrid approach between CSS preprocessors like SCSS and CSS-in-JS libraries like Vanilla Extract.
+
+## Installation
+
+Install Surimi with your package manager of choice:
+
+```bash
+npm install -D surimi
+# or
+yarn add -D surimi
+# or
+pnpm add -D surimi
+```
+
+Next, you need to run the surimi compiler. While you could do that manually through the `@surimi/compiler` package, we recommend using the vite plugin.
+It will automatically compile your `.css.ts` files on change, and integrate with your build tool to include the generated CSS in your final bundle.
+It supports all vite-compatible frameworks like React, Vue, Svelte, Astro etc. with configuration options for custom requirenemts.
+
+### Installation of the Vite plugin
+
+```bash
+npm install -D vite-plugin-surimi
+# or
+yarn add -D vite-plugin-surimi
+# or
+pnpm add -D vite-plugin-surimi
+```
+
+Note that both are installed as dev dependencies, as they are only needed at build time. Surimi does not (currently) need any runtime.
+
+Now, add the plugin to your `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import surimi from 'vite-plugin-surimi';
+
+export default defineConfig({
+  plugins: [surimi()],
+});
+```
+
+## Usage
+
+Create a `.css.ts` file somewhere in your project, e.g. `src/styles.css.ts`:
+
+```ts
+import { select } from 'surimi';
+
+select('body').style({
+  margin: 0,
+  backgroundColor: 'coral',
+});
+```
+
+And import that file somewhere in your app, e.g. in `src/main.ts` or `src/App.tsx`:
+
+```ts
+import './styles.css';
+```
+
+Note, that we left out the `.ts` extension from the import. This is because by default, vite and typescript are setup to resolve the extension automatically. Depending on your setup, you might need to include it.
+
+And that's it! The Surimi file will be automatically compiled (with HMR support), and exports from the file will be preserved (With some [exceptions](/docs/comiler#limitations)).
+
+## What surimi offers now:
+
+- Type-safe, autocompleted CSS properties and values
+- Hints when hovering over properties, selectors and values
+  - It will even tell you what you're targetting, like
+  ```
+  SelectorBuilder<"body > #container .button:hover">
+  ```
+- A query-builder API to build complex selectors
+- Support for media queries, pseudo selectors, nesting and more
+- Zero runtime, all CSS is compiled away
+- Full integration with your build tool via the vite plugin
