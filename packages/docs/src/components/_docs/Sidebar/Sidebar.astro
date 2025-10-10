@@ -29,13 +29,15 @@ const groupedDocs = Object.entries(SIDEBAR_LABELS).reduce(
         <li class="sidebar__category">
           <p class="sidebar__category-title">{category}</p>
           <ul class="sidebar__category-list">
-            {docs.map(doc => (
-              <li class="sidebar__doc-item">
-                <a href={`/docs/${doc.id}`} class="sidebar__doc-link">
-                  {doc.data.title}
-                </a>
-              </li>
-            ))}
+            {docs
+              .sort((a, b) => (a.data.categoryOrderId ?? Infinity) - (b.data.categoryOrderId ?? Infinity))
+              .map(doc => (
+                <li class="sidebar__doc-item">
+                  <a href={`/docs/${doc.id}`} class="sidebar__doc-link">
+                    {doc.data.title}
+                  </a>
+                </li>
+              ))}
 
             {docs.length === 0 ? (
               <li class="sidebar__doc-item sidebar__doc-item--empty">No documents available.</li>

@@ -7,18 +7,17 @@ const footerSections = [
   {
     title: 'RESOURCES',
     links: [
-      { label: 'Documentation', href: '#' },
-      { label: 'Getting Started', href: '#' },
-      { label: 'Examples', href: '#' },
-      { label: 'API Reference', href: '#' },
+      { label: 'Documentation', href: '/docs' },
+      { label: 'Examples', href: 'https://github.com/janis-me/surimi/tree/main/examples' },
+      { label: 'API Reference', href: '/docs/api-reference' },
     ],
   },
   {
     title: 'COMMUNITY',
     links: [
       { label: 'GitHub', href: 'https://github.com/janis-me/surimi' },
+      { label: 'Bluesky', href: 'https://bsky.app/profile/janis.me' },
       { label: 'Discord', href: '#' },
-      { label: 'Twitter', href: '#' },
       { label: 'Discussions', href: '#' },
     ],
   },
@@ -45,14 +44,23 @@ const footerSections = [
         </div>
         <p class="footer__description">The next-generation TypeScript-in-CSS library for modern web development.</p>
         <div class="footer__social">
-          <a href="https://github.com/janis-me/surimi" class="footer__social-link" aria-label="GitHub">
+          <a
+            href="https://github.com/janis-me/surimi"
+            class="footer__social-link"
+            aria-label="GitHub"
+            target="_blank"
+            rel="noopener"
+          >
             <span set:html={GithubIcon.html} />
           </a>
-          <a href="#" class="footer__social-link" aria-label="Twitter">
+          <a
+            href="https://bsky.app/profile/janis.me"
+            class="footer__social-link"
+            aria-label="Bluesky"
+            target="_blank"
+            rel="noopener"
+          >
             <span set:html={BlueskyIcon.html} />
-          </a>
-          <a href="#" class="footer__social-link" aria-label="Discord">
-            <span set:html={DiscordIcon.html} />
           </a>
         </div>
       </div>

@@ -58,6 +58,7 @@ select('ul, ol, dl')
   .style({
     margin: 0,
     padding: 0,
+    marginBlockEnd: theme.spacing[4],
   })
   .descendant('ul, ol, dl')
   .style({

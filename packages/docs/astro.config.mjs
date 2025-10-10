@@ -9,6 +9,7 @@ export default defineConfig({
 
   redirects: {
     '/docs': '/docs/getting-started',
+    '/docs/api-reference': '/docs/api-reference/surimi',
   },
 
   image: {

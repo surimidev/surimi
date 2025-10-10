@@ -10,6 +10,8 @@ const docs = defineCollection({
   schema: z.object({
     title: z.string(),
     category: z.enum(docsCategories),
+    // Used to keep a consistent order of posts within a category
+    categoryOrderId: z.number().optional(),
   }),
 });
 

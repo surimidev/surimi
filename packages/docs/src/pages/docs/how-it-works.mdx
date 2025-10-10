@@ -1,6 +1,7 @@
 ---
 title: How It Works
 category: gettingStarted
+categoryOrderId: 10
 layout: ../../layouts/Docs/Docs.astro
 ---
 
@@ -12,3 +13,94 @@ We put the **TS** first, as Surimi's main feature is a fully type-safe, annotate
 
 At it's core, Surimi is comprised of a query-builder API that assembles a CSS [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) via [PostCSS](https://postcss.org/),
 and a compiler that runs the user code and emits the resulting CSS, while preserving exports from the file, so you can export your theme, class names etc.
+
+## The Surimi API
+
+Writing surimi code is super intuitive. If you know CSS and a bit of TS, you know surimi. The most important thing is a `select` function.
+
+```ts
+import { select } from "surimi";
+
+const button = select('.button')
+```
+
+It returns a `SelectorBuilder<'.button'>`. Yes, it's typed with the selector you passed in. This is so you always know what you're styling.
+
+You can call a bunch of methods on it, to build your CSS:
+
+```ts
+button.hover().style({
+  backgroundColor: 'blue',
+  color: 'white',
+})
+```
+
+Looking at the signature of the `style` method, we see: 
+
+```ts
+SelectorBuilder<".button:hover">.style(properties: CSSProperties): SelectorBuilder<".button">
+```
+
+A couple of things to note here:
+- The selector is now `".button:hover"`. The styles we pass the `.style()` will be applied to the hover pseudo-class.
+- The `style` method returns a `SelectorBuilder<".button">`. This is so we can chain calls, e.g. to add more styles to the base selector.
+- The `properties` argument is typed as `CSSProperties`. This is a type-safe mapping of CSS properties to TS types.
+  - You will get a compile error when you pass an invalid property, or a value of the wrong type.
+  - You can use units like `px`, `em` etc. as strings, or use numbers for automatic units (e.g. `margin: 10` becomes `margin: 10px`, `opacity: 0.2` stays `0.2`).
+
+
+### Other methods
+
+There are a bunch of other methods on the `SelectorBuilder` to build your CSS. Here are some of the most important ones:
+
+```ts
+button.child('.icon') // => `.button > .icon`
+button.descendant('.icon') // => `.button .icon`
+button.sibling('.icon') // => `.button ~ .icon`
+button.is('.active') // => `.button:is(.active)`
+button.not('.disabled') // => `.button:not(.disabled)`
+button.has('.icon') // => `.button:has(.icon)`
+```
+
+There is much more to explore, like media queries, navigating the builder tree, the AttributeBuilder etc. Check out the [API reference](/docs/api) for more information.
+
+## Technical details
+
+While just building a CSS AST with TypeScript/PostCSS is easy, integrating that workflow into a developer-friendly environment requires more steps.
+
+The goals of the surimi toolchain are mainly:
+
+- Requiring zero runtime 
+- Fast compilation times
+- Platform-independent (works with node, deno or even in the browser)
+- Works with all major frameworks (React, Vue, Svelte, Astro etc.)
+- Works with SSR and static site generation
+- HMR support
+
+Also, the `surimi` core should only cover CSS compatibility and important UX. Things like themeing, react-specific hooks etc. should be covered in separate packages.
+
+Examples of things that might be included in the core package, in addition to the query builder:
+- CSS properties ("variables")
+- CSS layers
+- Special directives such as `@font-face`, `@keyframes` etc.
+- Shared/composable styles using `.extend()`, `.use()` etc.
+
+### Rough execution flow
+
+Let's go through how surimi works, when using the vite plugin (the recommended way to use surimi).
+
+1. The user writes a `.css.ts` file, using Surimi
+2. The file is imported into the project, e.g. in a component
+3. Vite resolves the file, calling `vite-plugin-surimi` to handle the import.
+4. Surimi determines if the file should be compiled, read from cache etc.
+  4.1. It also handles SSR, inlining, cache invalidation, HMR etc. 
+5. The compiler loads the file (and it's imports) using [rolldown](https://rolldown.rs/).
+  5.1. Rolldown transpiles the TS code to JS
+  5.2. It resolves all imports (currently with limitations, see [github issues](https://github.com/janis-me/surimi/issues))
+  5.3. It bundles everything into an executable (**ESM**!) file
+  5.4. The compiler adds custom code to build the AST and export the resulting CSS
+  5.5. The file is executed (currently not sandboxed) and the module output is captured
+6. The compiler collects the module's exports, removing any exports to surimi code (as that would require a runtime)
+7. Ready-to-use CSS (and JS) is returned from the compiler.
+8. Back to vite! Now the CSS/JS are handled by vite and the vite plugin.
+  8.1. It also registers files to watch for HMR etc. now.
