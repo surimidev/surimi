@@ -37,7 +37,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Publish to npm
         run: pnpm run publish-ci --tag="$REF_NAME"
