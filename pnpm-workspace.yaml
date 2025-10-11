@@ -8,11 +8,12 @@ catalogs:
     chokidar: ^4.0.3
     esbuild: ^0.25.10
     fast-glob: ^3.3.3
+    "@rolldown/browser": ^1.0.0-beta.42
     rolldown: ^1.0.0-beta.42
     tsdown: ^0.15.6
     tsup: ^8.5.0
     typescript: ^5.9.3
-    vite: 7.1.7
+    vite: "^6.0.0 <7.0.0"
   format:
     "@ianvs/prettier-plugin-sort-imports": ^4.7.0
     prettier: ^3.6.2
@@ -40,7 +41,7 @@ catalogs:
     "@vitest/ui": ^3.2.4
     vitest: 3.2.4
   types:
-    "@types/node": ^22.18.9
+    "@types/node": ^24.7.1
   docs:
     include-media: "^2.0.0"
     sanitize.css: "^13.0.0"

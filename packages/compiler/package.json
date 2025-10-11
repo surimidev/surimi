@@ -36,7 +36,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rollup/pluginutils": "catalog:build",
+    "@rolldown/browser": "catalog:build",
     "rolldown": "catalog:build"
   },
   "devDependencies": {
@@ -47,7 +47,6 @@
     "typescript": "catalog:build"
   },
   "peerDependencies": {
-    "surimi": "workspace:*",
-    "vite": "*7.0.0"
+    "surimi": "workspace:*"
   }
 }

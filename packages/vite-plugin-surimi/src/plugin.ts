@@ -35,7 +35,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         include,
         exclude,
       });
-      compilationCache.set(id, compileResult);
+      if (compileResult) {
+        compilationCache.set(id, compileResult);
+      }
     }
 
     const cacheEntry = compilationCache.get(id);
@@ -199,8 +201,10 @@ if (import.meta.hot) {
           }
 
           try {
+            console.log('transforming', id);
             const { css, js, dependencies } = await getCompilationResult(id);
             const jsCode = generateJsWithHmr(js, css, id);
+            console.log(dependencies);
 
             // Add file dependencies for proper HMR
             if (isDev && !options?.ssr) {
@@ -208,6 +212,8 @@ if (import.meta.hot) {
                 this.addWatchFile(dep);
               });
             }
+
+            console.log('returning now...');
 
             return {
               code: jsCode,
