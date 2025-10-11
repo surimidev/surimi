@@ -40,7 +40,7 @@ function publish(args: string[]) {
 
   console.log(`Publishing package "${pkg}" with version "${version}"...`);
 
-  const publishArgs = ['publish', '--access', 'public', '--no-git-checks', '--dry-run'];
+  const publishArgs = ['publish', '--access', 'public', '--no-git-checks'];
 
   exec('pnpm', publishArgs, {
     throwOnError: true,

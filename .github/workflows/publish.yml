@@ -41,7 +41,7 @@ jobs:
       - run: pnpm run build:ci
 
       - name: Publish to npm
-        run: pnpm run publish-ci --tag="$REF_NAME"
+        run: pnpm run publish-ci --tag=${{ github.ref_name }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
