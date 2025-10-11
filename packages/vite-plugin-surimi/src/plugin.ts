@@ -201,10 +201,8 @@ if (import.meta.hot) {
           }
 
           try {
-            console.log('transforming', id);
             const { css, js, dependencies } = await getCompilationResult(id);
             const jsCode = generateJsWithHmr(js, css, id);
-            console.log(dependencies);
 
             // Add file dependencies for proper HMR
             if (isDev && !options?.ssr) {
@@ -212,8 +210,6 @@ if (import.meta.hot) {
                 this.addWatchFile(dep);
               });
             }
-
-            console.log('returning now...');
 
             return {
               code: jsCode,

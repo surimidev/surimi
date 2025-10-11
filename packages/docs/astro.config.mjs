@@ -1,5 +1,6 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
 import { defineConfig, passthroughImageService } from 'astro/config';
 import surimiPlugin from 'vite-plugin-surimi';
 
@@ -16,9 +17,16 @@ export default defineConfig({
     service: passthroughImageService(),
   },
 
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
+  },
+
   vite: {
     plugins: [surimiPlugin()],
   },
 
-  integrations: [mdx()],
+  integrations: [mdx(), react()],
 });

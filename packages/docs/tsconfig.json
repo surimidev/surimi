@@ -1,9 +1,18 @@
 {
-  "extends": ["astro/tsconfigs/strict", "@janis.me/typescript-config/base.json"],
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "extends": [
+    "astro/tsconfigs/strict",
+    "@janis.me/typescript-config/base.json"
+  ],
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ],
   "compilerOptions": {
-    "jsx": "preserve",
-    "baseUrl": "."
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "jsxImportSource": "react"
   }
 }

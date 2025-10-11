@@ -1,0 +1,15 @@
+{
+  "name": "vite-simple-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "surimi compile"
+  },
+  "devDependencies": {
+    "@janis.me/linter-config": "workspace:*",
+    "@janis.me/typescript-config": "workspace:*",
+    "@surimi/compiler": "workspace:*",
+    "surimi": "workspace:*"
+  }
+}
