@@ -1,12 +1,11 @@
-import { createFilter } from '@rollup/pluginutils';
 import type { OutputChunk } from 'rolldown';
-import { build } from 'rolldown';
+import { rolldown } from 'rolldown';
 
 export interface CompileOptions {
   inputPath: string;
   cwd: string;
-  include?: string | string[];
-  exclude?: string | string[];
+  include: string[];
+  exclude: string[];
 }
 
 export interface CompileResult {
@@ -17,31 +16,23 @@ export interface CompileResult {
   dependencies: string[];
 }
 
-/**
- * Use rolldown to compile Surimi code to CSS and transformed JS (to preserve exports).
- * Also, returns a list of all imported files for watch mode.
- * @param options
- * @returns
- */
-export default async function compile(options: CompileOptions): Promise<CompileResult> {
+export default async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const { inputPath, cwd, include, exclude } = options;
 
-  const filter = createFilter(include, exclude);
-
-  const buildRes = await build({
+  await using rolldownCompiler = await rolldown({
     input: inputPath,
     cwd,
-    write: false,
-    output: {
-      exports: 'named',
-    },
     plugins: [
       {
         name: 'surimi:compiler-transform',
-        transform(code, id) {
-          if (filter(id)) {
-            // Add CSS generation but don't interfere with existing exports
-            // This allows the vite plugin to handle proper export processing
+        transform: {
+          filter: {
+            id: {
+              include,
+              exclude,
+            },
+          },
+          handler(code) {
             const finalCode = `
 import __SURIMI_INSTANCE__ from 'surimi';
 ${code}
@@ -50,12 +41,13 @@ export const __SURIMI_GENERATED_CSS__ = __SURIMI_INSTANCE__.build();\n
 // This is replaced by the default export to maintain compatibility
 export default __SURIMI_GENERATED_CSS__;\n`;
             return finalCode;
-          }
-          return null;
+          },
         },
       },
     ],
   });
+
+  const buildRes = await rolldownCompiler.generate({ exports: 'named' });
 
   const output = buildRes.output[0];
   const { css, js } = await execute(output.code);
@@ -108,6 +100,7 @@ async function execute(code: string): Promise<{ css: string; js: string }> {
     throw error;
   }
 }
+
 function getModuleDependencies(module: OutputChunk): string[] {
   const watchFiles: string[] = [];
 
@@ -126,7 +119,7 @@ function getModuleDependencies(module: OutputChunk): string[] {
 
   if ('modules' in module && Object.keys(module.modules).length > 0) {
     for (const moduleId of Object.keys(module.modules)) {
-      if (!moduleId.includes('node_modules')) {
+      if (!moduleId.includes('node_modules') && !isDevelopmentSurimiFile(moduleId)) {
         if (moduleId.includes('rolldown:runtime')) continue;
 
         watchFiles.push(moduleId);
@@ -135,4 +128,8 @@ function getModuleDependencies(module: OutputChunk): string[] {
   }
 
   return watchFiles;
+}
+
+function isDevelopmentSurimiFile(id: string) {
+  return id.includes('packages/surimi/dist/index.js');
 }

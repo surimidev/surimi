@@ -5,7 +5,7 @@ on:
     tags:
       - 'surimi@*'
       - 'compiler@*'
-      - 'vite-plugin@*'
+      - 'vite-plugin-surimi@*'
 
 permissions:
   contents: write
@@ -37,7 +37,8 @@ jobs:
           cache: 'pnpm'
 
       - name: Install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+        run: pnpm install --frozen-lockfile --prefer-offline
+      - run: pnpm run build:ci
 
       - name: Publish to npm
         run: pnpm run publish-ci --tag="$REF_NAME"

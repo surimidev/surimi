@@ -1,6 +1,6 @@
 {
   "name": "@surimi/compiler",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Compile surimi ts files to css",
   "keywords": [
     "css",
@@ -27,6 +27,9 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "surimi": "./dist/cli.js"
+  },
   "files": [
     "dist"
   ],
@@ -36,7 +39,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rollup/pluginutils": "catalog:build",
+    "@clack/prompts": "^0.11.0",
     "rolldown": "catalog:build"
   },
   "devDependencies": {
@@ -47,7 +50,6 @@
     "typescript": "catalog:build"
   },
   "peerDependencies": {
-    "surimi": "workspace:*",
-    "vite": "*7.0.0"
+    "surimi": "workspace:*"
   }
 }

@@ -35,7 +35,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         include,
         exclude,
       });
-      compilationCache.set(id, compileResult);
+      if (compileResult) {
+        compilationCache.set(id, compileResult);
+      }
     }
 
     const cacheEntry = compilationCache.get(id);

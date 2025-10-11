@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-surimi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vite plugin for automatic CSS generation with Surimi",
   "keywords": [
     "vite",
@@ -50,10 +50,10 @@
     "@types/node": "catalog:types",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "^6.0.0 <7.0.0"
+    "vite": "catalog:build"
   },
   "peerDependencies": {
     "surimi": "workspace:*",
-    "vite": "^6.0.0 <7.0.0"
+    "vite": "catalog:build"
   }
 }

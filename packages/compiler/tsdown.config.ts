@@ -1,9 +1,9 @@
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/index.ts', 'src/cli.ts'],
   format: 'esm',
-  platform: 'browser',
+  platform: 'node',
   target: 'es2020',
   clean: true,
   dts: true,

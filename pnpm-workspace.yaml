@@ -12,7 +12,7 @@ catalogs:
     tsdown: ^0.15.6
     tsup: ^8.5.0
     typescript: ^5.9.3
-    vite: 7.1.7
+    vite: "^6.3.6"
   format:
     "@ianvs/prettier-plugin-sort-imports": ^4.7.0
     prettier: ^3.6.2
@@ -45,7 +45,7 @@ catalogs:
     include-media: "^2.0.0"
     sanitize.css: "^13.0.0"
     cssnano: ^7.1.1
-    astro: "^5.14.3"
+    astro: "^5.14.4"
     sharp: "^0.34.4"
     "@fontsource/ibm-plex-mono": "^5.2.7"
     "@fortawesome/fontawesome-svg-core": "^6.7.2"

@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "build:ci": "pnpm --filter=!./examples/** build",
     "build:watch": "pnpm -r build:watch",
     "deps": "pnpm taze",
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm -r dev\"",
@@ -38,6 +39,6 @@
   },
   "packageManager": "pnpm@10.18.2",
   "engines": {
-    "node": ">=22.11.0"
+    "node": ">=22.18"
   }
 }
