@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "build:ci": "pnpm --filter=!./examples/** build",
     "build:watch": "pnpm -r build:watch",
     "deps": "pnpm taze",
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm -r dev\"",

@@ -26,7 +26,7 @@ Commands:
   compile <input>       Compile a TypeScript file to CSS
 
 Options:
-  -o, --outDir <path>       Output directory (default: same as input file)
+  -o, --out-dir, --out <path>       Output directory (default: same as input file)
   -c, --cwd <path>      Working directory (default: current directory)
   --include <patterns>  Include patterns (comma-separated)
   --exclude <patterns>  Exclude patterns (comma-separated)
@@ -61,7 +61,8 @@ function parseArgs(args: string[]): CLIOptions {
         }
         break;
       case '-o':
-      case '--outDir':
+      case '--out-dir':
+      case '--out':
         if (i + 1 < args.length) {
           const nextArg = args[++i];
           if (nextArg) options.outDir = nextArg;
