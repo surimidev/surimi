@@ -1,12 +1,11 @@
-import type { OutputChunk } from '@rolldown/browser';
+import type { OutputChunk } from 'rolldown';
+import { rolldown } from 'rolldown';
 
 export interface CompileOptions {
   inputPath: string;
   cwd: string;
   include: string[];
   exclude: string[];
-  /** When set to `true`, will use `@rolldown/browser` for the compilation. */
-  browserMode: boolean;
 }
 
 export interface CompileResult {
@@ -18,15 +17,7 @@ export interface CompileResult {
 }
 
 export default async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
-  const { inputPath, cwd, include, exclude, browserMode } = options;
-
-  let rolldown;
-
-  if (browserMode) {
-    rolldown = (await import('@rolldown/browser')).rolldown;
-  } else {
-    rolldown = (await import('rolldown')).rolldown;
-  }
+  const { inputPath, cwd, include, exclude } = options;
 
   await using rolldownCompiler = await rolldown({
     input: inputPath,
