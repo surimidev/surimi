@@ -46,6 +46,7 @@
     "@janis.me/linter-config": "workspace:*",
     "@janis.me/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
+    "chokidar": "^4.0.3",
     "tsdown": "catalog:build",
     "typescript": "catalog:build"
   },

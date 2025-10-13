@@ -28,7 +28,7 @@ select('html').style({ backgroundColor: 'red' });
     "@surimi/compiler": "latest"
   },
   "scripts": {
-    "build": "surimi compile index.ts --out-dir=./dist --no-js"
+    "build": "surimi compile index.ts --out-dir=./dist --no-js --watch"
   }
 }`,
     },
