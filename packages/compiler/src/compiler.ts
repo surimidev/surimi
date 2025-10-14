@@ -49,8 +49,7 @@ export default __SURIMI_GENERATED_CSS__;\n`;
   });
 
   const buildRes = await rolldownCompiler.generate({ exports: 'named' });
-  // No need to wait. Garbage-collect whenever.
-  void rolldownCompiler.close();
+  await rolldownCompiler.close();
 
   const output = buildRes.output[0];
   const { css, js } = await execute(output.code);
