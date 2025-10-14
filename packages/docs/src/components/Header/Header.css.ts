@@ -1,4 +1,4 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
 import { config, theme } from '#styles';
 
@@ -6,6 +6,7 @@ const header = select('.header').style({
   display: 'flex',
   height: config.header.height,
   alignItems: 'center',
+  justifyContent: 'space-between',
   gap: theme.spacing[6],
   padding: `0 ${theme.spacing[8]}`,
   backgroundColor: theme.bg.app,
@@ -20,7 +21,6 @@ const header = select('.header').style({
 header
   .child('.header__title')
   .style({
-    flex: '1',
     fontWeight: theme.font.weight.bold,
     alignSelf: 'center',
     cursor: 'pointer',
@@ -32,7 +32,14 @@ header
     fontSize: theme.font.size.xl,
   });
 
-const nav = header.child('.header__nav').style({
+const right = header.child('.header__right').style({
+  display: 'flex',
+  gap: theme.spacing[6],
+  alignItems: 'center',
+  marginLeft: 'auto',
+});
+
+const nav = right.child('.header__nav').style({
   display: 'flex',
   gap: theme.spacing[1],
   alignSelf: 'center',
@@ -55,7 +62,7 @@ nav
     color: theme.text.primary,
   });
 
-const social = header.child('.header__social').style({
+const social = right.child('.header__social').style({
   display: 'flex',
   gap: theme.spacing[3],
   alignSelf: 'center',
@@ -81,4 +88,31 @@ social
 social.descendant('svg').style({
   width: '20px',
   height: '20px',
+});
+
+const onMobile = media().maxWidth(theme.screen.sm);
+
+const headerMobile = onMobile.select('.header').style({
+  padding: `0 ${theme.spacing[4]}`,
+  gap: theme.spacing[4],
+});
+
+const titleMobile = headerMobile.child('.header__title').style({
+  fontSize: theme.font.size.lg,
+});
+
+titleMobile.descendant('span').style({
+  display: 'none',
+});
+
+headerMobile.child('.header__right').style({
+  marginLeft: '0',
+});
+
+headerMobile.descendant('.header__nav').style({
+  gap: '0 !important',
+});
+
+headerMobile.descendant('.header__social').style({
+  display: 'none !important',
 });
