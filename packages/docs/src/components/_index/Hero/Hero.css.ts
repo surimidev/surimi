@@ -1,4 +1,4 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
 import { theme } from '#styles/theme';
 
@@ -104,4 +104,60 @@ secondaryButton.hover().style({
 secondaryButton.active().style({
   backgroundColor: theme.interactive.secondary.active,
   transform: 'translateY(0)',
+});
+
+// Mobile responsive styles
+const mobile = media().maxWidth(theme.screen.md);
+
+// Mobile hero container - reduce padding significantly
+mobile.select('.hero').style({
+  padding: `${theme.spacing[8]} ${theme.spacing[4]}`,
+  gap: theme.spacing[4],
+});
+
+// Mobile title - smaller font size and better spacing
+mobile.select('.hero__title').style({
+  fontSize: theme.font.size['4xl'],
+  marginBottom: theme.spacing[4],
+  lineHeight: theme.font.lineHeight.tight,
+});
+
+// Mobile subtitle - smaller text and reduced margin
+mobile.select('.hero__subtitle').style({
+  fontSize: theme.font.size.lg,
+  marginBottom: theme.spacing[4],
+  maxWidth: '100%',
+  padding: `0 ${theme.spacing[2]}`,
+});
+
+// Mobile buttons - stack vertically and adjust sizing
+mobile.select('.hero__buttons').style({
+  flexDirection: 'column',
+  gap: theme.spacing[3],
+  width: '100%',
+  maxWidth: '320px',
+});
+
+// Mobile button styles - full width and better touch targets
+mobile.select('.hero__button').style({
+  width: '100%',
+  padding: `${theme.spacing[4]} ${theme.spacing[6]}`,
+  fontSize: theme.font.size.base,
+  justifyContent: 'center',
+});
+
+// Small mobile adjustments (phones in portrait)
+const smallMobile = media().maxWidth(theme.screen.sm);
+
+smallMobile.select('.hero').style({
+  padding: `${theme.spacing[6]} ${theme.spacing[3]}`,
+});
+
+smallMobile.select('.hero__title').style({
+  fontSize: theme.font.size['3xl'],
+});
+
+smallMobile.select('.hero__subtitle').style({
+  fontSize: theme.font.size.base,
+  padding: `0 ${theme.spacing[1]}`,
 });

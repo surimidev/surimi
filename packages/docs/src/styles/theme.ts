@@ -322,4 +322,12 @@ export const theme = {
     '3xl': '1.5rem', // 24px
     full: '9999px',
   },
+
+  screen: {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
+  },
 } as const;

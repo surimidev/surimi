@@ -3,8 +3,6 @@ import { ExternalLinkIcon, GithubIcon, NpmIcon } from '../icons';
 
 import './Header.css';
 
-const TITLE = '🍣 surimi';
-
 const NAV_LINKS = [
   { href: '/docs/getting-started', text: 'Getting Started' },
   { href: '/docs/api-reference', text: 'API Reference' },
@@ -19,26 +17,28 @@ const SOCIAL_LINKS = [
 
 <div class="header">
   <a href="/" class="header__title">
-    <h1>{TITLE}</h1>
+    <h1>🍣 <span>surimi</span></h1>
   </a>
 
-  <nav class="header__nav">
-    {
-      NAV_LINKS.map(link => (
-        <a class="header__nav-link" href={link.href}>
-          {link.text}
-          {'external' in link && link.external ? <Fragment set:html={ExternalLinkIcon.html} /> : null}
-        </a>
-      ))
-    }
-  </nav>
-  <div class="header__social">
-    {
-      SOCIAL_LINKS.map(link => (
-        <a class="header__social-link" href={link.href} aria-label={link.text} target="_blank" rel="noopener">
-          <Fragment set:html={link.icon.html} />
-        </a>
-      ))
-    }
+  <div class="header__right">
+    <nav class="header__nav">
+      {
+        NAV_LINKS.map(link => (
+          <a class="header__nav-link" href={link.href}>
+            {link.text}
+            {'external' in link && link.external ? <Fragment set:html={ExternalLinkIcon.html} /> : null}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header__social">
+      {
+        SOCIAL_LINKS.map(link => (
+          <a class="header__social-link" href={link.href} aria-label={link.text} target="_blank" rel="noopener">
+            <Fragment set:html={link.icon.html} />
+          </a>
+        ))
+      }
+    </div>
   </div>
 </div>
