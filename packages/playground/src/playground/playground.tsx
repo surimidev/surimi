@@ -28,7 +28,8 @@ select('html').style({ backgroundColor: 'red' });
     "@surimi/compiler": "latest"
   },
   "scripts": {
-    "build": "NAPI_RS_FORCE_WASI=0 surimi compile index.ts --out-dir=./dist --no-js --watch"
+    "build": "surimi compile index.ts --no-js --watch",
+    "build:initial": "surimi compile index.ts --no-js"
   }
 }`,
     },
@@ -63,7 +64,7 @@ export default function Playgroun() {
       }),
     );
     await installProcess.exit;
-    const buildProcess = await _runtime.run('pnpm', ['run', 'build']);
+    const buildProcess = await _runtime.run('pnpm', ['run', 'build:initial']);
     void buildProcess.output.pipeTo(
       new WritableStream({
         write: chunk => {
