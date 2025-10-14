@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import Loader from '#components/Loader/Loader';
 import { useEditor } from '#context/editor.context';
+import { debounce } from '#utils/debounce';
 
 import Code from '../Code/Code';
 import Panel from '../Panel/Panel';
@@ -35,6 +36,8 @@ export default function EditorView() {
     }
   };
 
+  const debounceHandleCodeEditorChange = debounce(handleCodeEditorChange, 200);
+
   return (
     <Panel
       resizable
@@ -54,7 +57,7 @@ export default function EditorView() {
       <Code
         value={editorValue}
         filepath={state.activeFile ?? ''}
-        onChange={handleCodeEditorChange}
+        onChange={debounceHandleCodeEditorChange}
         onMount={() => {
           /* unused */
         }}

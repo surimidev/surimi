@@ -19,6 +19,7 @@ export interface CompileResult {
 export default async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const { inputPath, cwd, include, exclude } = options;
 
+  // Rolldown nicely provides an `asyncDispose` symbol.
   await using rolldownCompiler = await rolldown({
     input: inputPath,
     cwd,
@@ -48,6 +49,8 @@ export default __SURIMI_GENERATED_CSS__;\n`;
   });
 
   const buildRes = await rolldownCompiler.generate({ exports: 'named' });
+  // No need to wait. Garbage-collect whenever.
+  void rolldownCompiler.close();
 
   const output = buildRes.output[0];
   const { css, js } = await execute(output.code);
