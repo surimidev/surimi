@@ -1,7 +1,8 @@
 import eslint from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
-import tseslint, { ConfigArray } from 'typescript-eslint';
+import type { ConfigArray } from 'typescript-eslint';
+import tseslint from 'typescript-eslint';
 
 export const baseConfig: ConfigArray = tseslint.config(
   eslint.configs.recommended,
@@ -39,6 +40,7 @@ export const baseConfig: ConfigArray = tseslint.config(
           default: 'array-simple',
         },
       ],
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       // For the rule details, see https://typescript-eslint.io/rules/no-unused-vars/
       // For the configuration, see https://eslint.org/docs/latest/rules/no-unused-vars
       '@typescript-eslint/no-unused-vars': [

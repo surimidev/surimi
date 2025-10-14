@@ -4,7 +4,7 @@ packages:
 
 catalogs:
   build:
-    "@rollup/pluginutils": ^5.3.0
+    '@rollup/pluginutils': ^5.3.0
     chokidar: ^4.0.3
     esbuild: ^0.25.10
     fast-glob: ^3.3.3
@@ -12,47 +12,48 @@ catalogs:
     tsdown: ^0.15.7
     tsup: ^8.5.0
     typescript: ^5.9.3
-    vite: "^6.3.6"
+    vite: ^6.3.6
+  docs:
+    '@fontsource/ibm-plex-mono': ^5.2.7
+    '@fortawesome/fontawesome-svg-core': ^6.7.2
+    '@fortawesome/free-brands-svg-icons': ^6.7.2
+    '@fortawesome/free-solid-svg-icons': ^6.7.2
+    astro: ^5.14.4
+    cssnano: ^7.1.1
+    include-media: ^2.0.0
+    sanitize.css: ^13.0.0
+    sharp: ^0.34.4
   format:
-    "@ianvs/prettier-plugin-sort-imports": ^4.7.0
+    '@ianvs/prettier-plugin-sort-imports': ^4.7.0
     prettier: ^3.6.2
     prettier-plugin-packagejson: ^2.5.19
   lint:
-    "@eslint/eslintrc": ^3.3.1
-    "@eslint/js": ^9.37.0
+    '@eslint/eslintrc': ^3.3.1
+    '@eslint/js': ^9.37.0
     eslint: ^9.37.0
     eslint-plugin-react: ^7.37.5
     eslint-plugin-react-hooks: ^5.2.0
     jiti: ^2.6.1
     typescript-eslint: ^8.46.1
   prod:
+    '@emotion/hash': ^0.9.2
     csstype: ^3.1.3
     postcss: ^8.5.6
-    "@emotion/hash": "^0.9.2"
   script:
+    concurrently: ^9.2.1
     taze: ^19.7.0
-    tinyexec: "^1.0.1"
-    concurrently: "^9.2.1"
+    tinyexec: ^1.0.1
   test:
-    "@playwright/test": ^1.56.0
-    "@vitest/browser": ^3.2.4
-    "@vitest/coverage-v8": ^3.2.4
-    "@vitest/ui": ^3.2.4
+    '@playwright/test': ^1.56.0
+    '@vitest/browser': ^3.2.4
+    '@vitest/coverage-v8': ^3.2.4
+    '@vitest/ui': ^3.2.4
     vitest: 3.2.4
   types:
-    "@types/node": ^22.18.10
-  docs:
-    include-media: "^2.0.0"
-    sanitize.css: "^13.0.0"
-    cssnano: ^7.1.1
-    astro: "^5.14.4"
-    sharp: "^0.34.4"
-    "@fontsource/ibm-plex-mono": "^5.2.7"
-    "@fortawesome/fontawesome-svg-core": "^6.7.2"
-    "@fortawesome/free-brands-svg-icons": "^6.7.2"
-    "@fortawesome/free-solid-svg-icons": "^6.7.2"
+    '@types/node': ^22.18.10
   utils:
     vite-bundle-analyzer: ^1.2.3
 
 ignoredBuiltDependencies:
   - esbuild
+  - sharp

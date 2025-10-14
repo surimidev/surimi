@@ -1,3 +1,3 @@
-import { config } from './index';
+import { baseConfig } from './index';
 
-export default config;
+export default baseConfig;
