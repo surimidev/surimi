@@ -1,6 +1,6 @@
 {
   "name": "@surimi/compiler",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Compile surimi ts files to css",
   "keywords": [
     "css",
