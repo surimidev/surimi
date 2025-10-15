@@ -73,23 +73,24 @@ export default function Playgroun() {
     runtime?.terminal?.setMetadata(meta);
   };
 
-  const handleEditorMount: Editor.OnMount = (editor, monaco) => {
+  const handleEditorMount: Editor.OnMount = (_, monaco) => {
     if (!runtime) return;
-
-    console.log('Editor mounted', { editor, monaco });
-    console.log('Setting stricter typescript settings');
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       ...monaco.languages.typescript.typescriptDefaults.getCompilerOptions(),
       strict: true,
+      alwaysStrict: true,
+      esModuleInterop: true,
+      skipLibCheck: true,
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
       noImplicitAny: true,
       strictNullChecks: true,
+      allowSyntheticDefaultImports: true,
+      isolatedModules: false,
       noUncheckedIndexedAccess: true,
       lib: ['ES2024', 'DOM', 'DOM.Iterable'],
       module: monaco.languages.typescript.ModuleKind.ESNext,
     });
-
-    console.log('Fetching TypeScript definitions from runtime');
 
     runtime
       .getTypescriptDefinitions()
@@ -111,7 +112,6 @@ export default function Playgroun() {
     runtime?.terminal
       ?.write('\x03')
       .then(async () => {
-        console.log('done');
         await runtime.terminal?.command('clear');
         void runtime.terminal?.command('pnpm', ['run', 'build']);
       })
@@ -120,10 +120,35 @@ export default function Playgroun() {
       });
   };
 
+  const handleDownloadProject = () => {
+    if (!runtime) return;
+
+    runtime
+      .downloadProject()
+      .then(zipArray => {
+        const blob = new Blob([zipArray], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'surimi-playground-project.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to download project', err);
+      });
+  };
+
   return (
     <div className="surimi-playground">
       <Editor.Provider>
-        <Editor.Header disabled={status !== null} onRestartCompiler={handleRestartCompiler} />
+        <Editor.Header
+          disabled={status !== null}
+          onRestartCompiler={handleRestartCompiler}
+          onDownloadProject={handleDownloadProject}
+        />
 
         <Editor.Root
           tree={files}

@@ -202,4 +202,12 @@ export default class Runtime {
 
     return types;
   }
+
+  public async downloadProject(): Promise<Uint8Array> {
+    if (!this._instance) throw new Error('Instance not initialized');
+
+    console.log('Starting export...');
+    const zip = await this._instance.export('/home/surimi', { format: 'zip', excludes: ['**/node_modules/**'] });
+    return zip;
+  }
 }
