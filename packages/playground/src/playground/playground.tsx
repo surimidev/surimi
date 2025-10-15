@@ -1,58 +1,18 @@
 import type { Terminal as XTerm } from '@xterm/xterm';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import * as Editor from '#components/Editor';
 import { Runtime } from '#core';
-import type { FileSystemTree, TerminalDimensions, WatchCallback, WatchOptions } from '#types';
+import type { TerminalDimensions, WatchCallback, WatchOptions } from '#types';
+
+import { files } from './filetree';
 
 import './playground.css';
-
-const files = {
-  'index.ts': {
-    file: {
-      contents: `\
-import { select } from "surimi";
-
-select('html').style({ backgroundColor: 'red' });
-`,
-    },
-  },
-  'index.css': {
-    file: {
-      contents: '// The output will appear here',
-    },
-  },
-  'package.json': {
-    file: {
-      contents: `\
-{
-  "name": "surimi-playground-app",
-  "type": "module",
-  "dependencies": {
-    "surimi": "latest",
-    "@surimi/compiler": "latest",
-    "@rolldown/binding-wasm32-wasi": "latest"
-  },
-  "scripts": {
-    "build": "surimi compile index.ts --no-js --watch"
-  }
-}`,
-    },
-  },
-} satisfies FileSystemTree;
 
 export default function Playgroun() {
   const [runtime, setRuntime] = useState<Runtime | undefined>();
   const [status, setStatus] = useState<string | null>('Loading...');
-
-  const compilerState = useMemo(() => {
-    return {
-      state: 'idle',
-      error: null,
-      outputFilePath: runtime ? 'index.css' : null,
-      duration: null,
-    } as const;
-  }, [runtime]);
+  const [outputFilePath, setOutputFilePath] = useState<string | undefined>();
 
   const handleTerminalMount = async (xterm: XTerm) => {
     const _runtime = new Runtime();
@@ -63,10 +23,11 @@ export default function Playgroun() {
     setStatus('Mounting files...');
     await _runtime.mount(files);
 
-    setRuntime(_runtime);
-
     setStatus('Installing dependencies...');
     await _runtime.terminal?.command('pnpm', ['install', '--prefer-offline']);
+
+    setRuntime(_runtime);
+    setOutputFilePath('/dist/index.css');
 
     setStatus('Starting build in watch mode...');
     await _runtime.terminal?.command('export', ['NODE_NO_WARNINGS=1']);
@@ -93,7 +54,7 @@ export default function Playgroun() {
       const file = await runtime.readFile(filepath);
       return file;
     } catch (err) {
-      throw new Error(`unable to read file ${filepath}: ${err}`);
+      throw new Error(`unable to read file ${filepath}: ${String(err)}`);
     }
   };
 
@@ -103,12 +64,47 @@ export default function Playgroun() {
     const watcher = runtime.watch(filepath, options, callback);
 
     return () => {
+      console.log('Stopping watch on file:', filepath);
       watcher.close();
     };
   };
 
   const handleTerminalResize = (meta: TerminalDimensions) => {
     runtime?.terminal?.setMetadata(meta);
+  };
+
+  const handleEditorMount: Editor.OnMount = (editor, monaco) => {
+    if (!runtime) return;
+
+    console.log('Editor mounted', { editor, monaco });
+    console.log('Setting stricter typescript settings');
+
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      ...monaco.languages.typescript.typescriptDefaults.getCompilerOptions(),
+      strict: true,
+      noImplicitAny: true,
+      strictNullChecks: true,
+      noUncheckedIndexedAccess: true,
+      lib: ['ES2024', 'DOM', 'DOM.Iterable'],
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+    });
+
+    console.log('Fetching TypeScript definitions from runtime');
+
+    runtime
+      .getTypescriptDefinitions()
+      .then(defs => {
+        for (const [filename, content] of Object.entries(defs)) {
+          const packageName = runtime.getPackageNameFromPath(filename);
+          const typeDefs = `declare module '${packageName}' {
+            ${content}
+          }`;
+          monaco.languages.typescript.typescriptDefaults.addExtraLib(typeDefs, filename);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to get TypeScript definitions from runtime', err);
+      });
   };
 
   const handleRestartCompiler = () => {
@@ -131,15 +127,15 @@ export default function Playgroun() {
 
         <Editor.Root
           tree={files}
-          selectedFile="index.ts"
+          selectedFile={runtime ? 'index.ts' : undefined}
           status={status ?? 'Done'}
           ready={status === null}
-          compiler={compilerState}
+          outputFilePath={outputFilePath}
           writeFile={handleWriteFile}
           readFile={handleReadFile}
           watchFile={handleWatchFile}
         >
-          <Editor.View />
+          <Editor.View onMount={handleEditorMount} />
           <Editor.Panel
             resizable
             hideOverlay

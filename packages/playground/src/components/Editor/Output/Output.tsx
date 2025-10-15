@@ -10,38 +10,35 @@ import './Output.css';
 export default function EditorOutput() {
   const { state } = useEditor();
   const [outputValue, setOutputValue] = useState<string>('');
-  const [outputFilePath, setOutputFilePath] = useState<string>('dist/index.css');
+  const [outputFilePath, setOutputFilePath] = useState<string | undefined>();
 
   useEffect(() => {
-    if (!state.compiler.outputFilePath) return undefined;
+    if (!state.outputFilePath) return undefined;
 
-    const unwatch = state.watchFileHandler?.(
-      state.compiler.outputFilePath,
-      { persistent: false },
-      (event, filename) => {
-        console.log(`Output file event: ${event}`, filename);
-        const finalFilepath = typeof filename === 'string' ? filename : filename.toString();
+    const unwatch = state.watchFileHandler?.(state.outputFilePath, { persistent: false }, event => {
+      if (event === 'change') {
+        console.log('Loading content for file:', state.outputFilePath);
 
-        if (event === 'change') {
-          state
-            .readFileHandler?.(finalFilepath)
-            .then(content => {
-              setOutputValue(content);
-            })
-            .catch((err: unknown) => {
-              console.error(`Failed to read output file: ${err}`);
-            });
-        } else {
-          setOutputValue('');
-          console.warn(`Output file was removed: ${finalFilepath}`);
-        }
-      },
-    );
+        state
+          .readFileHandler?.(state.outputFilePath ?? '/dist/index.css')
+          .then(content => {
+            setOutputValue(content);
+          })
+          .catch((err: unknown) => {
+            console.error(`Failed to read output file: ${String(err)}`);
+          });
+      } else {
+        setOutputValue('');
+        console.warn(`Output file was removed: ${state.outputFilePath}`);
+      }
+    });
 
-    setOutputFilePath(state.compiler.outputFilePath);
+    setOutputFilePath(state.outputFilePath);
 
-    return unwatch;
-  }, [state.compiler.outputFilePath, state.readFileHandler]);
+    return () => {
+      unwatch?.();
+    };
+  }, [state.outputFilePath, state.readFileHandler]);
 
   return (
     <Panel
@@ -59,17 +56,7 @@ export default function EditorOutput() {
       className="surimi-editor__output"
       as="div"
     >
-      <Code
-        value={outputValue}
-        filepath={outputFilePath}
-        options={{ readOnly: true }}
-        onChange={() => {
-          /* unused */
-        }}
-        onMount={() => {
-          /* unused */
-        }}
-      />
+      <Code value={outputValue} filepath={outputFilePath} options={{ readOnly: true }} />
     </Panel>
   );
 }

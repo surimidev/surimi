@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { CompilerState, FileSystemTree, ReadFileHandler, WatchFileHandler, WriteFileHandler } from '#types';
+import type { FileSystemTree, ReadFileHandler, WatchFileHandler, WriteFileHandler } from '#types';
 
 type Action =
   | {
@@ -13,11 +13,11 @@ type Action =
     }
   | {
       type: 'setActiveFile';
-      data: { filepath: string };
+      data: { filepath: string | undefined };
     }
   | {
-      type: 'setCompilerState';
-      data: { state: CompilerState };
+      type: 'setOutputFilePath';
+      data: { path: string | undefined };
     }
   | { type: 'setReadFileHandler'; data: { handler: ReadFileHandler } }
   | { type: 'setWriteFileHandler'; data: { handler: WriteFileHandler } }
@@ -33,7 +33,7 @@ interface State {
   ready: boolean;
   status: string;
   activeFile: string | undefined;
-  compiler: CompilerState;
+  outputFilePath: string | undefined;
   openFiles: Array<{ filepath: string; pendingChanges: boolean }>;
   fileTree: FileSystemTree;
   readFileHandler: ReadFileHandler | undefined;
@@ -45,12 +45,7 @@ const DEFAULT_STATE = {
   ready: false,
   status: 'Loading...',
   activeFile: undefined,
-  compiler: {
-    state: 'idle',
-    error: null,
-    outputFilePath: null,
-    duration: null,
-  },
+  outputFilePath: undefined,
   fileTree: {},
   openFiles: [],
   readFileHandler: undefined,
@@ -71,8 +66,8 @@ function editorReducer(state: State, action: Action): State {
     case 'setActiveFile': {
       return { ...state, activeFile: action.data.filepath };
     }
-    case 'setCompilerState': {
-      return { ...state, compiler: action.data.state };
+    case 'setOutputFilePath': {
+      return { ...state, outputFilePath: action.data.path };
     }
     case 'setReadFileHandler': {
       return { ...state, readFileHandler: action.data.handler };

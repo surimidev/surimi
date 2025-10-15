@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 
 import { useEditor } from '#context/editor.context';
-import type { CompilerState, FileSystemTree, ReadFileHandler, WatchFileHandler, WriteFileHandler } from '#types';
+import type { FileSystemTree, ReadFileHandler, WatchFileHandler, WriteFileHandler } from '#types';
 
 export interface RootProps extends React.PropsWithChildren {
   tree: FileSystemTree;
-  selectedFile: string;
+  selectedFile: string | undefined;
   ready: boolean;
   status: string;
-  compiler: CompilerState;
+  outputFilePath: string | undefined;
   readFile: ReadFileHandler;
   watchFile: WatchFileHandler;
   writeFile: WriteFileHandler;
@@ -20,7 +20,7 @@ export default function Root({
   status,
   selectedFile,
   ready,
-  compiler,
+  outputFilePath,
   readFile,
   writeFile,
   watchFile,
@@ -32,8 +32,8 @@ export default function Root({
   }, [status]);
 
   useEffect(() => {
-    dispatch({ type: 'setCompilerState', data: { state: compiler } });
-  }, [compiler]);
+    dispatch({ type: 'setOutputFilePath', data: { path: outputFilePath } });
+  }, [outputFilePath]);
 
   useEffect(() => {
     dispatch({ type: 'setReadFileHandler', data: { handler: readFile } });

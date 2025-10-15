@@ -6,3 +6,5 @@ export { default as Output } from './Output/Output';
 export { default as Header } from './Header/Header';
 
 export { EditorProvider as Provider } from '#context/editor.context';
+
+export type { OnMount, OnChange } from '@monaco-editor/react';
