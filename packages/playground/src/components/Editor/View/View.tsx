@@ -1,20 +1,27 @@
+import type { OnMount } from '@monaco-editor/react';
 import { useEffect, useState } from 'react';
 
 import Loader from '#components/Loader/Loader';
 import { useEditor } from '#context/editor.context';
+import { debounce } from '#utils/debounce';
 
 import Code from '../Code/Code';
 import Panel from '../Panel/Panel';
 
 import './View.css';
 
-export default function EditorView() {
+export interface ViewProps {
+  onMount?: OnMount;
+}
+
+export default function View({ onMount }: ViewProps) {
   const { state } = useEditor();
   const [editorValue, setEditorValue] = useState<string>('');
 
   useEffect(() => {
     const getFileContent = async () => {
       if (!state.activeFile) return undefined;
+      console.log('Loading content for file:', state.activeFile);
 
       const content = await state.readFileHandler?.(state.activeFile);
       setEditorValue(content ?? '');
@@ -35,6 +42,8 @@ export default function EditorView() {
     }
   };
 
+  const debounceHandleCodeEditorChange = debounce(handleCodeEditorChange, 200);
+
   return (
     <Panel
       resizable
@@ -53,11 +62,9 @@ export default function EditorView() {
     >
       <Code
         value={editorValue}
-        filepath={state.activeFile ?? ''}
-        onChange={handleCodeEditorChange}
-        onMount={() => {
-          /* unused */
-        }}
+        filepath={state.activeFile}
+        onChange={debounceHandleCodeEditorChange}
+        onMount={onMount}
       />
 
       {!state.ready && state.status && (

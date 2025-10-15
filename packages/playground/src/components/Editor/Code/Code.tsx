@@ -14,18 +14,22 @@ const defaultEditorOptions = {
 
 export interface CodeProps {
   value: string;
-  filepath: string;
+  filepath: string | undefined;
   options?: MonacoEditorOptions;
-  onChange: OnChange;
-  onMount: OnMount;
+  onChange?: OnChange | undefined;
+  onMount?: OnMount | undefined;
 }
 
 export default function Code({ value, filepath, options, onChange, onMount }: CodeProps) {
   const handleMount: OnMount = (editor, monaco) => {
-    onMount(editor, monaco);
+    onMount?.(editor, monaco);
   };
 
   const editorOptions = { ...defaultEditorOptions, ...options };
+
+  if (!filepath) {
+    return <div className="surimi-editor__code--no-file"></div>;
+  }
 
   return (
     <MonacoEditor
@@ -34,7 +38,8 @@ export default function Code({ value, filepath, options, onChange, onMount }: Co
       value={value}
       options={editorOptions}
       onMount={handleMount}
-      onChange={onChange}
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      onChange={onChange!}
     />
   );
 }
