@@ -6,6 +6,11 @@ const header = select('.surimi-editor__header').style({
   justifyContent: 'space-between',
 });
 
+header.child('.surimi-editor__header-right').style({
+  display: 'flex',
+  gap: '0.5rem',
+});
+
 const button = header.descendant('button').style({
   backgroundColor: '#007bff',
   color: '#fff',
@@ -16,7 +21,7 @@ const button = header.descendant('button').style({
   fontSize: '1rem',
 });
 
-button.hover().style({
+button.not('.button-secondary').hover().style({
   backgroundColor: '#0056b3',
 });
 
@@ -24,3 +29,13 @@ button.disabled().style({
   backgroundColor: '#ccc',
   cursor: 'not-allowed',
 });
+
+select('.button-secondary')
+  .not(':disabled')
+  .style({
+    backgroundColor: '#8d8d8d',
+  })
+  .hover()
+  .style({
+    backgroundColor: '#838383',
+  });
