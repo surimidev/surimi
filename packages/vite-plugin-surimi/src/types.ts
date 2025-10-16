@@ -4,14 +4,14 @@ export interface SurimiOptions {
    * Used in both manual and virtual modes.
    * @default ['**\/*.css.{ts,js}']
    */
-  include?: string | string[];
+  include?: string[];
 
   /**
    * Files to exclude from processing as surimi files.
    * Used in both manual and virtual modes.
    * @default ['node_modules/**', '**\/*.d.ts']
    */
-  exclude?: string | string[];
+  exclude?: string[];
 
   /**
    * Whether to inline the generated CSS into the JavaScript module.
