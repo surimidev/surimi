@@ -6,18 +6,6 @@ settings:
 
 catalogs:
   build:
-    '@rollup/pluginutils':
-      specifier: ^5.3.0
-      version: 5.3.0
-    chokidar:
-      specifier: ^4.0.3
-      version: 4.0.3
-    esbuild:
-      specifier: ^0.25.10
-      version: 0.25.10
-    fast-glob:
-      specifier: ^3.3.3
-      version: 3.3.3
     rolldown:
       specifier: ^1.0.0-beta.43
       version: 1.0.0-beta.43
@@ -458,21 +446,9 @@ importers:
 
   packages/vite-plugin-surimi:
     dependencies:
-      '@rollup/pluginutils':
-        specifier: catalog:build
-        version: 5.3.0(rollup@4.52.3)
       '@surimi/compiler':
         specifier: workspace:*
         version: link:../compiler
-      chokidar:
-        specifier: catalog:build
-        version: 4.0.3
-      esbuild:
-        specifier: catalog:build
-        version: 0.25.10
-      fast-glob:
-        specifier: catalog:build
-        version: 3.3.3
       surimi:
         specifier: workspace:*
         version: link:../surimi

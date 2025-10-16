@@ -38,11 +38,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rollup/pluginutils": "catalog:build",
-    "@surimi/compiler": "workspace:*",
-    "chokidar": "catalog:build",
-    "esbuild": "catalog:build",
-    "fast-glob": "catalog:build"
+    "@surimi/compiler": "workspace:*"
   },
   "devDependencies": {
     "@janis.me/linter-config": "workspace:*",
