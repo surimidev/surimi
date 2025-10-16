@@ -54,9 +54,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     for (const [cachedFile] of compilationCache) {
       if (!tsFileFilter(cachedFile)) continue;
 
-        const cacheEntry = compilationCache.get(cachedFile);
-        if (cacheEntry?.dependencies.includes(changedFile)) {
-          compilationCache.delete(cachedFile);
+      const cacheEntry = compilationCache.get(cachedFile);
+      if (cacheEntry?.dependencies.includes(changedFile)) {
+        compilationCache.delete(cachedFile);
         modules.push(...collectModulesForInvalidation(cachedFile, server, inlineCss));
       }
     }
@@ -108,7 +108,11 @@ if (import.meta.hot) {
           modules.push(...collectDependentModules(file, server));
         }
 
-        return modules;
+        // Only return modules if we found any to handle,
+        // otherwise, let vite handle it as usual
+        if (modules.length > 0) {
+          return modules;
+        }
       },
       resolveId: {
         filter: {
@@ -119,17 +123,17 @@ if (import.meta.hot) {
         handler(source) {
           if (!resolvedConfig) throw new Error('resolveId called before config was resolved');
 
-        const [validId, query] = source.split('?');
+          const [validId, query] = source.split('?');
 
-        // Handle virtual CSS imports
-        if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-          // In SSR Mode, we can end up with paths like /src/styles.css.ts
+          // Handle virtual CSS imports
+          if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
+            // In SSR Mode, we can end up with paths like /src/styles.css.ts
             const absoluteId = getAbsoluteId(validId, resolvedConfig);
 
-          return query ? `${absoluteId}?${query}` : absoluteId;
-        }
-        return null;
-      },
+            return query ? `${absoluteId}?${query}` : absoluteId;
+          }
+          return null;
+        },
       },
       load: {
         filter: {
@@ -140,37 +144,37 @@ if (import.meta.hot) {
         async handler(id) {
           if (!resolvedConfig) throw new Error('load handler called before config was resolved');
 
-        const [validId] = id.split('?');
-        // Load virtual CSS files. Surimi TS files are handled in transform()
-        if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-          const originalId = getSourceIdFromVirtual(validId);
-          // In SSR Mode, we can end up with paths like /src/styles.css.ts
+          const [validId] = id.split('?');
+          // Load virtual CSS files. Surimi TS files are handled in transform()
+          if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
+            const originalId = getSourceIdFromVirtual(validId);
+            // In SSR Mode, we can end up with paths like /src/styles.css.ts
             const absoluteId = getAbsoluteId(originalId, resolvedConfig);
-          let cacheEntry = compilationCache.get(absoluteId);
+            let cacheEntry = compilationCache.get(absoluteId);
 
-          // If cache entry is missing (e.g., during HMR), regenerate it
+            // If cache entry is missing (e.g., during HMR), regenerate it
             if (!cacheEntry && tsFileFilter(absoluteId)) {
-            this.debug(`Regenerating cache for: ${absoluteId}`);
-            cacheEntry = await getCompilationResult(absoluteId);
-          }
+              this.debug(`Regenerating cache for: ${absoluteId}`);
+              cacheEntry = await getCompilationResult(absoluteId);
+            }
 
-          if (cacheEntry) {
-            return {
-              code: cacheEntry.css,
-              map: {
-                version: 3,
-                file: path.basename(validId),
-                sources: [path.basename(absoluteId)],
-                names: [],
-                mappings: '',
-              },
-            };
-          } else {
-            this.error(`Missing build cache entry for virtual CSS file: ${id}`);
+            if (cacheEntry) {
+              return {
+                code: cacheEntry.css,
+                map: {
+                  version: 3,
+                  file: path.basename(validId),
+                  sources: [path.basename(absoluteId)],
+                  names: [],
+                  mappings: '',
+                },
+              };
+            } else {
+              this.error(`Missing build cache entry for virtual CSS file: ${id}`);
+            }
           }
-        }
-        return null;
-      },
+          return null;
+        },
       },
       transform: {
         filter: {
@@ -193,7 +197,7 @@ if (import.meta.hot) {
               dependencies.forEach((dep: string) => {
                 if (!filesWatched.has(dep)) {
                   filesWatched.add(dep);
-                this.addWatchFile(dep);
+                  this.addWatchFile(dep);
                 }
               });
             }
