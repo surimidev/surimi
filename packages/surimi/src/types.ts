@@ -44,11 +44,30 @@ export type ResetToBase<T extends string> = ParseSelector<ExtractPrimarySelector
  * Context utilities for media queries and selector extraction
  */
 
-// Build unified context that includes selector and media query
-export type WithMediaContext<TSelector extends string, TMediaQuery extends string> = `${TSelector} @${TMediaQuery}`;
+// Build unified context that includes media query and selector (media comes first)
+export type WithMediaContext<
+  TSelector extends string,
+  TMediaQuery extends string,
+> = `@media ${TMediaQuery} ${TSelector}`;
 
 // Extract selector from context (handles both plain selectors and media contexts)
-export type ExtractSelector<T extends string> = T extends `${infer Selector} @${string}` ? Selector : T;
+// For format: @media (min-width: 768px) .button
+// Also resets pseudo-classes and pseudo-elements to base selector
+export type ExtractSelector<T extends string> = T extends `@media (${string}) ${infer Selector}`
+  ? ResetToBase<Selector>
+  : T extends `@media (${string}) and (${string}) ${infer Selector}`
+    ? ResetToBase<Selector>
+    : T extends `@media (${string}) and (${string}) and (${string}) ${infer Selector}`
+      ? ResetToBase<Selector>
+      : ResetToBase<T>;
+
+// Extract media query from context
+// For format: @media (min-width: 768px) .button
+export type ExtractMediaQuery<T extends string> = T extends `@media ${infer Query} .${string}`
+  ? Query
+  : T extends `@media ${infer Query} #${string}`
+    ? Query
+    : never;
 
 /**
  * Selector building utilities
@@ -81,14 +100,14 @@ export type WithRelationship<
 export type WithContextualSelector<
   TContext extends string,
   TNewSelector extends string,
-> = TContext extends `${string} @${infer Media}` ? WithMediaContext<TNewSelector, Media> : TNewSelector;
+> = TContext extends `@media ${infer Media} ${string}` ? WithMediaContext<TNewSelector, Media> : TNewSelector;
 
 /**
  * Context analysis utilities
  */
 
-// Check if context has media query
-export type HasMediaContext<T extends string> = T extends `${string} @${string}` ? true : false;
+// Check if context has media query (media comes first in new format)
+export type HasMediaContext<T extends string> = T extends `@media ${string} ${string}` ? true : false;
 
 // Check if context has pseudo-classes or pseudo-elements
 export type HasPseudoContext<T extends string> = T extends `${string}:${string}` ? true : false;
@@ -101,7 +120,7 @@ export type HasPseudoContext<T extends string> = T extends `${string}:${string}`
 export type WithAttributeExistence<
   TContext extends string,
   TAttribute extends string,
-> = TContext extends `${infer Selector} @${infer Media}`
+> = TContext extends `@media ${infer Media} ${infer Selector}`
   ? WithMediaContext<`${Selector}[${TAttribute}]`, Media>
   : `${TContext}[${TAttribute}]`;
 
@@ -112,7 +131,7 @@ export type WithAttribute<
   TAttribute extends string,
   TOperator extends string,
   TValue extends string,
-> = TContext extends `${infer Selector} @${infer Media}`
+> = TContext extends `@media ${infer Media} ${infer Selector}`
   ? WithMediaContext<ReplaceAttributeExistenceWithValue<Selector, TAttribute, TOperator, TValue>, Media>
   : ReplaceAttributeExistenceWithValue<TContext, TAttribute, TOperator, TValue>;
 

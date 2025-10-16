@@ -1,6 +1,6 @@
 import postcss from 'postcss';
 
-import { MediaQueryBuilder, SelectorBuilder } from './builder';
+import { MediaQueryBuilder, SelectorBuilder } from './builder/index';
 import type { JoinSelectors, SelectorInput } from './types';
 
 /**

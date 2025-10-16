@@ -36,7 +36,8 @@
     "build": "tsdown",
     "build:watch": "tsdown --watch",
     "format": "prettier . --write",
-    "prepack": "pnpm -c exec ../../scripts/replace-symlinks.sh"
+    "prepack": "pnpm -c exec ../../scripts/replace-symlinks.sh",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/hash": "catalog:prod",
