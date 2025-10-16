@@ -100,9 +100,11 @@ if (import.meta.hot) {
         const modules = [];
 
         if (tsFileFilter(file)) {
+          console.log('surimi HMR:', file);
           // Direct change to a .css.ts file
           compilationCache.delete(file);
           modules.push(...collectModulesForInvalidation(file, server, inlineCss));
+          modules.push(...collectDependentModules(file, server));
         } else {
           // Check if any .css.ts files depend on this changed file
           modules.push(...collectDependentModules(file, server));
@@ -192,10 +194,13 @@ if (import.meta.hot) {
             const { css, js, dependencies } = await getCompilationResult(id);
             const jsCode = generateJsWithHmr(js, css, id);
 
+            console.log(id, dependencies);
+
             // Add file dependencies for proper HMR
             if (isDev && !options?.ssr) {
               dependencies.forEach((dep: string) => {
                 if (!filesWatched.has(dep)) {
+                  console.log('watching', dep);
                   filesWatched.add(dep);
                   this.addWatchFile(dep);
                 }
