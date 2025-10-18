@@ -4,6 +4,7 @@
 
 import type { BuilderContext, ExtractContextString, FlatBuilderContext } from '#types/builder.types';
 import type { SelectorRelationship } from '#types/css.types';
+import { JoinSelectors, ValidSelector } from '#types/selector.types';
 
 /**
  * Combine multiple selectors and pseudoElements / pseudoClasses into a single selector string.
@@ -64,4 +65,11 @@ export function buildContextString<TContext extends BuilderContext>(context: TCo
       return '';
     })
     .join('') as ExtractContextString<TContext>;
+}
+
+/**
+ * Join multiple selectors with comma separation
+ */
+export function joinSelectors<TSelectors extends ValidSelector[]>(...selectors: TSelectors): JoinSelectors<TSelectors> {
+  return selectors.join(', ') as JoinSelectors<TSelectors>;
 }

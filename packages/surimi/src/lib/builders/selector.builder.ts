@@ -1,20 +1,24 @@
-import postcss from 'postcss';
-
-import { Mixins, StylableMixin } from '#lib/builders/mixins';
-import type { BuilderContext, ExtractBuildContextFromString, ExtractContextString } from '#types/builder.types';
+import { mix } from 'ts-mixer';
 
 import { CoreBuilder } from './core.builder';
-import NavigableMixin from './mixins/navigable.mixin';
+import { WithNavigation, WithPseudoClasses, WithPseudoElements, WithStyling } from './mixins';
+import { ExtractBuildContextFromString } from '#types/builder.types';
 
-export default class SelectorBuilder<TContextString extends string> extends StylableMixin(NavigableMixin(CoreBuilder)) {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor -- Not useless! Needed for TS to infer the types correctly
-  constructor(context: ExtractBuildContextFromString<TContextString>, postcssRoot: postcss.Root) {
-    super(context, postcssRoot);
-  }
+export interface SelectorBuilder<T extends string>
+  extends WithNavigation<T>,
+    WithStyling<T>,
+    WithPseudoClasses<T>,
+    WithPseudoElements<T> {}
 
+/**
+ * The primary way to select things in Surimi.
+ * Provides ways to select elements, navigate the DOM, target pseudo-elements, pseudo classes and apply styles.
+ *
+ * You usually don't instantiate this class directly, but rather start from a helper function like `select()`.
+ */
+@mix(WithNavigation, WithStyling, WithPseudoClasses, WithPseudoElements)
+export class SelectorBuilder<T extends string> extends CoreBuilder<ExtractBuildContextFromString<T>> {
   public test() {
-    return this;
+    return this.style({ color: 'red' });
   }
 }
-
-const test = new SelectorBuilder<'.button'>([{ selector: '.button' }] as const, postcss.root());

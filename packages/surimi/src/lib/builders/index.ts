@@ -1,3 +1,3 @@
-export * from './selector.builder';
+export { SelectorBuilder } from './selector.builder';
 
 export * from './mixins';

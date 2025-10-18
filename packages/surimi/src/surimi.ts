@@ -1,7 +1,16 @@
 import postcss from 'postcss';
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+import { SelectorBuilder } from '#lib/builders';
+
 export abstract class Surimi {
-  private static root: postcss.Root = postcss.root();
-  private static selectors = new Map<string, SelectorBuilder>();
+  public static root: postcss.Root = postcss.root();
 }
+
+export function select<TSelector extends string>(selector: TSelector): SelectorBuilder<TSelector> {
+  // TODO: Figure out what doesn't work.
+  return new SelectorBuilder<TSelector>([{ selector }] as any, Surimi.root) as any;
+}
+
+const x = select('aa');
+
+x.child('.icon').style({ width: '10px' });

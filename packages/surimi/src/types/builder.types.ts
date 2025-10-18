@@ -1,4 +1,32 @@
-import type { NestableAtRule, SelectorRelationship } from '#types/css.types';
+/**
+ * This file defines types to operate on builders using context strings and context arrays.
+ * The context is used to give the user type hints when building selectors, applying styles etc.
+ *
+ * The core idea is that using some string like "@media (max-width: 600px) ⤷ button:hover > .icon::after",
+ * we can extract a structured representation of the context as an array of items,
+ * each representing a part of the selector or at-rule.
+ * For this example, the context array would look like:
+ * [
+ *   { atRule: '@media', params: '(max-width: 600px)' },
+ *   { selector: 'button' },
+ *   { pseudoClass: 'hover' },
+ *   { selector: '.icon', relation: 'child' },
+ *   { pseudoElement: 'after' },
+ * ]
+ *
+ * This structured context can then be used by the builder classes to generate the correct PostCSS AST,
+ * while also providing type hints to users about what methods are available in the current context.
+ *
+ * It's important for these strings to be human-readable, but also unambiguous and easy to parse both ways (string -> context array, context array -> string).
+ * To achieve this, we use specific delimiters:
+ * - " ⤷ " to denote at-rule nesting
+ * - " > ", " + ", " ~ ", " " to denote selector relationships (child, adjacent sibling, general sibling, descendant)
+ * - ", " to denote multiple selectors
+ * - ":" to denote pseudo-classes
+ * - "::" to denote pseudo-elements
+ */
+
+import type { NestableAtRule, SelectorRelationship, WithoutAtPrefix } from '#types/css.types';
 
 /**
  * Used to add at-rules to the builder context. These will be combined when generating the PostCSS AST.
@@ -15,20 +43,12 @@ export type AtRuleContext = Record<NestableAtRule, string[]>;
 export type BuilderContextRelationKind = SelectorRelationship;
 
 /**
- * Additional, optional relation information for context items
- * For example, button:hover does not have any relation, but div > button has a child relation.
- */
-export interface BuilderContextRelation {
-  relation?: BuilderContextRelationKind;
-}
-
-/**
  * Map of relation kinds to their string representation in CSS selectors.
  */
 export interface BuilderContextRelationMap {
-  child: ' > ';
-  adjacent: ' + ';
-  sibling: ' ~ ';
+  child: '>';
+  adjacent: '+';
+  sibling: '~';
   descendant: ' ';
 }
 
@@ -38,8 +58,10 @@ export interface BuilderContextRelationMap {
  * Some items can have relations to the previous item in the context, which is represented by the {@link BuilderContextRelation}.
  * For example, a selector context item can have a child relation to the previous selector.
  */
+// TODO: We could make all of this even better by adding `BasePseudoClasses` and `BasePseudoElements` here for better type hints
+// But that makes validation and parsing significantly more complex, so for now we keep it simple
 export type BuilderContextItem =
-  | ({ selector: string } & BuilderContextRelation)
+  | { selector: string; relation?: BuilderContextRelationKind }
   | { pseudoClass: string }
   | { pseudoElement: string }
   | { atRule: NestableAtRule; params: string };
@@ -70,7 +92,7 @@ export type FlatBuilderContext = {
  * @example
  * type Selector = ExtractContextStringItem<{  selector: 'button' }>; // 'button'
  * type PseudoClass = ExtractContextStringItem<{ pseudoClass: 'hover' }>; // ":hover"
- * type AtRule = ExtractContextStringItem<{ atRule: '@media'; parameter: '(max-width: 600px)' }>; // "@media (max-width: 600px)"
+ * type AtRule = ExtractContextStringItem<{ atRule: '@media'; params: '(max-width: 600px)' }>; // "@media (max-width: 600px)"
  */
 export type ExtractContextStringItem<TContext extends BuilderContextItem> = TContext extends {
   selector: infer S;
@@ -78,7 +100,7 @@ export type ExtractContextStringItem<TContext extends BuilderContextItem> = TCon
   ? S extends string
     ? TContext extends { relation: infer R }
       ? R extends SelectorRelationship
-        ? `${BuilderContextRelationMap[R]}${S}`
+        ? ` ${BuilderContextRelationMap[R]} ${S}`
         : `${S}`
       : `${S}`
     : never
@@ -90,11 +112,10 @@ export type ExtractContextStringItem<TContext extends BuilderContextItem> = TCon
       ? E extends string
         ? `::${E}`
         : never
-      : TContext extends { atRule: infer A; parameter: infer Param }
+      : TContext extends { atRule: infer A; params: infer Params }
         ? A extends NestableAtRule
-          ? Param extends string
-            ? // Using the `⤷` symbol to indicate that everything on the right is nested under the at-rule
-              `${A} ${Param} ⤷ `
+          ? Params extends string
+            ? `${A} ${Params} ⤷ `
             : never
           : never
         : never;
@@ -105,18 +126,21 @@ export type ExtractContextStringItem<TContext extends BuilderContextItem> = TCon
  *
  * @example
  * type FullContext = ExtractContextString<
- *   [
- *     { atRule: '@media'; parameter: '(max-width: 600px)' },
- *     { selector: 'button' },
- *     { pseudoClass: 'hover' },
- *     { pseudoElement: 'after' },
- *   ]
- * >; // "@media (max-width: 600px) button:hover::after"
+ * [
+ *   { atRule: '@media'; params: '(max-width: 600px)' },
+ *   { selector: 'button' },
+ *   { selector: '.icon'; relation: 'child' },
+ *   { pseudoClass: 'hover' },
+ *   { pseudoElement: 'after' },
+ * ]
+ * >; // "@media (max-width: 600px) ⤷ button > .icon:hover::after"
  */
 export type ExtractContextString<TContexts extends BuilderContext> = TContexts extends [infer First, ...infer Rest]
   ? First extends BuilderContextItem
     ? Rest extends BuilderContextItem[]
-      ? `${ExtractContextStringItem<First>}${ExtractContextString<Rest>}`
+      ? ExtractContextString<Rest> extends ''
+        ? `${ExtractContextStringItem<First>}`
+        : `${ExtractContextStringItem<First>}${ExtractContextString<Rest>}`
       : never
     : never
   : '';
@@ -126,49 +150,217 @@ export type ExtractContextString<TContexts extends BuilderContext> = TContexts e
  * and converts it into a BuilderContext type.
  *
  * @example
- * type Context = ExtractBuildContextFromString<"@media (max-width: 600px) ⤷ button:hover::after">;
+ * type Context = ExtractBuildContextFromString<"@media (max-width: 600px) ⤷ button > .icon:hover::after">;
  * // [
- * //   { atRule: '@media'; parameter: '(max-width: 600px)' },
- * //   { selector: 'button' },
- * //   { pseudoClass: 'hover' },
- * //   { pseudoElement: 'after' },
+ * //  { atRule: '@media'; params: '(max-width: 600px)' },
+ * //  { selector: 'button' },
+ * //  { selector: '.icon'; relation: 'child' },
+ * //  { pseudoClass: 'hover' },
+ * //  { pseudoElement: 'after' },
  * // ]
  */
-export type ExtractBuildContextFromString<T extends string> =
+export type ExtractBuildContextFromString<T extends string> = T extends '' ? [] : ExtractBuildContextItem<T>;
+
+/**
+ * Helper type to parse relation-based selectors (>, +, ~, space).
+ * This reduces duplication in the main parsing logic.
+ */
+type ParseWithRelation<Before extends string, After extends string, Relation extends BuilderContextRelationKind> = [
+  ...ExtractBuildContextItem<Before>,
+  ...ExtractBuildContextItemWithRelation<After, Relation>,
+];
+
+/**
+ * Helper type to parse pseudo-elements with optional continuation.
+ * Handles patterns like "selector::element rest" where rest can be more selectors.
+ */
+type ParsePseudoElement<
+  Before extends string,
+  ElementAndRest extends string,
+> = ElementAndRest extends `${infer Element} > ${infer After}`
+  ? [
+      ...ExtractBuildContextItem<Before>,
+      { pseudoElement: Element },
+      ...ExtractBuildContextItemWithRelation<After, 'child'>,
+    ]
+  : ElementAndRest extends `${infer Element} + ${infer After}`
+    ? [
+        ...ExtractBuildContextItem<Before>,
+        { pseudoElement: Element },
+        ...ExtractBuildContextItemWithRelation<After, 'adjacent'>,
+      ]
+    : ElementAndRest extends `${infer Element} ~ ${infer After}`
+      ? [
+          ...ExtractBuildContextItem<Before>,
+          { pseudoElement: Element },
+          ...ExtractBuildContextItemWithRelation<After, 'sibling'>,
+        ]
+      : ElementAndRest extends `${infer Element} ${infer After}`
+        ? [
+            ...ExtractBuildContextItem<Before>,
+            { pseudoElement: Element },
+            ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
+          ]
+        : [...ExtractBuildContextItem<Before>, { pseudoElement: ElementAndRest }];
+
+/**
+ * Helper type to parse pseudo-classes with optional continuation.
+ * Handles patterns like "selector:class rest" where rest can be more selectors.
+ */
+type ParsePseudoClass<
+  Before extends string,
+  ClassAndRest extends string,
+> = ClassAndRest extends `${infer Class} > ${infer After}`
+  ? [...ExtractBuildContextItem<Before>, { pseudoClass: Class }, ...ExtractBuildContextItemWithRelation<After, 'child'>]
+  : ClassAndRest extends `${infer Class} + ${infer After}`
+    ? [
+        ...ExtractBuildContextItem<Before>,
+        { pseudoClass: Class },
+        ...ExtractBuildContextItemWithRelation<After, 'adjacent'>,
+      ]
+    : ClassAndRest extends `${infer Class} ~ ${infer After}`
+      ? [
+          ...ExtractBuildContextItem<Before>,
+          { pseudoClass: Class },
+          ...ExtractBuildContextItemWithRelation<After, 'sibling'>,
+        ]
+      : ClassAndRest extends `${infer Class} ${infer After}`
+        ? [
+            ...ExtractBuildContextItem<Before>,
+            { pseudoClass: Class },
+            ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
+          ]
+        : [...ExtractBuildContextItem<Before>, { pseudoClass: ClassAndRest }];
+
+/**
+ * Helper type to parse at-rules with their parameters and continuation.
+ */
+type ParseAtRule<AtRule extends string, Params extends string, Rest extends string> = AtRule extends NestableAtRule
+  ? [{ atRule: AtRule; params: Params }, ...ExtractBuildContextItem<Rest>]
+  : never;
+
+/**
+ * Parses a single string fragment into a BuilderContextItem array.
+ * This type handles the parsing of context strings, including:
+ * - At-rules with their parameters (e.g., "@media (max-width: 600px) ⤷ button")
+ * - Selectors with optional relations (e.g., "button > .icon", "button")
+ * - Pseudo-classes (e.g., "button:hover")
+ * - Pseudo-elements (e.g., "button::after")
+ * - Complex combinations (e.g., "button:hover::after")
+ *
+ * The parsing is designed to be unambiguous - each string can only be parsed one way.
+ */
+export type ExtractBuildContextItem<T extends string> =
+  // Handle at-rules: "@media (max-width: 600px) ⤷ rest"
   T extends `${infer AtRule} ${infer Params} ⤷ ${infer Rest}`
-    ? AtRule extends NestableAtRule
-      ? [{ atRule: AtRule; params: Params }, ...ExtractBuildContextFromString<Rest>]
-      : []
-    : T extends `${infer FirstPart} > ${infer Rest}`
-      ? [...ExtractBuildContextFromString<FirstPart>, ...ExtractSelectorWithRelation<Rest, 'child'>]
-      : T extends `${infer FirstPart} + ${infer Rest}`
-        ? [...ExtractBuildContextFromString<FirstPart>, ...ExtractSelectorWithRelation<Rest, 'adjacent'>]
-        : T extends `${infer FirstPart} ~ ${infer Rest}`
-          ? [...ExtractBuildContextFromString<FirstPart>, ...ExtractSelectorWithRelation<Rest, 'sibling'>]
-          : T extends `${infer FirstPart} ${infer Rest}`
-            ? Rest extends string
-              ? [...ExtractBuildContextFromString<FirstPart>, ...ExtractSelectorWithRelation<Rest, 'descendant'>]
-              : ExtractSingleSelector<T>
-            : ExtractSingleSelector<T>;
+    ? ParseAtRule<AtRule, Params, Rest>
+    : // Handle pseudo-elements (higher precedence): "selector::element rest"
+      T extends `${infer Before}::${infer ElementAndRest}`
+      ? ParsePseudoElement<Before, ElementAndRest>
+      : // Handle pseudo-classes: "selector:class rest"
+        T extends `${infer Before}:${infer ClassAndRest}`
+        ? ParsePseudoClass<Before, ClassAndRest>
+        : // Handle relation-based selectors
+          T extends `${infer Before} > ${infer After}`
+          ? ParseWithRelation<Before, After, 'child'>
+          : T extends `${infer Before} + ${infer After}`
+            ? ParseWithRelation<Before, After, 'adjacent'>
+            : T extends `${infer Before} ~ ${infer After}`
+              ? ParseWithRelation<Before, After, 'sibling'>
+              : // Handle descendant relation (space separation)
+                T extends `${infer Before} ${infer After}`
+                ? // Avoid conflicts with at-rule syntax and special characters
+                  Before extends `${string} ⤷`
+                  ? never
+                  : After extends `>${string}` | `+${string}` | `~${string}`
+                    ? never
+                    : ParseWithRelation<Before, After, 'descendant'>
+                : // Handle simple selectors
+                  T extends string
+                  ? T extends ''
+                    ? []
+                    : [{ selector: T }]
+                  : never;
 
-type ExtractSelectorWithRelation<
-  T extends string,
-  R extends SelectorRelationship,
-> = T extends `${infer Selector}:${infer PseudoClass}::${infer PseudoElement}`
-  ? [{ selector: Selector; relation: R }, { pseudoClass: PseudoClass }, { pseudoElement: PseudoElement }]
-  : T extends `${infer Selector}:${infer PseudoClass}`
-    ? [{ selector: Selector; relation: R }, { pseudoClass: PseudoClass }]
-    : T extends `${infer Selector}::${infer PseudoElement}`
-      ? [{ selector: Selector; relation: R }, { pseudoElement: PseudoElement }]
-      : [{ selector: T; relation: R }];
+/**
+ * Helper type to parse a selector string that should have a specific relation to the previous selector.
+ */
+type ExtractBuildContextItemWithRelation<T extends string, Relation extends BuilderContextRelationKind> =
+  // Handle pseudo-elements: "selector::element rest"
+  T extends `${infer Selector}::${infer ElementAndRest}`
+    ? ParsePseudoElementWithRelation<Selector, ElementAndRest, Relation>
+    : // Handle pseudo-classes: "selector:class rest"
+      T extends `${infer Selector}:${infer ClassAndRest}`
+      ? ParsePseudoClassWithRelation<Selector, ClassAndRest, Relation>
+      : // Handle regular selector
+        T extends string
+        ? T extends ''
+          ? []
+          : [{ selector: T; relation: Relation }]
+        : never;
 
-type ExtractSingleSelector<T extends string> =
-  T extends `${infer Selector}:${infer PseudoClass}::${infer PseudoElement}`
-    ? [{ selector: Selector }, { pseudoClass: PseudoClass }, { pseudoElement: PseudoElement }]
-    : T extends `${infer Selector}:${infer PseudoClass}`
-      ? [{ selector: Selector }, { pseudoClass: PseudoClass }]
-      : T extends `${infer Selector}::${infer PseudoElement}`
-        ? [{ selector: Selector }, { pseudoElement: PseudoElement }]
-        : T extends `${infer Selector}`
-          ? [{ selector: Selector }]
-          : [];
+/**
+ * Helper type to parse pseudo-elements when they have a relation to the previous selector.
+ */
+type ParsePseudoElementWithRelation<
+  Selector extends string,
+  ElementAndRest extends string,
+  Relation extends BuilderContextRelationKind,
+> = ElementAndRest extends `${infer Element} > ${infer After}`
+  ? [
+      { selector: Selector; relation: Relation },
+      { pseudoElement: Element },
+      ...ExtractBuildContextItemWithRelation<After, 'child'>,
+    ]
+  : ElementAndRest extends `${infer Element} + ${infer After}`
+    ? [
+        { selector: Selector; relation: Relation },
+        { pseudoElement: Element },
+        ...ExtractBuildContextItemWithRelation<After, 'adjacent'>,
+      ]
+    : ElementAndRest extends `${infer Element} ~ ${infer After}`
+      ? [
+          { selector: Selector; relation: Relation },
+          { pseudoElement: Element },
+          ...ExtractBuildContextItemWithRelation<After, 'sibling'>,
+        ]
+      : ElementAndRest extends `${infer Element} ${infer After}`
+        ? [
+            { selector: Selector; relation: Relation },
+            { pseudoElement: Element },
+            ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
+          ]
+        : [{ selector: Selector; relation: Relation }, { pseudoElement: ElementAndRest }];
+
+/**
+ * Helper type to parse pseudo-classes when they have a relation to the previous selector.
+ */
+type ParsePseudoClassWithRelation<
+  Selector extends string,
+  ClassAndRest extends string,
+  Relation extends BuilderContextRelationKind,
+> = ClassAndRest extends `${infer Class} > ${infer After}`
+  ? [
+      { selector: Selector; relation: Relation },
+      { pseudoClass: Class },
+      ...ExtractBuildContextItemWithRelation<After, 'child'>,
+    ]
+  : ClassAndRest extends `${infer Class} + ${infer After}`
+    ? [
+        { selector: Selector; relation: Relation },
+        { pseudoClass: Class },
+        ...ExtractBuildContextItemWithRelation<After, 'adjacent'>,
+      ]
+    : ClassAndRest extends `${infer Class} ~ ${infer After}`
+      ? [
+          { selector: Selector; relation: Relation },
+          { pseudoClass: Class },
+          ...ExtractBuildContextItemWithRelation<After, 'sibling'>,
+        ]
+      : ClassAndRest extends `${infer Class} ${infer After}`
+        ? [
+            { selector: Selector; relation: Relation },
+            { pseudoClass: Class },
+            ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
+          ]
+        : [{ selector: Selector; relation: Relation }, { pseudoClass: ClassAndRest }];
