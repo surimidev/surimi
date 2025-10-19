@@ -46,43 +46,22 @@ type MatchingAttributeSelector =
   | `[${HtmlAttributesWithoutBrackets | (string & {})}*=${string}]`;
 
 /**
- * @warning **WARNING** It works, but it seems to be VERY heavy on the CPU right now. Needs to be optimized and tested before using in production
+ * A string literal type that gives type hints on CSS selectors.
  *
- * A string literal type that only allows valid CSS selectors according to surimi rules.
- *
- * Valid selectors must:
- * - Not contain spaces (no descendant selectors)
- * - Not be combinators (>, +, ~, or space)
- * - Be one of: class selector (.class), ID selector (#id), type selector (div),
- *   universal selector (*), or attribute selector ([attr] or [attr=value])
- * - For attribute selectors, use valid HTML attributes
- *
- * @example
- * ```typescript
- * // Valid selectors - TypeScript will accept these
- * const valid1: ValidSelector = '.my-class'; // ✓ class selector
- * const valid2: ValidSelector = '#my-id'; // ✓ ID selector
- * const valid3: ValidSelector = 'div'; // ✓ type selector
- * const valid4: ValidSelector = '*'; // ✓ universal selector
- * const valid5: ValidSelector = '[disabled]'; // ✓ simple attribute selector
- * const valid6: ValidSelector = '[data-test="value"]'; // ✓ matching attribute selector
- *
- * // Invalid selectors - TypeScript will show errors
- * const invalid1: ValidSelector = 'div p'; // ✗ contains space
- * const invalid2: ValidSelector = '>'; // ✗ combinator
- * const invalid3: ValidSelector = '[invalid-attr]'; // ✗ invalid HTML attribute
- * ```
+ * Type hint support includes:
+ * - known HTML element names (div, span, etc.)
+ * - known HTML attributes in attribute selectors ([href], [data-custom], etc.)
  */
-// TODO: Optimize this type to be less CPU intensive, so we can use it.
-// TODO: We might want to limit usage of spaces in, for example, classes. But I didn't find a way to do that yet.
-// (except to define a custom alphabet of allowed characters, which is not feasible)
+// TODO: note, this is not currently used to restrict users to use only these selectors.
+// it is also not checking if users are using nesting, combinators, etc.
 export type ValidSelector =
   | ClassSelector
   | IdSelector
-  | TypeSelector
   | UniversalSelector
+  | TypeSelector
   | SimpleAttributeSelector
-  | MatchingAttributeSelector;
+  | MatchingAttributeSelector
+  | (string & {});
 
 /**
  * Convert a list of selector strings into a list of selector items lik { selector: string}

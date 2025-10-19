@@ -43,7 +43,8 @@
   "dependencies": {
     "@emotion/hash": "catalog:prod",
     "csstype": "catalog:prod",
-    "postcss": "catalog:prod"
+    "postcss": "catalog:prod",
+    "postcss-selector-parser": "^7.1.0"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

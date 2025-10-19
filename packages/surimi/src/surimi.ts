@@ -3,7 +3,6 @@ import postcss from 'postcss';
 import type { CustomProperty } from '#lib/api/custom-property';
 import { _select } from '#lib/api/select';
 import { MediaQueryBuilder } from '#lib/builders/index';
-import { ExtractBuildContextFromString } from '#types/builder.types';
 import type { ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 
@@ -50,10 +49,22 @@ export abstract class Surimi {
  * Make sure to select each item in a new argument, so that surimi can properly figure out lists of selectors.
  * For example, use `select('.class1', '.class2')` instead of `select('.class1, .class2')`.
  * When typing in selectors, you will get autocompletion for valid CSS selectors in most editors.
+ *
+ * @example
+ * ```ts
+ * const button = select('.button');
+ *
+ * button.style({
+ *   backgroundColor: 'blue',
+ *   color: 'white',
+ * });
+ * ```
  */
 export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: TSelectors) {
   return _select([], Surimi.root, selectors);
 }
+
+select('h[test]').child('test');
 
 /**
  * Create a media query builder to apply selections and styles within a media query.

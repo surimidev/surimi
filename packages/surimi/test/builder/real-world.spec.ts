@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../src/index';
+import { media, select, Surimi } from '../../src/index';
 
 describe('Real-world Scenarios', () => {
   beforeEach(() => {

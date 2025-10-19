@@ -1,2 +1,2 @@
 export { property } from '#lib/api/index';
-export { Surimi, select } from './surimi';
+export { Surimi, select, media } from './surimi';

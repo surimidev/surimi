@@ -2,9 +2,11 @@
  * Shared utils across different builders / mixins.
  */
 
-import type { BuilderContext, ExtractContextString, FlatBuilderContext } from '#types/builder.types';
+import selectorParser from 'postcss-selector-parser';
+
+import type { ExtractBuildContextFromString, FlatBuilderContext } from '#types/builder.types';
 import type { SelectorRelationship } from '#types/css.types';
-import { JoinSelectors } from '#types/selector.types';
+import type { JoinSelectors } from '#types/selector.types';
 
 /**
  * Combine multiple selectors and pseudoElements / pseudoClasses into a single selector string.
@@ -129,4 +131,168 @@ export function buildSelectorWithRelationship(
  */
 export function joinSelectors<TSelectors extends string[]>(...selectors: TSelectors): JoinSelectors<TSelectors> {
   return selectors.join(', ') as JoinSelectors<TSelectors>;
+}
+
+/**
+ * Parse a selector string into its build context representation
+ * For example, '.button:hover::after' becomes
+ * [
+ *   { selector: '.button' },
+ *   { pseudoClass: 'hover' },
+ *   { pseudoElement: 'after' },
+ * ]
+ *
+ * Uses postcss-selector-parser for robust CSS selector parsing.
+ * Supports:
+ * - Simple selectors (class, ID, element, attribute)
+ * - Pseudo-classes (:hover, :focus, etc.)
+ * - Pseudo-elements (::before, ::after, etc.)
+ * - Combinators (>, +, ~, space for descendant)
+ * - Complex selectors with parentheses and quoted values
+ *
+ * This does NOT support media queries, groups, or other advanced BuildContext features.
+ */
+export function parseSelectorString<S extends string>(selector: S): ExtractBuildContextFromString<S> {
+  if (!selector || selector.trim() === '') {
+    return [] as ExtractBuildContextFromString<S>;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any[] = [];
+
+  try {
+    selectorParser(selectors => {
+      // Handle comma-separated selectors - process each one individually
+      selectors.each(selectorNode => {
+        console.log('Parsing selector node:', selectorNode.toString());
+        const parsed = parseSingleSelectorNode(selectorNode);
+        result.push(...parsed);
+      });
+    }).processSync(selector.trim());
+  } catch (error) {
+    // If parsing fails, fall back to treating it as a simple selector
+    console.warn(`Failed to parse selector "${selector}":`, error);
+    result.push({ selector: selector.trim() });
+  }
+
+  return result as ExtractBuildContextFromString<S>;
+}
+
+interface BuildContextItem {
+  selector?: string;
+  pseudoClass?: string;
+  pseudoElement?: string;
+  relation?: 'child' | 'adjacent' | 'sibling' | 'descendant';
+}
+
+/**
+ * Parse a single selector node from postcss-selector-parser into build context items
+ */
+function parseSingleSelectorNode(selectorNode: selectorParser.Selector): BuildContextItem[] {
+  // Use postcss-selector-parser's built-in combinator detection rather than regex
+  const result: BuildContextItem[] = [];
+  let currentCompound: BuildContextItem[] = [];
+  let pendingRelation: 'child' | 'adjacent' | 'sibling' | 'descendant' | undefined;
+
+  selectorNode.each(node => {
+    switch (node.type) {
+      case 'combinator': {
+        // Flush current compound
+        if (currentCompound.length > 0) {
+          result.push(...currentCompound);
+          currentCompound = [];
+        }
+
+        // Set pending relation for next compound
+        switch (node.value.trim()) {
+          case '>':
+            pendingRelation = 'child';
+            break;
+          case '+':
+            pendingRelation = 'adjacent';
+            break;
+          case '~':
+            pendingRelation = 'sibling';
+            break;
+          default:
+            pendingRelation = 'descendant';
+        }
+        break;
+      }
+
+      case 'tag':
+      case 'class':
+      case 'id':
+      case 'attribute':
+      case 'universal': {
+        // If we don't have a base selector yet, create one
+        if (currentCompound.length === 0 || !currentCompound.some(item => item.selector)) {
+          const baseItem: BuildContextItem = { selector: node.toString() };
+
+          // Add pending relation if we have one
+          if (pendingRelation) {
+            baseItem.relation = pendingRelation;
+            pendingRelation = undefined;
+          }
+
+          currentCompound.push(baseItem);
+        } else {
+          // Append to existing base selector
+          const baseItem = currentCompound.find(item => item.selector);
+          if (baseItem?.selector) {
+            baseItem.selector += node.toString();
+          }
+        }
+        break;
+      }
+
+      case 'pseudo': {
+        // Use toString() to get the full pseudo-class including functional notation
+        const fullPseudo = node.toString();
+        const pseudoValue = fullPseudo.replace(/^::?/, ''); // Remove : or ::
+
+        if (fullPseudo.startsWith('::')) {
+          currentCompound.push({ pseudoElement: pseudoValue });
+        } else {
+          currentCompound.push({ pseudoClass: pseudoValue });
+        }
+        break;
+      }
+
+      default: {
+        // Handle other node types by adding to base selector
+        if (currentCompound.length === 0 || !currentCompound.some(item => item.selector)) {
+          const baseItem: BuildContextItem = { selector: node.toString() };
+
+          if (pendingRelation) {
+            baseItem.relation = pendingRelation;
+            pendingRelation = undefined;
+          }
+
+          currentCompound.push(baseItem);
+        } else {
+          const baseItem = currentCompound.find(item => item.selector);
+          if (baseItem?.selector) {
+            baseItem.selector += node.toString();
+          }
+        }
+        break;
+      }
+    }
+  });
+
+  // Flush final compound
+  if (currentCompound.length > 0) {
+    // Add pending relation to the first selector item
+    if (pendingRelation) {
+      const firstSelectorItem = currentCompound.find(item => item.selector);
+      if (firstSelectorItem) {
+        firstSelectorItem.relation = pendingRelation;
+      }
+    }
+
+    result.push(...currentCompound);
+  }
+
+  return result;
 }
