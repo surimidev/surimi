@@ -1,10 +1,13 @@
 import postcss from 'postcss';
 
-import { CustomProperty } from '#lib/api/custom-property';
-import { SelectorBuilder } from '#lib/builders/index';
-import { GetSelectorBuilder, SelectorsAsGroup, ValidSelector } from '#types/selector.types';
-import { ArrayWithAtLeastOneItem } from '#types/util.types';
+import type { CustomProperty } from '#lib/api/custom-property';
+import { _select } from '#lib/api/select';
+import { MediaQueryBuilder } from '#lib/builders/index';
+import { ExtractBuildContextFromString } from '#types/builder.types';
+import type { ValidSelector } from '#types/selector.types';
+import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class Surimi {
   public static root: postcss.Root = postcss.root();
 
@@ -33,24 +36,46 @@ export abstract class Surimi {
   }
 }
 
-export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(
-  ...selectors: TSelectors
-): GetSelectorBuilder<TSelectors> {
-  if (selectors.length === 0) {
-    throw new Error('At least one selector must be provided');
-  } else if (selectors.length === 1) {
-    if (typeof selectors[0] !== 'string') {
-      throw new Error('Selector must be a string');
-    }
+/**
+ * The main way to select things in Surimi.
+ *
+ * Pass this anything you would like to select, like class names, IDs, element names, attributes, etc.
+ * Will return a tagged SelectorBuilder that allows you to
+ * - navigate the DOM
+ * - target pseudo-classes and pseudo-elements
+ * - apply styles
+ * - and more.
+ *
+ * **IMPORTANT:**
+ * Make sure to select each item in a new argument, so that surimi can properly figure out lists of selectors.
+ * For example, use `select('.class1', '.class2')` instead of `select('.class1, .class2')`.
+ * When typing in selectors, you will get autocompletion for valid CSS selectors in most editors.
+ */
+export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: TSelectors) {
+  return _select([], Surimi.root, selectors);
+}
 
-    return new SelectorBuilder([{ selector: selectors[0] as string }], Surimi.root) as GetSelectorBuilder<TSelectors>;
-  }
-
-  // As with types, filter out empty strings
-  const selectorItems = selectors
-    .filter(i => i.length > 0)
-    .map(selector => ({ selector })) as SelectorsAsGroup<TSelectors>;
-
-  // TODO: Fix/remove type assertion. Not sure why it's needed.
-  return new SelectorBuilder([{ group: selectorItems }] as any, Surimi.root) as GetSelectorBuilder<TSelectors>;
+/**
+ * Create a media query builder to apply selections and styles within a media query.
+ *
+ * Use the returned MediaQueryBuilder to define the media query parameters using the provided methods,
+ * and then select elements within the media query using the `select()` method.
+ *
+ * @example
+ * ```ts
+ * const mobileContainer = media()
+ *   .minWidth('768px')
+ *   .maxWidth('1024px')
+ *   .select('.container');
+ *
+ * // The resulting builder will be `SelectorBuilder<"@media (min-width: 768px) (max-width: 1024px) ⤷ .container">`
+ *
+ * mobileContainer.style({
+ *    padding: '20px',
+ * });
+ *
+ * ```
+ */
+export function media() {
+  return new MediaQueryBuilder<'@media'>();
 }

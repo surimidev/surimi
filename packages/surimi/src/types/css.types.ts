@@ -2,7 +2,7 @@ import type csstype from 'csstype';
 
 import type { CustomProperty } from '#lib/api/custom-property';
 
-import { ExcludeByPattern, IncludeByPattern } from './util.types';
+import type { ExcludeByPattern, IncludeByPattern } from './util.types';
 
 /**
  * Not all at rules are the same. This type represents at rules that contain style rules.
@@ -26,6 +26,53 @@ export type WithoutAtPrefix<T extends string> = T extends `@${infer R}` ? R : T;
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Next-sibling_combinator
  */
 export type SelectorRelationship = 'child' | 'descendant' | 'sibling' | 'adjacent';
+
+/**
+ * The spec defines some media descriptors as discrete values, and some as ranged. See
+ * See https://drafts.csswg.org/mediaqueries/#media-descriptor-table
+ */
+export type DiscreteMediaDescriptor =
+  | 'any-hover'
+  | 'any-pointer'
+  | 'color-gamut'
+  | 'grid'
+  | 'hover'
+  | 'overflow-block'
+  | 'overflow-inline'
+  | 'pointer'
+  | 'scan'
+  | 'update';
+
+/**
+ * The spec defines some media descriptors as discrete values, and some as ranged. See
+ * See https://drafts.csswg.org/mediaqueries/#media-descriptor-table
+ */
+export type BaseRangedMediaDescriptor =
+  | 'aspect-ratio'
+  | 'color'
+  | 'color-index'
+  | 'device-aspect-ratio'
+  | 'device-height'
+  | 'device-width'
+  | 'height'
+  | 'monochrome'
+  | 'resolution'
+  | 'width';
+
+export type RangedMediaDescriptor =
+  | BaseRangedMediaDescriptor
+  | `min-${BaseRangedMediaDescriptor}`
+  | `max-${BaseRangedMediaDescriptor}`;
+
+export type MediaQueryRangeOperator = '<' | '<=' | '=' | '>=' | '>';
+/**
+ * All possible media descriptors, including prefixed min- and max- variants for ranged descriptors.
+ */
+export type MediaDescriptor = DiscreteMediaDescriptor | RangedMediaDescriptor;
+
+export type MediaOperator = 'not' | 'and' | 'only' | 'or';
+
+export type MediaType = 'all' | 'print' | 'screen';
 
 /**
  * An object of CSS properties and their values.
@@ -55,7 +102,9 @@ export type VendorPrefixPattern =
   | `-moz-${string}`
   | `-ms-${string}`
   | `-o-${string}`
-  | `-khtml-${string}`;
+  | `-khtml-${string}`
+  | `-apple-${string}`
+  | `-x-moz-${string}`;
 
 /**
  * pseudo-elements without browser-specific prefixes.

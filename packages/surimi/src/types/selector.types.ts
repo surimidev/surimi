@@ -5,9 +5,7 @@
  * For example, we don't want users to be able to add pseudo elements to 'select()' calls.
  */
 
-import { SelectorBuilder } from '#lib/builders/selector.builder';
-
-import { HtmlAttributesWithoutBrackets } from './css.types';
+import type { HtmlAttributesWithoutBrackets } from './css.types';
 
 /**
  * Type for class selectors (.className)
@@ -40,15 +38,15 @@ type SimpleAttributeSelector = `[${HtmlAttributesWithoutBrackets}]` | (`[${strin
  * Gives type hints for known HTML attributes, but also allows custom attributes.
  */
 type MatchingAttributeSelector =
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}=${string}]`
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}~=${string}]`
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}|=${string}]`
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}^=${string}]`
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}$=${string}]`
-  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}*=${string}]`;
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}~=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}|=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}^=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}$=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (string & {})}*=${string}]`;
 
 /**
- * @deprecated It works, but it seems to be VERY heavy on the CPU right now. Needs to be optimized and tested before using in production
+ * @warning **WARNING** It works, but it seems to be VERY heavy on the CPU right now. Needs to be optimized and tested before using in production
  *
  * A string literal type that only allows valid CSS selectors according to surimi rules.
  *
@@ -93,6 +91,9 @@ export type SelectorsAsGroup<TSelectors extends string[]> = {
   [K in keyof TSelectors]: TSelectors[K] extends string ? { selector: TSelectors[K] } : never;
 };
 
+/**
+ * Join multiple selector strings into a single selector string, separated by commas.
+ */
 export type JoinSelectors<T extends string[]> = T extends []
   ? ''
   : T extends [infer F extends string]
@@ -106,13 +107,14 @@ export type JoinSelectors<T extends string[]> = T extends []
           : `${F}, ${JoinSelectors<R>}`
       : string;
 
-export type GetSelectorBuilder<T extends string[]> = T extends []
-  ? never
+/**
+ * Similar to {@link JoinSelectors}, but when more than one selector is provided,
+ * the result is wrapped in a group [...].
+ */
+export type JoinSelectorsAsGroup<T extends string[]> = T extends []
+  ? ''
   : T extends [infer F extends string]
-    ? // Don't allow empty strings for single-item arrays
-      F extends ''
-      ? never
-      : SelectorBuilder<F>
-    : T extends [infer F extends string, ...infer R extends string[]]
-      ? SelectorBuilder<`[${JoinSelectors<[F, ...R]>}]`>
-      : never;
+    ? F
+    : T extends [string, ...string[]]
+      ? `[${JoinSelectors<T>}]`
+      : string;

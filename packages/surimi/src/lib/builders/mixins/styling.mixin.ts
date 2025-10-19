@@ -14,8 +14,6 @@ import { CoreBuilder } from '../core.builder';
  * - Creating the correct rule, potentially scoped under at rules etc.
  */
 export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBuildContextFromString<TContext>> {
-  public context!: ExtractBuildContextFromString<TContext>;
-
   /**
    * Get or create the PostCSS rule(s) for the current selector context.
    * Used by the `style()` method to apply CSS properties to the root postcss AST.

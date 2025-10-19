@@ -1,7 +1,7 @@
 import type { CoreBuilder } from '#lib/builders/core.builder';
-import { ExtractBuildContextFromString } from '#types/builder.types';
+import type { ExtractBuildContextFromString } from '#types/builder.types';
 
-export * from './stylable.mixin';
+export * from './styling.mixin';
 export * from './navigation.mixin';
 export * from './pseudo-classes.mixin';
 export * from './pseudo-elements.mixin';

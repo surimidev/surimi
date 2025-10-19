@@ -1,6 +1,6 @@
 import type { ExtractBuildContextFromString } from '#types/builder.types';
-import { BasePseudoClasses, BasePseudoElements } from '#types/css.types';
-import { KebabCaseToCamelCase, StripColons } from '#types/util.types';
+import type { BasePseudoClasses } from '#types/css.types';
+import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
 
 import { CoreBuilder } from '../core.builder';
 import { SelectorBuilder } from '../selector.builder';
@@ -20,8 +20,8 @@ export class WithPseudoClasses<TContext extends string>
   protected createPseudoClass<TPseudoClass extends string>(
     pseudoClass: TPseudoClass,
   ): SelectorBuilder<`${TContext}${TPseudoClass}`> {
-    return new SelectorBuilder<`${TContext}${TPseudoClass}`>(
-      [...this.context, { selector: pseudoClass, relation: 'pseudo-class' }] as any,
+    return new SelectorBuilder(
+      [...this.context, { selector: pseudoClass, relation: 'pseudo-class' }] as never,
       this.postcssRoot,
     );
   }

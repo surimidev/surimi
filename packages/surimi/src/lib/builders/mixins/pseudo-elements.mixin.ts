@@ -1,6 +1,6 @@
 import type { ExtractBuildContextFromString } from '#types/builder.types';
-import { BasePseudoElements } from '#types/css.types';
-import { KebabCaseToCamelCase, StripColons } from '#types/util.types';
+import type { BasePseudoElements } from '#types/css.types';
+import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
 
 import { CoreBuilder } from '../core.builder';
 import { SelectorBuilder } from '../selector.builder';
@@ -21,7 +21,8 @@ export class WithPseudoElements<TContext extends string>
     pseudoElement: TPseudoElement,
   ): SelectorBuilder<`${TContext}${TPseudoElement}`> {
     return new SelectorBuilder<`${TContext}${TPseudoElement}`>(
-      [...this.context, { selector: pseudoElement, relation: 'pseudo-element' }] as any,
+      // TODO: Fix typing
+      [...this.context, { selector: pseudoElement, relation: 'pseudo-element' }] as never,
       this.postcssRoot,
     );
   }

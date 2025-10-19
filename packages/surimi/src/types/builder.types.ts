@@ -34,7 +34,7 @@
  * - "::" to denote pseudo-elements
  */
 
-import type { NestableAtRule, SelectorRelationship, WithoutAtPrefix } from '#types/css.types';
+import type { NestableAtRule, SelectorRelationship } from '#types/css.types';
 
 /**
  * Used to add at-rules to the builder context. These will be combined when generating the PostCSS AST.
@@ -200,6 +200,8 @@ export type ExtractContextString<TContexts extends BuilderContext> = TContexts e
  * //  { selector: '.icon'; relation: 'child' },
  * // ]
  */
+// TODO: Add a way to detect 'incomplete' media queries, such as ones that don't have any parameters yet
+// We could check if there is an at rule, but no `⤷` symbol, and in that case have a '...' placeholder?
 export type ExtractBuildContextFromString<T extends string> = T extends '' ? [] : ExtractBuildContextItem<T>;
 
 /**

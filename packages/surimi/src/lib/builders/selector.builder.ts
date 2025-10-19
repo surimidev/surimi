@@ -2,7 +2,7 @@ import { mix } from 'ts-mixer';
 
 import { CoreBuilder } from './core.builder';
 import { WithNavigation, WithPseudoClasses, WithPseudoElements, WithStyling } from './mixins';
-import { ExtractBuildContextFromString } from '#types/builder.types';
+import type { ExtractBuildContextFromString } from '#types/builder.types';
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -17,8 +17,4 @@ export interface SelectorBuilder<T extends string>
  * You usually don't instantiate this class directly, but rather start from a helper function like `select()`.
  */
 @mix(WithNavigation, WithStyling, WithPseudoClasses, WithPseudoElements)
-export class SelectorBuilder<T extends string> extends CoreBuilder<ExtractBuildContextFromString<T>> {
-  public test() {
-    return this.style({ color: 'red' });
-  }
-}
+export class SelectorBuilder<T extends string> extends CoreBuilder<ExtractBuildContextFromString<T>> {}
