@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s, { select } from '../../src/index';
+import { select, Surimi } from '../../src/index';
 
 describe('Real-world Scenarios', () => {
   beforeEach(() => {
-    s.clear();
+    Surimi.clear();
   });
 
   describe('Complex Component Systems', () => {
@@ -45,7 +45,7 @@ describe('Real-world Scenarios', () => {
         margin: '0.5rem',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;
@@ -91,7 +91,7 @@ describe('Real-world Scenarios', () => {
       });
 
       // Typography
-      select('h1, h2, h3, h4, h5, h6').style({
+      select('h1', 'h2', 'h3', 'h4', 'h5', 'h6').style({
         margin: '0 0 1rem 0',
         fontWeight: '600',
         lineHeight: '1.2',
@@ -114,7 +114,7 @@ describe('Real-world Scenarios', () => {
         textDecoration: 'underline',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 html {
     box-sizing: border-box;
     font-size: 16px;
@@ -192,7 +192,7 @@ a:hover {
         backgroundColor: '#2563eb',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .btn {
     padding: 0.5rem 1rem;
     background-color: #e5e7eb;
@@ -245,7 +245,7 @@ a:hover {
         outlineOffset: '2px',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .input:focus:hover {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1)
@@ -305,7 +305,7 @@ a:hover {
         display: 'none',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .container {
     width: 100%;
     padding: 1rem
@@ -365,7 +365,7 @@ h1 {
         transition: 'outline 0.2s ease',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 1024px) {
     .btn:hover {
         transform: scale(1.05);
@@ -399,7 +399,7 @@ h1 {
           display: 'none',
         });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (max-width: 600px) and (min-height: 200px) {
     html .button:hover > .icon:where(.svg) {
         display: none
@@ -442,7 +442,7 @@ h1 {
       media('(min-width: 768px)').select('.md\\:flex').style({ display: 'flex' });
       media('(min-width: 1024px)').select('.lg\\:text-xl').style({ fontSize: '1.25rem' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .p-4 {
     padding: 1rem
 }

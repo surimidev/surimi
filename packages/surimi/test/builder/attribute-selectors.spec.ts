@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s, { select } from '../../src/index';
+import { select, Surimi } from '../../src/index';
 
 describe('Attribute Selectors', () => {
   beforeEach(() => {
-    s.clear();
+    Surimi.clear();
   });
 
   describe('.attr() - Attribute exists', () => {
     it('should create attribute existence selector', () => {
       select('input').attr('required').style({ borderColor: 'red' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[required] {
     border-color: red
 }`);
@@ -20,7 +20,7 @@ input[required] {
     it('should work with complex selectors', () => {
       select('.form').child('input').attr('data-validate').style({ position: 'relative' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .form > input[data-validate] {
     position: relative
 }`);
@@ -31,7 +31,7 @@ input[required] {
     it('should create exact match attribute selector', () => {
       select('input').attr('type').equals('text').style({ padding: '0.5rem' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[type="text"] {
     padding: 0.5rem
 }`);
@@ -40,7 +40,7 @@ input[type="text"] {
     it('should work with data attributes', () => {
       select('.component').attr('data-theme').equals('dark').style({ backgroundColor: '#333' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .component[data-theme="dark"] {
     background-color: #333
 }`);
@@ -49,7 +49,7 @@ input[type="text"] {
     it('should handle special characters in values', () => {
       select('.btn').attr('data-action').equals('save:form').style({ color: 'green' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .btn[data-action="save:form"] {
     color: green
 }`);
@@ -60,7 +60,7 @@ input[type="text"] {
     it('should create starts-with attribute selector', () => {
       select('input').attr('name').startsWith('user').style({ backgroundColor: '#f0f0f0' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[name^="user"] {
     background-color: #f0f0f0
 }`);
@@ -69,7 +69,7 @@ input[name^="user"] {
     it('should work with class attributes', () => {
       select('div').attr('class').startsWith('btn-').style({ cursor: 'pointer' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 div[class^="btn-"] {
     cursor: pointer
 }`);
@@ -80,7 +80,7 @@ div[class^="btn-"] {
     it('should create ends-with attribute selector', () => {
       select('img').attr('src').endsWith('.jpg').style({ border: '1px solid gray' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 img[src$=".jpg"] {
     border: 1px solid gray
 }`);
@@ -89,7 +89,7 @@ img[src$=".jpg"] {
     it('should work with href attributes', () => {
       select('a').attr('href').endsWith('.pdf').style({ textDecoration: 'none' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 a[href$=".pdf"] {
     text-decoration: none
 }`);
@@ -100,7 +100,7 @@ a[href$=".pdf"] {
     it('should create contains attribute selector', () => {
       select('input').attr('placeholder').contains('email').style({ fontStyle: 'italic' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[placeholder*="email"] {
     font-style: italic
 }`);
@@ -109,7 +109,7 @@ input[placeholder*="email"] {
     it('should work with title attributes', () => {
       select('span').attr('title').contains('tooltip').style({ position: 'relative' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 span[title*="tooltip"] {
     position: relative
 }`);
@@ -124,7 +124,7 @@ span[title*="tooltip"] {
         .attr('required')
         .style({ borderColor: 'red', backgroundColor: '#ffe6e6' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[type="text"][required] {
     border-color: red;
     background-color: #ffe6e6
@@ -141,7 +141,7 @@ input[type="text"][required] {
         .hover()
         .style({ boxShadow: '0 0 5px blue' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .form > input[type="email"][data-validate="true"]:hover {
     box-shadow: 0 0 5px blue
 }`);
@@ -152,7 +152,7 @@ input[type="text"][required] {
     it('should work with hover', () => {
       select('input').attr('type').equals('submit').hover().style({ backgroundColor: 'darkblue' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[type="submit"]:hover {
     background-color: darkblue
 }`);
@@ -161,7 +161,7 @@ input[type="submit"]:hover {
     it('should work with focus', () => {
       select('input').attr('required').focus().style({ outline: '2px solid blue' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input[required]:focus {
     outline: 2px solid blue
 }`);
@@ -170,7 +170,7 @@ input[required]:focus {
     it('should work with disabled', () => {
       select('button').attr('type').equals('button').disabled().style({ opacity: '0.3' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 button[type="button"]:disabled {
     opacity: 0.3
 }`);
@@ -181,7 +181,7 @@ button[type="button"]:disabled {
     it('should work with .not()', () => {
       select('input').not('[type="hidden"]').style({ display: 'block' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 input:not([type="hidden"]) {
     display: block
 }`);
@@ -190,7 +190,7 @@ input:not([type="hidden"]) {
     it('should work inside .is()', () => {
       select('.field').is('input[required], textarea[required]').style({ borderLeft: '3px solid red' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .field:is(input[required], textarea[required]) {
     border-left: 3px solid red
 }`);

@@ -4,7 +4,7 @@ import s, { select } from '../../src/index';
 
 describe('Enhanced Navigation', () => {
   beforeEach(() => {
-    s.clear();
+    Surimi.clear();
   });
 
   describe('.parent() - Navigate back to parent selector', () => {
@@ -17,7 +17,7 @@ describe('Enhanced Navigation', () => {
       // Navigate back to parent and apply different styles
       parentBuilder.parent().style({ padding: '1rem' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .container > .item {
     display: flex
 }
@@ -38,7 +38,7 @@ describe('Enhanced Navigation', () => {
       // Navigate back to root
       builder.parent().parent().style({ margin: '2rem' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .wrapper > .container > .item {
     font-size: 14px
 }
@@ -57,7 +57,7 @@ describe('Enhanced Navigation', () => {
       builder.parent().style({ listStyle: 'none' });
       builder.parent().parent().style({ width: '250px' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .sidebar .menu .item {
     border-radius: 4px
 }
@@ -75,7 +75,7 @@ describe('Enhanced Navigation', () => {
       builder.style({ outline: '2px solid blue' });
       builder.parent().style({ backgroundColor: '#fff' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .form > input[type="text"]:focus {
     outline: 2px solid blue
 }
@@ -101,7 +101,7 @@ describe('Enhanced Navigation', () => {
       // Navigate back to root
       rootBuilder.root().style({ minHeight: '100vh' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .app > .main > .content > .article {
     line-height: 1.6
 }
@@ -116,7 +116,7 @@ describe('Enhanced Navigation', () => {
       builder.style({ fontWeight: 'bold' });
       builder.root().style({ display: 'grid' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .dashboard > .widget.active .title:first-child {
     font-weight: bold
 }
@@ -131,7 +131,7 @@ describe('Enhanced Navigation', () => {
       builder.style({ borderColor: 'red' });
       builder.root().style({ maxWidth: '600px' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .form > input[required]:hover {
     border-color: red
 }
@@ -158,7 +158,7 @@ describe('Enhanced Navigation', () => {
       // But navigation should still work
       builder.parent().style({ padding: '1rem' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .container > .item {
     color: blue
 }
@@ -182,7 +182,7 @@ describe('Enhanced Navigation', () => {
       // Navigate to root
       builder.root().style({ margin: 'auto' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .wrapper > .box > .content {
     font-size: 16px;
     line-height: 1.5
@@ -203,7 +203,7 @@ describe('Enhanced Navigation', () => {
       builder.style({ flexDirection: 'row' });
       builder.parent().style({ display: 'flex' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 768px) {
     .container > .item {
         flex-direction: row
@@ -220,7 +220,7 @@ describe('Enhanced Navigation', () => {
       builder.style({ fontSize: '14px' });
       builder.root().style({ width: '100%' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (max-width: 600px) {
     .sidebar > .menu > .item {
         font-size: 14px

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s, { select } from '../../src/index';
+import { select, Surimi } from '../../src/index';
 
 describe('Media Queries', () => {
   beforeEach(() => {
-    s.clear();
+    Surimi.clear();
   });
 
   describe('Simple Media Queries', () => {
@@ -13,7 +13,7 @@ describe('Media Queries', () => {
         flexDirection: 'row',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 768px) {
     .container {
         flex-direction: row
@@ -26,7 +26,7 @@ describe('Media Queries', () => {
         display: 'block',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (max-width: 767px) {
     .mobile-nav {
         display: block
@@ -39,7 +39,7 @@ describe('Media Queries', () => {
         columns: 2,
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 768px) and (max-width: 1024px) {
     .tablet-layout {
         columns: 2
@@ -52,7 +52,7 @@ describe('Media Queries', () => {
         display: 'none',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media print {
     .no-print {
         display: none
@@ -65,7 +65,7 @@ describe('Media Queries', () => {
     it('should combine basic selectors with pseudo-classes and media queries', () => {
       media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 768px) {
     .button:hover {
         background-color: blue
@@ -80,7 +80,7 @@ describe('Media Queries', () => {
         fontSize: '18px',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-width: 600px) and (max-width: 1200px) {
     .responsive {
         font-size: 18px
@@ -93,7 +93,7 @@ describe('Media Queries', () => {
         display: 'block',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (orientation: landscape) {
     .landscape-only {
         display: block
@@ -106,7 +106,7 @@ describe('Media Queries', () => {
         border: '1px solid black',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 @media (min-resolution: 2dppx) {
     .high-res {
         border: 1px solid black

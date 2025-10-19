@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s, { select } from '../../src/index';
+import { select, Surimi } from '../../src/index';
 
 describe('Nesting and Complex Combinations', () => {
   beforeEach(() => {
-    s.clear();
+    Surimi.clear();
   });
 
   describe('Basic Selector Relationships', () => {
     it('should support direct child combinator', () => {
       select('.card').child('.title').style({ fontSize: '1.2em' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .card > .title {
     font-size: 1.2em
 }`);
@@ -20,7 +20,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support descendant combinator', () => {
       select('.nav').descendant('a').style({ textDecoration: 'none' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .nav a {
     text-decoration: none
 }`);
@@ -31,7 +31,7 @@ describe('Nesting and Complex Combinations', () => {
         padding: '0.5rem',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .sidebar > .menu > .item {
     padding: 0.5rem
 }`);
@@ -42,7 +42,7 @@ describe('Nesting and Complex Combinations', () => {
         fontWeight: 'bold',
       });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .main .section > .header {
     font-weight: bold
 }`);
@@ -53,7 +53,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should handle complex selector chains', () => {
       select('.nav').child('.item').hover().child('a').style({ color: 'white' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .nav > .item:hover > a {
     color: white
 }`);
@@ -64,7 +64,7 @@ describe('Nesting and Complex Combinations', () => {
       select('.multi-style').hover().style({ backgroundColor: 'gray' });
       media('(max-width: 768px)').select('.multi-style').style({ flexDirection: 'column' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .multi-style {
     display: flex
 }
@@ -81,7 +81,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support multiple chained style calls', () => {
       select('.complex').style({ color: 'red' }).style({ border: '1px solid black' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .complex {
     color: red;
     border: 1px solid black
@@ -91,7 +91,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support multiple style calls in one chain', () => {
       select('.complex').style({ color: 'red' }).hover().style({ color: 'blue' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .complex {
     color: red
 }
@@ -105,7 +105,7 @@ describe('Nesting and Complex Combinations', () => {
       select('.complex').hover().style({ color: 'blue' });
       media('(max-width: 600px)').select('.complex').style({ color: 'green' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .complex {
     color: red
 }
@@ -124,7 +124,7 @@ describe('Nesting and Complex Combinations', () => {
       select('.parent').child('a').hover().style({ color: 'blue' });
       media('(max-width: 600px)').select('.parent').child('a').style({ color: 'red' });
 
-      expect(s.build()).toBe(`\
+      expect(Surimi.build()).toBe(`\
 .parent > a {
     color: black
 }

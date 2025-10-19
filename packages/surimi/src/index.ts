@@ -1,1 +1,2 @@
-export { Surimi as default, select, media } from './surimi';
+export { property } from '#lib/api/index';
+export { Surimi, select } from './surimi';

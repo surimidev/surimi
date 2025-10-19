@@ -13,7 +13,11 @@ import type { CamelCaseToKebabCase } from '#types/util.types';
  * Formats a camelCase property name to kebab-case for CSS
  */
 export function formatPropertyName<T extends string>(property: T): CamelCaseToKebabCase<T> {
-  return property.replace(/([A-Z])/g, '-$1').toLowerCase() as CamelCaseToKebabCase<T>;
+  if (property.length === 0) return property as never;
+
+  let formatted = property[0]?.toLowerCase() + property.slice(1);
+
+  return formatted.replace(/([A-Z])/g, '-$1').toLowerCase() as CamelCaseToKebabCase<T>;
 }
 
 /**
