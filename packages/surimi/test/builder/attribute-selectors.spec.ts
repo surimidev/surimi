@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s from '../../src/index';
+import s, { select } from '../../src/index';
 
 describe('Attribute Selectors', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Attribute Selectors', () => {
 
   describe('.attr() - Attribute exists', () => {
     it('should create attribute existence selector', () => {
-      s.select('input').attr('required').style({ borderColor: 'red' });
+      select('input').attr('required').style({ borderColor: 'red' });
 
       expect(s.build()).toBe(`\
 input[required] {
@@ -18,7 +18,7 @@ input[required] {
     });
 
     it('should work with complex selectors', () => {
-      s.select('.form').child('input').attr('data-validate').style({ position: 'relative' });
+      select('.form').child('input').attr('data-validate').style({ position: 'relative' });
 
       expect(s.build()).toBe(`\
 .form > input[data-validate] {
@@ -29,7 +29,7 @@ input[required] {
 
   describe('.attr().equals() - Exact attribute match', () => {
     it('should create exact match attribute selector', () => {
-      s.select('input').attr('type').equals('text').style({ padding: '0.5rem' });
+      select('input').attr('type').equals('text').style({ padding: '0.5rem' });
 
       expect(s.build()).toBe(`\
 input[type="text"] {
@@ -38,7 +38,7 @@ input[type="text"] {
     });
 
     it('should work with data attributes', () => {
-      s.select('.component').attr('data-theme').equals('dark').style({ backgroundColor: '#333' });
+      select('.component').attr('data-theme').equals('dark').style({ backgroundColor: '#333' });
 
       expect(s.build()).toBe(`\
 .component[data-theme="dark"] {
@@ -47,7 +47,7 @@ input[type="text"] {
     });
 
     it('should handle special characters in values', () => {
-      s.select('.btn').attr('data-action').equals('save:form').style({ color: 'green' });
+      select('.btn').attr('data-action').equals('save:form').style({ color: 'green' });
 
       expect(s.build()).toBe(`\
 .btn[data-action="save:form"] {
@@ -58,7 +58,7 @@ input[type="text"] {
 
   describe('.attr().startsWith() - Starts with match', () => {
     it('should create starts-with attribute selector', () => {
-      s.select('input').attr('name').startsWith('user').style({ backgroundColor: '#f0f0f0' });
+      select('input').attr('name').startsWith('user').style({ backgroundColor: '#f0f0f0' });
 
       expect(s.build()).toBe(`\
 input[name^="user"] {
@@ -67,7 +67,7 @@ input[name^="user"] {
     });
 
     it('should work with class attributes', () => {
-      s.select('div').attr('class').startsWith('btn-').style({ cursor: 'pointer' });
+      select('div').attr('class').startsWith('btn-').style({ cursor: 'pointer' });
 
       expect(s.build()).toBe(`\
 div[class^="btn-"] {
@@ -78,7 +78,7 @@ div[class^="btn-"] {
 
   describe('.attr().endsWith() - Ends with match', () => {
     it('should create ends-with attribute selector', () => {
-      s.select('img').attr('src').endsWith('.jpg').style({ border: '1px solid gray' });
+      select('img').attr('src').endsWith('.jpg').style({ border: '1px solid gray' });
 
       expect(s.build()).toBe(`\
 img[src$=".jpg"] {
@@ -87,7 +87,7 @@ img[src$=".jpg"] {
     });
 
     it('should work with href attributes', () => {
-      s.select('a').attr('href').endsWith('.pdf').style({ textDecoration: 'none' });
+      select('a').attr('href').endsWith('.pdf').style({ textDecoration: 'none' });
 
       expect(s.build()).toBe(`\
 a[href$=".pdf"] {
@@ -98,7 +98,7 @@ a[href$=".pdf"] {
 
   describe('.attr().contains() - Contains match', () => {
     it('should create contains attribute selector', () => {
-      s.select('input').attr('placeholder').contains('email').style({ fontStyle: 'italic' });
+      select('input').attr('placeholder').contains('email').style({ fontStyle: 'italic' });
 
       expect(s.build()).toBe(`\
 input[placeholder*="email"] {
@@ -107,7 +107,7 @@ input[placeholder*="email"] {
     });
 
     it('should work with title attributes', () => {
-      s.select('span').attr('title').contains('tooltip').style({ position: 'relative' });
+      select('span').attr('title').contains('tooltip').style({ position: 'relative' });
 
       expect(s.build()).toBe(`\
 span[title*="tooltip"] {
@@ -118,7 +118,7 @@ span[title*="tooltip"] {
 
   describe('Multiple attribute selectors', () => {
     it('should chain multiple attribute selectors', () => {
-      s.select('input')
+      select('input')
         .attr('type')
         .equals('text')
         .attr('required')
@@ -132,7 +132,7 @@ input[type="text"][required] {
     });
 
     it('should work with complex chaining', () => {
-      s.select('.form')
+      select('.form')
         .child('input')
         .attr('type')
         .equals('email')
@@ -150,7 +150,7 @@ input[type="text"][required] {
 
   describe('Attribute selectors with pseudo-classes', () => {
     it('should work with hover', () => {
-      s.select('input').attr('type').equals('submit').hover().style({ backgroundColor: 'darkblue' });
+      select('input').attr('type').equals('submit').hover().style({ backgroundColor: 'darkblue' });
 
       expect(s.build()).toBe(`\
 input[type="submit"]:hover {
@@ -159,7 +159,7 @@ input[type="submit"]:hover {
     });
 
     it('should work with focus', () => {
-      s.select('input').attr('required').focus().style({ outline: '2px solid blue' });
+      select('input').attr('required').focus().style({ outline: '2px solid blue' });
 
       expect(s.build()).toBe(`\
 input[required]:focus {
@@ -168,7 +168,7 @@ input[required]:focus {
     });
 
     it('should work with disabled', () => {
-      s.select('button').attr('type').equals('button').disabled().style({ opacity: '0.3' });
+      select('button').attr('type').equals('button').disabled().style({ opacity: '0.3' });
 
       expect(s.build()).toBe(`\
 button[type="button"]:disabled {
@@ -179,7 +179,7 @@ button[type="button"]:disabled {
 
   describe('Attribute selectors in complex combinations', () => {
     it('should work with .not()', () => {
-      s.select('input').not('[type="hidden"]').style({ display: 'block' });
+      select('input').not('[type="hidden"]').style({ display: 'block' });
 
       expect(s.build()).toBe(`\
 input:not([type="hidden"]) {
@@ -188,7 +188,7 @@ input:not([type="hidden"]) {
     });
 
     it('should work inside .is()', () => {
-      s.select('.field').is('input[required], textarea[required]').style({ borderLeft: '3px solid red' });
+      select('.field').is('input[required], textarea[required]').style({ borderLeft: '3px solid red' });
 
       expect(s.build()).toBe(`\
 .field:is(input[required], textarea[required]) {

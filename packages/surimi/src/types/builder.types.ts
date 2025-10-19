@@ -14,6 +14,13 @@
  *   { pseudoElement: 'after' },
  * ]
  *
+ * Groups of selectors can be represented using square brackets syntax:
+ * "[button, .link] > .icon" would parse to:
+ * [
+ *   { group: [{ selector: 'button' }, { selector: '.link' }] },
+ *   { selector: '.icon', relation: 'child' },
+ * ]
+ *
  * This structured context can then be used by the builder classes to generate the correct PostCSS AST,
  * while also providing type hints to users about what methods are available in the current context.
  *
@@ -21,7 +28,8 @@
  * To achieve this, we use specific delimiters:
  * - " ⤷ " to denote at-rule nesting
  * - " > ", " + ", " ~ ", " " to denote selector relationships (child, adjacent sibling, general sibling, descendant)
- * - ", " to denote multiple selectors
+ * - "[...]" to denote groups of selectors
+ * - ", " to denote multiple selectors (within groups)
  * - ":" to denote pseudo-classes
  * - "::" to denote pseudo-elements
  */
@@ -64,7 +72,8 @@ export type BuilderContextItem =
   | { selector: string; relation?: BuilderContextRelationKind }
   | { pseudoClass: string }
   | { pseudoElement: string }
-  | { atRule: NestableAtRule; params: string };
+  | { atRule: NestableAtRule; params: string }
+  | { group: BuilderContextItem[] };
 
 /**
  * The complete builder context type, represented as an array of context items.
@@ -93,6 +102,7 @@ export type FlatBuilderContext = {
  * type Selector = ExtractContextStringItem<{  selector: 'button' }>; // 'button'
  * type PseudoClass = ExtractContextStringItem<{ pseudoClass: 'hover' }>; // ":hover"
  * type AtRule = ExtractContextStringItem<{ atRule: '@media'; params: '(max-width: 600px)' }>; // "@media (max-width: 600px)"
+ * type Group = ExtractContextStringItem<{ group: [{ selector: 'button' }, { selector: '.link' }] }>; // "[button, .link]"
  */
 export type ExtractContextStringItem<TContext extends BuilderContextItem> = TContext extends {
   selector: infer S;
@@ -118,7 +128,25 @@ export type ExtractContextStringItem<TContext extends BuilderContextItem> = TCon
             ? `${A} ${Params} ⤷ `
             : never
           : never
-        : never;
+        : TContext extends { group: infer G }
+          ? G extends BuilderContextItem[]
+            ? `[${ExtractGroupString<G>}]`
+            : never
+          : never;
+
+/**
+ * Helper type to extract comma-separated string representation of group items.
+ * Used internally by ExtractContextStringItem for group context items.
+ */
+type ExtractGroupString<TGroupItems extends BuilderContextItem[]> = TGroupItems extends [infer First, ...infer Rest]
+  ? First extends BuilderContextItem
+    ? Rest extends BuilderContextItem[]
+      ? Rest extends []
+        ? `${ExtractContextStringItem<First>}`
+        : `${ExtractContextStringItem<First>}, ${ExtractGroupString<Rest>}`
+      : never
+    : never
+  : '';
 
 /**
  * Recursively build a string representation of the builder context.
@@ -134,6 +162,13 @@ export type ExtractContextStringItem<TContext extends BuilderContextItem> = TCon
  *   { pseudoElement: 'after' },
  * ]
  * >; // "@media (max-width: 600px) ⤷ button > .icon:hover::after"
+ *
+ * type GroupContext = ExtractContextString<
+ * [
+ *   { group: [{ selector: 'button' }, { selector: '.link' }] },
+ *   { selector: '.icon'; relation: 'child' },
+ * ]
+ * >; // "[button, .link] > .icon"
  */
 export type ExtractContextString<TContexts extends BuilderContext> = TContexts extends [infer First, ...infer Rest]
   ? First extends BuilderContextItem
@@ -157,6 +192,12 @@ export type ExtractContextString<TContexts extends BuilderContext> = TContexts e
  * //  { selector: '.icon'; relation: 'child' },
  * //  { pseudoClass: 'hover' },
  * //  { pseudoElement: 'after' },
+ * // ]
+ *
+ * type GroupContext = ExtractBuildContextFromString<"[button, .link] > .icon">;
+ * // [
+ * //  { group: [{ selector: 'button' }, { selector: '.link' }] },
+ * //  { selector: '.icon'; relation: 'child' },
  * // ]
  */
 export type ExtractBuildContextFromString<T extends string> = T extends '' ? [] : ExtractBuildContextItem<T>;
@@ -243,6 +284,7 @@ type ParseAtRule<AtRule extends string, Params extends string, Rest extends stri
  * Parses a single string fragment into a BuilderContextItem array.
  * This type handles the parsing of context strings, including:
  * - At-rules with their parameters (e.g., "@media (max-width: 600px) ⤷ button")
+ * - Groups of selectors (e.g., "[button, .link]")
  * - Selectors with optional relations (e.g., "button > .icon", "button")
  * - Pseudo-classes (e.g., "button:hover")
  * - Pseudo-elements (e.g., "button::after")
@@ -254,33 +296,57 @@ export type ExtractBuildContextItem<T extends string> =
   // Handle at-rules: "@media (max-width: 600px) ⤷ rest"
   T extends `${infer AtRule} ${infer Params} ⤷ ${infer Rest}`
     ? ParseAtRule<AtRule, Params, Rest>
-    : // Handle pseudo-elements (higher precedence): "selector::element rest"
-      T extends `${infer Before}::${infer ElementAndRest}`
-      ? ParsePseudoElement<Before, ElementAndRest>
-      : // Handle pseudo-classes: "selector:class rest"
-        T extends `${infer Before}:${infer ClassAndRest}`
-        ? ParsePseudoClass<Before, ClassAndRest>
-        : // Handle relation-based selectors
-          T extends `${infer Before} > ${infer After}`
-          ? ParseWithRelation<Before, After, 'child'>
-          : T extends `${infer Before} + ${infer After}`
-            ? ParseWithRelation<Before, After, 'adjacent'>
-            : T extends `${infer Before} ~ ${infer After}`
-              ? ParseWithRelation<Before, After, 'sibling'>
-              : // Handle descendant relation (space separation)
-                T extends `${infer Before} ${infer After}`
-                ? // Avoid conflicts with at-rule syntax and special characters
-                  Before extends `${string} ⤷`
-                  ? never
-                  : After extends `>${string}` | `+${string}` | `~${string}`
+    : // Handle groups: "[selector1, selector2] rest"
+      T extends `[${infer GroupContent}]${infer Rest}`
+      ? Rest extends ''
+        ? [{ group: ParseGroupContent<GroupContent> }]
+        : Rest extends ` > ${infer After}`
+          ? [{ group: ParseGroupContent<GroupContent> }, ...ExtractBuildContextItemWithRelation<After, 'child'>]
+          : Rest extends ` + ${infer After}`
+            ? [{ group: ParseGroupContent<GroupContent> }, ...ExtractBuildContextItemWithRelation<After, 'adjacent'>]
+            : Rest extends ` ~ ${infer After}`
+              ? [{ group: ParseGroupContent<GroupContent> }, ...ExtractBuildContextItemWithRelation<After, 'sibling'>]
+              : Rest extends ` ${infer After}`
+                ? [
+                    { group: ParseGroupContent<GroupContent> },
+                    ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
+                  ]
+                : never
+      : // Handle pseudo-elements (higher precedence): "selector::element rest"
+        T extends `${infer Before}::${infer ElementAndRest}`
+        ? ParsePseudoElement<Before, ElementAndRest>
+        : // Handle pseudo-classes: "selector:class rest"
+          T extends `${infer Before}:${infer ClassAndRest}`
+          ? ParsePseudoClass<Before, ClassAndRest>
+          : // Handle relation-based selectors
+            T extends `${infer Before} > ${infer After}`
+            ? ParseWithRelation<Before, After, 'child'>
+            : T extends `${infer Before} + ${infer After}`
+              ? ParseWithRelation<Before, After, 'adjacent'>
+              : T extends `${infer Before} ~ ${infer After}`
+                ? ParseWithRelation<Before, After, 'sibling'>
+                : // Handle descendant relation (space separation)
+                  T extends `${infer Before} ${infer After}`
+                  ? // Avoid conflicts with at-rule syntax and special characters
+                    Before extends `${string} ⤷`
                     ? never
-                    : ParseWithRelation<Before, After, 'descendant'>
-                : // Handle simple selectors
-                  T extends string
-                  ? T extends ''
-                    ? []
-                    : [{ selector: T }]
-                  : never;
+                    : After extends `>${string}` | `+${string}` | `~${string}`
+                      ? never
+                      : ParseWithRelation<Before, After, 'descendant'>
+                  : // Handle simple selectors
+                    T extends string
+                    ? T extends ''
+                      ? []
+                      : [{ selector: T }]
+                    : never;
+
+/**
+ * Helper type to parse the content inside group brackets into an array of BuilderContextItem.
+ * Handles comma-separated selectors within groups like "button, .link, span".
+ */
+type ParseGroupContent<T extends string> = T extends `${infer First}, ${infer Rest}`
+  ? [...ExtractBuildContextItem<First>, ...ParseGroupContent<Rest>]
+  : ExtractBuildContextItem<T>;
 
 /**
  * Helper type to parse a selector string that should have a specific relation to the previous selector.

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s from '../../src/index';
+import s, { select } from '../../src/index';
 
 describe('Media Queries', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Media Queries', () => {
 
   describe('Simple Media Queries', () => {
     it('should support basic media queries', () => {
-      s.media('(min-width: 768px)').select('.container').style({
+      media('(min-width: 768px)').select('.container').style({
         flexDirection: 'row',
       });
 
@@ -22,7 +22,7 @@ describe('Media Queries', () => {
     });
 
     it('should support max-width media queries', () => {
-      s.media('(max-width: 767px)').select('.mobile-nav').style({
+      media('(max-width: 767px)').select('.mobile-nav').style({
         display: 'block',
       });
 
@@ -35,7 +35,7 @@ describe('Media Queries', () => {
     });
 
     it('should support complex media query conditions', () => {
-      s.media('(min-width: 768px) and (max-width: 1024px)').select('.tablet-layout').style({
+      media('(min-width: 768px) and (max-width: 1024px)').select('.tablet-layout').style({
         columns: 2,
       });
 
@@ -48,7 +48,7 @@ describe('Media Queries', () => {
     });
 
     it('should support print media queries', () => {
-      s.media('print').select('.no-print').style({
+      media('print').select('.no-print').style({
         display: 'none',
       });
 
@@ -63,7 +63,7 @@ describe('Media Queries', () => {
 
   describe('Media Query Chaining', () => {
     it('should combine basic selectors with pseudo-classes and media queries', () => {
-      s.media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
+      media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
 
       expect(s.build()).toBe(`\
 @media (min-width: 768px) {
@@ -76,7 +76,7 @@ describe('Media Queries', () => {
 
   describe('Media query builder', () => {
     it('should support minWidth and maxWidth methods', () => {
-      s.media().minWidth('600px').maxWidth('1200px').select('.responsive').style({
+      media().minWidth('600px').maxWidth('1200px').select('.responsive').style({
         fontSize: '18px',
       });
 
@@ -89,7 +89,7 @@ describe('Media Queries', () => {
     });
 
     it('should support orientation method', () => {
-      s.media().orientation('landscape').select('.landscape-only').style({
+      media().orientation('landscape').select('.landscape-only').style({
         display: 'block',
       });
 
@@ -102,7 +102,7 @@ describe('Media Queries', () => {
     });
 
     it('should support raw method', () => {
-      s.media().raw('(min-resolution: 2dppx)').select('.high-res').style({
+      media().raw('(min-resolution: 2dppx)').select('.high-res').style({
         border: '1px solid black',
       });
 

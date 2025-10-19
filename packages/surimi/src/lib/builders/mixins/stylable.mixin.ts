@@ -17,11 +17,13 @@ export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBui
   public context!: ExtractBuildContextFromString<TContext>;
 
   /**
-   * Get or create the PostCSS rule for the current selector context.
+   * Get or create the PostCSS rule(s) for the current selector context.
    * Used by the `style()` method to apply CSS properties to the root postcss AST.
    *
    * If no existing rule is found for the current selector context, a new one is created and appended either to the postcss root,
    * or to the newly created at-rule container.
+   *
+   * If there are groups of selectors in the context (like `[`.class1`, `#id1`] > .child`), the selectors are combined using the `combineSelectors()` utility function.
    *
    * Selectors, pseudo classes etc. are combined into a complete selector string.
    * If any at-rule (e.g. media query) is present in the context, the rules are created/scoped automatically
@@ -67,7 +69,7 @@ export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBui
     const contextAtRules = (this.context as BuilderContext).filter(item => 'atRule' in item);
 
     if (Object.keys(contextAtRules).length === 0) {
-      throw new Error('`getOrCreateAtRules` was called without any at-rules in context. Unsure what to do.');
+      return undefined;
     }
 
     // The "innermost" at-rule to nest others into.

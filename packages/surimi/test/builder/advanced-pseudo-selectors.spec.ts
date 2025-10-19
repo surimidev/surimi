@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s from '../../src/index';
+import s, { select } from '../../src/index';
 
 describe('Advanced Pseudo-selectors', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Advanced Pseudo-selectors', () => {
 
   describe('.nthChild() - nth-child selector', () => {
     it('should create :nth-child() selector with number', () => {
-      s.select('.item').nthChild(3).style({ backgroundColor: 'yellow' });
+      select('.item').nthChild(3).style({ backgroundColor: 'yellow' });
 
       expect(s.build()).toBe(`\
 .item:nth-child(3) {
@@ -18,7 +18,7 @@ describe('Advanced Pseudo-selectors', () => {
     });
 
     it('should create :nth-child() selector with odd', () => {
-      s.select('tr').nthChild('odd').style({ backgroundColor: '#f0f0f0' });
+      select('tr').nthChild('odd').style({ backgroundColor: '#f0f0f0' });
 
       expect(s.build()).toBe(`\
 tr:nth-child(odd) {
@@ -27,7 +27,7 @@ tr:nth-child(odd) {
     });
 
     it('should create :nth-child() selector with even', () => {
-      s.select('tr').nthChild('even').style({ backgroundColor: 'white' });
+      select('tr').nthChild('even').style({ backgroundColor: 'white' });
 
       expect(s.build()).toBe(`\
 tr:nth-child(even) {
@@ -36,7 +36,7 @@ tr:nth-child(even) {
     });
 
     it('should create :nth-child() selector with formula', () => {
-      s.select('.card').nthChild('2n+1').style({ marginRight: '0' });
+      select('.card').nthChild('2n+1').style({ marginRight: '0' });
 
       expect(s.build()).toBe(`\
 .card:nth-child(2n+1) {
@@ -45,7 +45,7 @@ tr:nth-child(even) {
     });
 
     it('should chain with other pseudo-classes', () => {
-      s.select('.btn').nthChild(2).hover().style({ transform: 'scale(1.05)' });
+      select('.btn').nthChild(2).hover().style({ transform: 'scale(1.05)' });
 
       expect(s.build()).toBe(`\
 .btn:nth-child(2):hover {
@@ -56,7 +56,7 @@ tr:nth-child(even) {
 
   describe('.firstChild() - first-child selector', () => {
     it('should create :first-child selector', () => {
-      s.select('.nav-item').firstChild().style({ marginLeft: '0' });
+      select('.nav-item').firstChild().style({ marginLeft: '0' });
 
       expect(s.build()).toBe(`\
 .nav-item:first-child {
@@ -65,7 +65,7 @@ tr:nth-child(even) {
     });
 
     it('should work with element selectors', () => {
-      s.select('p').firstChild().style({ marginTop: '0' });
+      select('p').firstChild().style({ marginTop: '0' });
 
       expect(s.build()).toBe(`\
 p:first-child {
@@ -74,7 +74,7 @@ p:first-child {
     });
 
     it('should chain with other selectors', () => {
-      s.select('.container').child('div').firstChild().style({ borderTop: 'none' });
+      select('.container').child('div').firstChild().style({ borderTop: 'none' });
 
       expect(s.build()).toBe(`\
 .container > div:first-child {
@@ -85,7 +85,7 @@ p:first-child {
 
   describe('.lastChild() - last-child selector', () => {
     it('should create :last-child selector', () => {
-      s.select('.nav-item').lastChild().style({ marginRight: '0' });
+      select('.nav-item').lastChild().style({ marginRight: '0' });
 
       expect(s.build()).toBe(`\
 .nav-item:last-child {
@@ -94,7 +94,7 @@ p:first-child {
     });
 
     it('should work with element selectors', () => {
-      s.select('p').lastChild().style({ marginBottom: '0' });
+      select('p').lastChild().style({ marginBottom: '0' });
 
       expect(s.build()).toBe(`\
 p:last-child {
@@ -103,7 +103,7 @@ p:last-child {
     });
 
     it('should work in complex selectors', () => {
-      s.select('.sidebar').descendant('ul').child('li').lastChild().style({ borderBottom: 'none' });
+      select('.sidebar').descendant('ul').child('li').lastChild().style({ borderBottom: 'none' });
 
       expect(s.build()).toBe(`\
 .sidebar ul > li:last-child {
@@ -114,7 +114,7 @@ p:last-child {
 
   describe('.nthOfType() - nth-of-type selector', () => {
     it('should create :nth-of-type() selector with number', () => {
-      s.select('h2').nthOfType(1).style({ fontSize: '2rem' });
+      select('h2').nthOfType(1).style({ fontSize: '2rem' });
 
       expect(s.build()).toBe(`\
 h2:nth-of-type(1) {
@@ -123,7 +123,7 @@ h2:nth-of-type(1) {
     });
 
     it('should create :nth-of-type() selector with odd', () => {
-      s.select('article').nthOfType('odd').style({ backgroundColor: '#f9f9f9' });
+      select('article').nthOfType('odd').style({ backgroundColor: '#f9f9f9' });
 
       expect(s.build()).toBe(`\
 article:nth-of-type(odd) {
@@ -132,7 +132,7 @@ article:nth-of-type(odd) {
     });
 
     it('should create :nth-of-type() selector with even', () => {
-      s.select('section').nthOfType('even').style({ padding: '2rem' });
+      select('section').nthOfType('even').style({ padding: '2rem' });
 
       expect(s.build()).toBe(`\
 section:nth-of-type(even) {
@@ -141,7 +141,7 @@ section:nth-of-type(even) {
     });
 
     it('should create :nth-of-type() selector with formula', () => {
-      s.select('img').nthOfType('3n').style({ border: '2px solid blue' });
+      select('img').nthOfType('3n').style({ border: '2px solid blue' });
 
       expect(s.build()).toBe(`\
 img:nth-of-type(3n) {
@@ -150,7 +150,7 @@ img:nth-of-type(3n) {
     });
 
     it('should work with class selectors', () => {
-      s.select('.image').nthOfType(2).style({ float: 'right' });
+      select('.image').nthOfType(2).style({ float: 'right' });
 
       expect(s.build()).toBe(`\
 .image:nth-of-type(2) {
@@ -161,7 +161,7 @@ img:nth-of-type(3n) {
 
   describe('Complex combinations', () => {
     it('should combine multiple nth selectors', () => {
-      s.select('.grid-item').nthChild('odd').nthOfType('even').style({ opacity: '0.8' });
+      select('.grid-item').nthChild('odd').nthOfType('even').style({ opacity: '0.8' });
 
       expect(s.build()).toBe(`\
 .grid-item:nth-child(odd):nth-of-type(even) {
@@ -170,7 +170,7 @@ img:nth-of-type(3n) {
     });
 
     it('should work with other pseudo-classes', () => {
-      s.select('.btn').firstChild().hover().focus().style({
+      select('.btn').firstChild().hover().focus().style({
         outline: '2px solid blue',
         transform: 'translateY(-2px)',
       });
@@ -183,7 +183,7 @@ img:nth-of-type(3n) {
     });
 
     it('should work with attribute selectors', () => {
-      s.select('input').attr('type').equals('checkbox').nthChild(2).style({ marginLeft: '1rem' });
+      select('input').attr('type').equals('checkbox').nthChild(2).style({ marginLeft: '1rem' });
 
       expect(s.build()).toBe(`\
 input[type="checkbox"]:nth-child(2) {
@@ -192,7 +192,7 @@ input[type="checkbox"]:nth-child(2) {
     });
 
     it('should work with combinators', () => {
-      s.select('.form').child('input').firstChild().adjacent('.label').style({ fontWeight: 'bold' });
+      select('.form').child('input').firstChild().adjacent('.label').style({ fontWeight: 'bold' });
 
       expect(s.build()).toBe(`\
 .form > input:first-child + .label {
@@ -203,7 +203,7 @@ input[type="checkbox"]:nth-child(2) {
 
   describe('Edge cases and validation', () => {
     it('should handle negative numbers in nth-child', () => {
-      s.select('.item').nthChild(-1).style({ display: 'none' });
+      select('.item').nthChild(-1).style({ display: 'none' });
 
       expect(s.build()).toBe(`\
 .item:nth-child(-1) {
@@ -212,7 +212,7 @@ input[type="checkbox"]:nth-child(2) {
     });
 
     it('should handle zero in nth-of-type', () => {
-      s.select('p').nthOfType(0).style({ color: 'gray' });
+      select('p').nthOfType(0).style({ color: 'gray' });
 
       expect(s.build()).toBe(`\
 p:nth-of-type(0) {
@@ -221,7 +221,7 @@ p:nth-of-type(0) {
     });
 
     it('should handle complex formulas', () => {
-      s.select('.tile').nthChild('-2n+3').style({ background: 'linear-gradient(45deg, #f0f, #0ff)' });
+      select('.tile').nthChild('-2n+3').style({ background: 'linear-gradient(45deg, #f0f, #0ff)' });
 
       expect(s.build()).toBe(`\
 .tile:nth-child(-2n+3) {

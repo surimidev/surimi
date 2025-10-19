@@ -5,72 +5,9 @@
  * For example, we don't want users to be able to add pseudo elements to 'select()' calls.
  */
 
+import { SelectorBuilder } from '#lib/builders/selector.builder';
+
 import { HtmlAttributesWithoutBrackets } from './css.types';
-
-/**
- * Checks if there is any space within the string
- */
-export type HasSpaces<T extends string> = T extends `${string} ${string}` ? true : false;
-
-/**
- * Checks if the string is a combinator, i.e., one of '>', '+', '~', or ' ' (space)
- */
-export type HasCombinator<T extends string> = T extends `>` | `+` | `~` | ` ` ? true : false;
-
-export type IsClassSelector<T extends string> = T extends `.${string}` ? true : false;
-export type IsIdSelector<T extends string> = T extends `#${string}` ? true : false;
-
-export type IsTypeSelector<T extends string> = T extends keyof HTMLElementTagNameMap ? true : false;
-
-// TODO: Technically, there are more like the namespace selectors? But we have to figure out if/how to support them
-export type IsUniversalSelector<T extends string> = T extends `*` ? true : false;
-
-// TODO: This does not support sensitivity flags like [attr="value" i]. Or maybe it does?
-export type IsValidAttributeName<T extends string> = T extends
-  | `[${infer R}]`
-  | `[${infer R}=${string}]`
-  | `[${infer R}~=${string}]`
-  | `[${infer R}|=${string}]`
-  | `[${infer R}^=${string}]`
-  | `[${infer R}$=${string}]`
-  | `[${infer R}*=${string}]`
-  ? R extends HtmlAttributesWithoutBrackets
-    ? true
-    : false
-  : false;
-
-export type IsSimpleAttributeSelector<T extends string> = T extends `[${infer R}]`
-  ? R extends HtmlAttributesWithoutBrackets
-    ? true
-    : false
-  : false;
-
-export type IsMatchingAttributeSelector<T extends string> =
-  T extends `[${string}${'=' | '~=' | '|=' | '^=' | '$=' | '*='}${string}]` ? true : false;
-
-export type IsAttributeSelector<T extends string> =
-  IsSimpleAttributeSelector<T> extends false
-    ? IsMatchingAttributeSelector<T> extends false
-      ? false
-      : IsValidAttributeName<T>
-    : IsValidAttributeName<T>;
-
-export type IsValidSelector<T extends string> =
-  HasSpaces<T> extends true
-    ? false
-    : HasCombinator<T> extends true
-      ? false
-      : IsClassSelector<T> extends true
-        ? true
-        : IsIdSelector<T> extends true
-          ? true
-          : IsTypeSelector<T> extends true
-            ? true
-            : IsUniversalSelector<T> extends true
-              ? true
-              : IsAttributeSelector<T> extends true
-                ? true
-                : false;
 
 /**
  * Type for class selectors (.className)
@@ -94,21 +31,25 @@ type UniversalSelector = '*';
 
 /**
  * Type for simple attribute selectors [attr]
+ * Gives type hints for known HTML attributes, but also allows custom attributes.
  */
-type SimpleAttributeSelector = `[${HtmlAttributesWithoutBrackets}]`;
+type SimpleAttributeSelector = `[${HtmlAttributesWithoutBrackets}]` | (`[${string}]` & {});
 
 /**
  * Type for matching attribute selectors [attr=value], [attr~=value], etc.
+ * Gives type hints for known HTML attributes, but also allows custom attributes.
  */
 type MatchingAttributeSelector =
-  | `[${HtmlAttributesWithoutBrackets}=${string}]`
-  | `[${HtmlAttributesWithoutBrackets}~=${string}]`
-  | `[${HtmlAttributesWithoutBrackets}|=${string}]`
-  | `[${HtmlAttributesWithoutBrackets}^=${string}]`
-  | `[${HtmlAttributesWithoutBrackets}$=${string}]`
-  | `[${HtmlAttributesWithoutBrackets}*=${string}]`;
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}~=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}|=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}^=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}$=${string}]`
+  | `[${HtmlAttributesWithoutBrackets | (`${string}` & {})}*=${string}]`;
 
 /**
+ * @deprecated It works, but it seems to be VERY heavy on the CPU right now. Needs to be optimized and tested before using in production
+ *
  * A string literal type that only allows valid CSS selectors according to surimi rules.
  *
  * Valid selectors must:
@@ -134,6 +75,9 @@ type MatchingAttributeSelector =
  * const invalid3: ValidSelector = '[invalid-attr]'; // ✗ invalid HTML attribute
  * ```
  */
+// TODO: Optimize this type to be less CPU intensive, so we can use it.
+// TODO: We might want to limit usage of spaces in, for example, classes. But I didn't find a way to do that yet.
+// (except to define a custom alphabet of allowed characters, which is not feasible)
 export type ValidSelector =
   | ClassSelector
   | IdSelector
@@ -142,9 +86,33 @@ export type ValidSelector =
   | SimpleAttributeSelector
   | MatchingAttributeSelector;
 
-// Join multiple selectors with comma separation
-export type JoinSelectors<T extends ValidSelector[]> = T extends [infer First extends ValidSelector]
-  ? First
-  : T extends [infer First extends ValidSelector, ...infer Rest extends ValidSelector[]]
-    ? `${First}, ${JoinSelectors<Rest>}`
-    : never;
+/**
+ * Convert a list of selector strings into a list of selector items lik { selector: string}
+ */
+export type SelectorsAsGroup<TSelectors extends string[]> = {
+  [K in keyof TSelectors]: TSelectors[K] extends string ? { selector: TSelectors[K] } : never;
+};
+
+export type JoinSelectors<T extends string[]> = T extends []
+  ? ''
+  : T extends [infer F extends string]
+    ? F
+    : T extends [infer F extends string, ...infer R extends string[]]
+      ? // Filter out empty strings so that ['a', ''] becomes 'a' and not 'a, '
+        JoinSelectors<R> extends ''
+        ? F
+        : F extends ''
+          ? JoinSelectors<R>
+          : `${F}, ${JoinSelectors<R>}`
+      : string;
+
+export type GetSelectorBuilder<T extends string[]> = T extends []
+  ? never
+  : T extends [infer F extends string]
+    ? // Don't allow empty strings for single-item arrays
+      F extends ''
+      ? never
+      : SelectorBuilder<F>
+    : T extends [infer F extends string, ...infer R extends string[]]
+      ? SelectorBuilder<`[${JoinSelectors<[F, ...R]>}]`>
+      : never;

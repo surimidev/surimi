@@ -21,3 +21,5 @@ export type ExcludeByPattern<T extends string, Pattern extends string> = T exten
  * Recursively strips leading colons from a string.
  */
 export type StripColons<T extends string> = T extends `:${infer R}` ? StripColons<R> : T;
+
+export type ArrayWithAtLeastOneItem<T> = [T, ...T[]];

@@ -5,8 +5,8 @@
 
 import postcss from 'postcss';
 
-import { CustomProperty } from '#lib/api/custom-property.js';
-import type { CssProperties } from '#types/css.types.js';
+import { CustomProperty } from '#lib/api/custom-property';
+import type { CssProperties } from '#types/css.types';
 import type { CamelCaseToKebabCase } from '#types/util.types';
 
 /**

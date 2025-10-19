@@ -16,7 +16,9 @@
     "#*": [
       "./src/*.ts",
       "./src/*.tsx",
-      "./src/*/index.ts"
+      "./src/*/index.ts",
+      "./src/*.js",
+      "./src/*/index.js"
     ]
   },
   "exports": {

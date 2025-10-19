@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import s from '../../src/index';
+import s, { select } from '../../src/index';
 
 describe('Enhanced Navigation', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Enhanced Navigation', () => {
 
   describe('.parent() - Navigate back to parent selector', () => {
     it('should navigate back to parent after child selector', () => {
-      const parentBuilder = s.select('.container').child('.item');
+      const parentBuilder = select('.container').child('.item');
 
       // Apply styles to child
       parentBuilder.style({ display: 'flex' });
@@ -27,7 +27,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should navigate back through multiple levels', () => {
-      const builder = s.select('.wrapper').child('.container').child('.item');
+      const builder = select('.wrapper').child('.container').child('.item');
 
       // Style the deepest child
       builder.style({ fontSize: '14px' });
@@ -51,7 +51,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should work with descendant selectors', () => {
-      const builder = s.select('.sidebar').descendant('.menu').descendant('.item');
+      const builder = select('.sidebar').descendant('.menu').descendant('.item');
 
       builder.style({ borderRadius: '4px' });
       builder.parent().style({ listStyle: 'none' });
@@ -70,7 +70,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should work with pseudo-classes and attributes', () => {
-      const builder = s.select('.form').child('input').attr('type').equals('text').focus();
+      const builder = select('.form').child('input').attr('type').equals('text').focus();
 
       builder.style({ outline: '2px solid blue' });
       builder.parent().style({ backgroundColor: '#fff' });
@@ -86,14 +86,14 @@ describe('Enhanced Navigation', () => {
 
     it('should throw error when no parent exists', () => {
       expect(() => {
-        s.select('.root').parent();
+        select('.root').parent();
       }).toThrow('No parent selector found');
     });
   });
 
   describe('.root() - Navigate back to root selector', () => {
     it('should navigate back to root from any depth', () => {
-      const rootBuilder = s.select('.app').child('.main').child('.content').child('.article');
+      const rootBuilder = select('.app').child('.main').child('.content').child('.article');
 
       // Style the deep child
       rootBuilder.style({ lineHeight: '1.6' });
@@ -111,7 +111,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should work with complex selector chains', () => {
-      const builder = s.select('.dashboard').child('.widget').and('.active').descendant('.title').firstChild();
+      const builder = select('.dashboard').child('.widget').and('.active').descendant('.title').firstChild();
 
       builder.style({ fontWeight: 'bold' });
       builder.root().style({ display: 'grid' });
@@ -126,7 +126,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should work with attribute selectors', () => {
-      const builder = s.select('.form').child('input').attr('required').hover();
+      const builder = select('.form').child('input').attr('required').hover();
 
       builder.style({ borderColor: 'red' });
       builder.root().style({ maxWidth: '600px' });
@@ -141,7 +141,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should return the same instance when already at root', () => {
-      const rootBuilder = s.select('.root');
+      const rootBuilder = select('.root');
       const sameBuilder = rootBuilder.root();
 
       expect(rootBuilder).toBe(sameBuilder);
@@ -150,7 +150,7 @@ describe('Enhanced Navigation', () => {
 
   describe('Navigation with style reset behavior', () => {
     it('should maintain navigation chain after style application', () => {
-      const builder = s.select('.container').child('.item');
+      const builder = select('.container').child('.item');
 
       // Apply styles (this typically resets the builder)
       builder.style({ color: 'blue' });
@@ -168,7 +168,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should handle multiple style applications with navigation', () => {
-      const builder = s.select('.wrapper').child('.box').child('.content');
+      const builder = select('.wrapper').child('.box').child('.content');
 
       // Style the deepest element
       builder.style({ fontSize: '16px' });
@@ -198,7 +198,7 @@ describe('Enhanced Navigation', () => {
 
   describe('Navigation in media queries', () => {
     it('should work within media query context', () => {
-      const builder = s.media().minWidth('768px').select('.container').child('.item');
+      const builder = media().minWidth('768px').select('.container').child('.item');
 
       builder.style({ flexDirection: 'row' });
       builder.parent().style({ display: 'flex' });
@@ -215,7 +215,7 @@ describe('Enhanced Navigation', () => {
     });
 
     it('should navigate to root within media queries', () => {
-      const builder = s.media().maxWidth('600px').select('.sidebar').child('.menu').child('.item');
+      const builder = media().maxWidth('600px').select('.sidebar').child('.menu').child('.item');
 
       builder.style({ fontSize: '14px' });
       builder.root().style({ width: '100%' });
