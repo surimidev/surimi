@@ -41,7 +41,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@emotion/hash": "catalog:prod",
     "csstype": "catalog:prod",
     "parsel-js": "^1.2.2",
     "postcss": "catalog:prod",
