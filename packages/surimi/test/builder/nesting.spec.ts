@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../src/index';
+import { media, select, Surimi } from '../../src/index';
 
 describe('Nesting and Complex Combinations', () => {
   beforeEach(() => {
@@ -62,7 +62,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support multiple style applications on the same selector', () => {
       select('.multi-style').style({ display: 'flex' });
       select('.multi-style').hover().style({ backgroundColor: 'gray' });
-      media('(max-width: 768px)').select('.multi-style').style({ flexDirection: 'column' });
+      media().maxWidth('768px').select('.multi-style').style({ flexDirection: 'column' });
 
       expect(Surimi.build()).toBe(`\
 .multi-style {
@@ -103,7 +103,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should support even more style calls in one chain', () => {
       select('.complex').style({ color: 'red' });
       select('.complex').hover().style({ color: 'blue' });
-      media('(max-width: 600px)').select('.complex').style({ color: 'green' });
+      media().maxWidth('600px').select('.complex').style({ color: 'green' });
 
       expect(Surimi.build()).toBe(`\
 .complex {
@@ -122,7 +122,7 @@ describe('Nesting and Complex Combinations', () => {
     it('should handle complex chaining with structural selectors correctly', () => {
       select('.parent').child('a').style({ color: 'black' });
       select('.parent').child('a').hover().style({ color: 'blue' });
-      media('(max-width: 600px)').select('.parent').child('a').style({ color: 'red' });
+      media().maxWidth('600px').select('.parent').child('a').style({ color: 'red' });
 
       expect(Surimi.build()).toBe(`\
 .parent > a {

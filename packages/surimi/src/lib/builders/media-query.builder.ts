@@ -127,12 +127,40 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     return this.createMediaQueryBuilderWithParameter(`(color-gamut: ${value})`);
   }
 
+  public displayMode(value: 'fullscreen' | 'standalone' | 'minimal-ui' | 'browser' | 'picture-in-picture') {
+    return this.createMediaQueryBuilderWithParameter(`(display-mode: ${value})`);
+  }
+
+  public dynamicRange(value: 'standard' | 'high') {
+    return this.createMediaQueryBuilderWithParameter(`(dynamic-range: ${value})`);
+  }
+
+  public environmentBlending(value: 'opaque' | 'additive' | 'subtractive') {
+    return this.createMediaQueryBuilderWithParameter(`(environment-blending: ${value})`);
+  }
+
+  public forcedColors(value: 'none' | 'active') {
+    return this.createMediaQueryBuilderWithParameter(`(forced-colors: ${value})`);
+  }
+
   public grid(value: 0 | 1) {
     return this.createMediaQueryBuilderWithParameter(`(grid: ${value})`);
   }
 
   public hover(value: 'none' | 'hover') {
     return this.createMediaQueryBuilderWithParameter(`(hover: ${value})`);
+  }
+
+  public invertedColors(value: 'none' | 'inverted') {
+    return this.createMediaQueryBuilderWithParameter(`(inverted-colors: ${value})`);
+  }
+
+  public navControls(value: 'none' | 'back') {
+    return this.createMediaQueryBuilderWithParameter(`(nav-controls: ${value})`);
+  }
+
+  public orientation(value: 'portrait' | 'landscape') {
+    return this.createMediaQueryBuilderWithParameter(`(orientation: ${value})`);
   }
 
   public overflowBlock(value: 'none' | 'scroll' | 'optional-paged' | 'paged') {
@@ -147,12 +175,44 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     return this.createMediaQueryBuilderWithParameter(`(pointer: ${value})`);
   }
 
+  public prefersColorScheme(value: 'light' | 'dark') {
+    return this.createMediaQueryBuilderWithParameter(`(prefers-color-scheme: ${value})`);
+  }
+
+  public prefersContrast(value: 'no-preference' | 'more' | 'less' | 'custom') {
+    return this.createMediaQueryBuilderWithParameter(`(prefers-contrast: ${value})`);
+  }
+
+  public prefersReducedData(value: 'no-preference' | 'reduce') {
+    return this.createMediaQueryBuilderWithParameter(`(prefers-reduced-data: ${value})`);
+  }
+
+  public prefersReducedMotion(value: 'no-preference' | 'reduce') {
+    return this.createMediaQueryBuilderWithParameter(`(prefers-reduced-motion: ${value})`);
+  }
+
+  public prefersReducedTransparency(value: 'no-preference' | 'reduce') {
+    return this.createMediaQueryBuilderWithParameter(`(prefers-reduced-transparency: ${value})`);
+  }
+
   public scan(value: 'interlace' | 'progressive') {
     return this.createMediaQueryBuilderWithParameter(`(scan: ${value})`);
   }
 
+  public scripting(value: 'none' | 'initial-only' | 'enabled') {
+    return this.createMediaQueryBuilderWithParameter(`(scripting: ${value})`);
+  }
+
   public update(value: 'none' | 'slow' | 'fast') {
     return this.createMediaQueryBuilderWithParameter(`(update: ${value})`);
+  }
+
+  public videoColorGamut(value: 'srgb' | 'p3' | 'rec2020') {
+    return this.createMediaQueryBuilderWithParameter(`(video-color-gamut: ${value})`);
+  }
+
+  public videoDynamicRange(value: 'standard' | 'high') {
+    return this.createMediaQueryBuilderWithParameter(`(video-dynamic-range: ${value})`);
   }
 
   // ------------
@@ -201,6 +261,13 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     return this.createMediaQueryBuilderWithParameter(`(height ${operator} ${value})`);
   }
 
+  public horizontalViewportSegments<TOperator extends MediaQueryRangeOperator, TValue extends string>(
+    operator: TOperator,
+    value: TValue,
+  ) {
+    return this.createMediaQueryBuilderWithParameter(`(horizontal-viewport-segments ${operator} ${value})`);
+  }
+
   public monochrome<TOperator extends MediaQueryRangeOperator, TValue extends string>(
     operator: TOperator,
     value: TValue,
@@ -213,6 +280,13 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     value: TValue,
   ) {
     return this.createMediaQueryBuilderWithParameter(`(resolution ${operator} ${value})`);
+  }
+
+  public verticalViewportSegments<TOperator extends MediaQueryRangeOperator, TValue extends string>(
+    operator: TOperator,
+    value: TValue,
+  ) {
+    return this.createMediaQueryBuilderWithParameter(`(vertical-viewport-segments ${operator} ${value})`);
   }
 
   public width<TOperator extends MediaQueryRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
@@ -251,12 +325,20 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     return this.createMediaQueryBuilderWithParameter(`(min-height: ${value})`);
   }
 
+  public minHorizontalViewportSegments<TValue extends string>(value: TValue) {
+    return this.createMediaQueryBuilderWithParameter(`(min-horizontal-viewport-segments: ${value})`);
+  }
+
   public minMonochrome<TValue extends string>(value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(min-monochrome: ${value})`);
   }
 
   public minResolution<TValue extends string>(value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(min-resolution: ${value})`);
+  }
+
+  public minVerticalViewportSegments<TValue extends string>(value: TValue) {
+    return this.createMediaQueryBuilderWithParameter(`(min-vertical-viewport-segments: ${value})`);
   }
 
   public minWidth<TValue extends string>(value: TValue) {
@@ -295,12 +377,20 @@ export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuild
     return this.createMediaQueryBuilderWithParameter(`(max-height: ${value})`);
   }
 
+  public maxHorizontalViewportSegments<TValue extends string>(value: TValue) {
+    return this.createMediaQueryBuilderWithParameter(`(max-horizontal-viewport-segments: ${value})`);
+  }
+
   public maxMonochrome<TValue extends string>(value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(max-monochrome: ${value})`);
   }
 
   public maxResolution<TValue extends string>(value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(max-resolution: ${value})`);
+  }
+
+  public maxVerticalViewportSegments<TValue extends string>(value: TValue) {
+    return this.createMediaQueryBuilderWithParameter(`(max-vertical-viewport-segments: ${value})`);
   }
 
   public maxWidth<TValue extends string>(value: TValue) {

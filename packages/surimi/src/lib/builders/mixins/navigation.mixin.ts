@@ -1,4 +1,9 @@
-import type { ExtractBuildContextFromString } from '#types/builder.types';
+import type {
+  ExtractBuildContextFromString,
+  ExtractContextString,
+  GetFirstSelector,
+  GetParentSelector,
+} from '#types/builder.types';
 
 import { CoreBuilder } from '../core.builder';
 import { SelectorBuilder } from '../selector.builder';
@@ -21,5 +26,30 @@ export class WithNavigation<TContext extends string> extends CoreBuilder<Extract
 
   public sibling<TSibling extends string>(selector: TSibling): SelectorBuilder<`${TContext} ~ ${TSibling}`> {
     return new SelectorBuilder([...this.context, { selector, relation: 'sibling' }] as never, this.postcssRoot);
+  }
+
+  /** Navigate to the parent selector, as in the previous one. */
+  public parent(): SelectorBuilder<ExtractContextString<GetParentSelector<ExtractBuildContextFromString<TContext>>>> {
+    if (this.context.length === 0) {
+      throw new Error('No parent selector found');
+    }
+
+    const newContext = this.context.slice(0, -1) as GetParentSelector<ExtractBuildContextFromString<TContext>>;
+
+    // TODO: remvoe need for casting
+    return new SelectorBuilder(newContext as never, this.postcssRoot);
+  }
+
+  /**
+   * Navigate back to the root selector
+   * Not to be confused with `.root()` which selects the `:root` pseudo-class
+   */
+  public main(): SelectorBuilder<ExtractContextString<GetFirstSelector<ExtractBuildContextFromString<TContext>>>> {
+    if (this.context.length === 0) {
+      throw new Error('No root selector found');
+    }
+
+    const newContext = [this.context[0]] as GetFirstSelector<ExtractBuildContextFromString<TContext>>;
+    return new SelectorBuilder(newContext as never, this.postcssRoot);
   }
 }

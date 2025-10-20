@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../src/index';
+import { media, Surimi } from '../../src/index';
 
 describe('Media Queries', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Media Queries', () => {
 
   describe('Simple Media Queries', () => {
     it('should support basic media queries', () => {
-      media('(min-width: 768px)').select('.container').style({
+      media().minWidth('768px').select('.container').style({
         flexDirection: 'row',
       });
 
@@ -22,7 +22,7 @@ describe('Media Queries', () => {
     });
 
     it('should support max-width media queries', () => {
-      media('(max-width: 767px)').select('.mobile-nav').style({
+      media().minWidth('768px').select('.mobile-nav').style({
         display: 'block',
       });
 
@@ -35,7 +35,7 @@ describe('Media Queries', () => {
     });
 
     it('should support complex media query conditions', () => {
-      media('(min-width: 768px) and (max-width: 1024px)').select('.tablet-layout').style({
+      media().minWidth('768px').and().maxWidth('1024px').select('.tablet-layout').style({
         columns: 2,
       });
 
@@ -48,7 +48,7 @@ describe('Media Queries', () => {
     });
 
     it('should support print media queries', () => {
-      media('print').select('.no-print').style({
+      media().print().select('.no-print').style({
         display: 'none',
       });
 
@@ -63,7 +63,7 @@ describe('Media Queries', () => {
 
   describe('Media Query Chaining', () => {
     it('should combine basic selectors with pseudo-classes and media queries', () => {
-      media('(min-width: 768px)').select('.button').hover().style({ backgroundColor: 'blue' });
+      media().minWidth('768px').select('.button').hover().style({ backgroundColor: 'blue' });
 
       expect(Surimi.build()).toBe(`\
 @media (min-width: 768px) {
@@ -102,7 +102,7 @@ describe('Media Queries', () => {
     });
 
     it('should support raw method', () => {
-      media().raw('(min-resolution: 2dppx)').select('.high-res').style({
+      media().minResolution('2dppx').select('.high-res').style({
         border: '1px solid black',
       });
 

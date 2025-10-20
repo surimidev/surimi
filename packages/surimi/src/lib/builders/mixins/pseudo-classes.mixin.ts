@@ -5,8 +5,9 @@ import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
 import { CoreBuilder } from '../core.builder';
 import { SelectorBuilder } from '../selector.builder';
 
-type WithPseudoClassMethods<TContext extends string> = {
-  [K in BasePseudoClasses as KebabCaseToCamelCase<StripColons<K>>]: () => SelectorBuilder<`${TContext}${K}`>;
+type WithPseudoClassMethods<_TContext extends string> = {
+  // Should be typed as `a function taking none or some arguments and returning some SelectorBuilder`?
+  [K in BasePseudoClasses as KebabCaseToCamelCase<StripColons<K>>]: unknown;
 };
 
 /**
@@ -28,13 +29,13 @@ export class WithPseudoClasses<TContext extends string>
 
   public dir = () => this.createPseudoClass(':dir');
   public fullscreen = () => this.createPseudoClass(':fullscreen');
-  public has = () => this.createPseudoClass(':has');
+  public has = (selector: string) => this.createPseudoClass(`:has(${selector})`);
   public host = () => this.createPseudoClass(':host');
   public is = () => this.createPseudoClass(':is');
   public lang = () => this.createPseudoClass(':lang');
   public matches = () => this.createPseudoClass(':matches');
   public not = () => this.createPseudoClass(':not');
-  public where = () => this.createPseudoClass(':where');
+  public where = (selector: string) => this.createPseudoClass(`:where(${selector})`);
   public active = () => this.createPseudoClass(':active');
   public blank = () => this.createPseudoClass(':blank');
   public checked = () => this.createPseudoClass(':checked');
@@ -58,6 +59,10 @@ export class WithPseudoClasses<TContext extends string>
   public playing = () => this.createPseudoClass(':playing');
   public required = () => this.createPseudoClass(':required');
   public right = () => this.createPseudoClass(':right');
+  /**
+   * Selects the root element of the document via the `:root` pseudo-class
+   * Not to be confused with `.main()` which navigates back to the root selector of the current builder context.
+   */
   public root = () => this.createPseudoClass(':root');
   public scope = () => this.createPseudoClass(':scope');
   public target = () => this.createPseudoClass(':target');

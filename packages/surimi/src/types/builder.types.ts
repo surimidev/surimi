@@ -432,3 +432,15 @@ type ParsePseudoClassWithRelation<
             ...ExtractBuildContextItemWithRelation<After, 'descendant'>,
           ]
         : [{ selector: Selector; relation: Relation }, { pseudoClass: ClassAndRest }];
+
+export type GetParentSelector<T extends BuilderContext> = T extends [...infer Rest, infer Last]
+  ? Last extends { selector: string }
+    ? Rest
+    : T
+  : T;
+
+export type GetFirstSelector<T extends BuilderContext> = T extends [infer First, ...infer _Rest]
+  ? First extends { selector: string }
+    ? First
+    : never
+  : never;

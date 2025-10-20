@@ -35,13 +35,28 @@ export type DiscreteMediaDescriptor =
   | 'any-hover'
   | 'any-pointer'
   | 'color-gamut'
+  | 'display-mode'
+  | 'dynamic-range'
+  | 'environment-blending'
+  | 'forced-colors'
   | 'grid'
   | 'hover'
+  | 'inverted-colors'
+  | 'nav-controls'
+  | 'orientation'
   | 'overflow-block'
   | 'overflow-inline'
   | 'pointer'
+  | 'prefers-color-scheme'
+  | 'prefers-contrast'
+  | 'prefers-reduced-data'
+  | 'prefers-reduced-motion'
+  | 'prefers-reduced-transparency'
   | 'scan'
-  | 'update';
+  | 'scripting'
+  | 'update'
+  | 'video-color-gamut'
+  | 'video-dynamic-range';
 
 /**
  * The spec defines some media descriptors as discrete values, and some as ranged. See
@@ -55,8 +70,10 @@ export type BaseRangedMediaDescriptor =
   | 'device-height'
   | 'device-width'
   | 'height'
+  | 'horizontal-viewport-segments'
   | 'monochrome'
   | 'resolution'
+  | 'vertical-viewport-segments'
   | 'width';
 
 export type RangedMediaDescriptor =

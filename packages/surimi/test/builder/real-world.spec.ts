@@ -271,17 +271,17 @@ a:hover {
       });
 
       // Mobile first approach
-      media('(min-width: 640px)').select('.container').style({
+      media().minWidth('640px').select('.container').style({
         maxWidth: '640px',
         margin: '0 auto',
       });
 
-      media('(min-width: 768px)').select('.container').style({
+      media().minWidth('768px').select('.container').style({
         maxWidth: '768px',
         padding: '2rem',
       });
 
-      media('(min-width: 1024px)').select('.container').style({
+      media().minWidth('1024px').select('.container').style({
         maxWidth: '1024px',
       });
 
@@ -290,18 +290,18 @@ a:hover {
         fontSize: '2rem',
       });
 
-      media('(min-width: 768px)').select('h1').style({
+      media().minWidth('').select('h1').style({
         fontSize: '3rem',
       });
 
       // Dark mode support
-      media('(prefers-color-scheme: dark)').select('body').style({
+      media().prefersColorScheme('dark').select('body').style({
         backgroundColor: '#1f2937',
         color: '#f9fafb',
       });
 
       // Print styles
-      media('print').select('.no-print').style({
+      media().print().select('.no-print').style({
         display: 'none',
       });
 
@@ -348,18 +348,18 @@ h1 {
 
     it('should handle pseudo-classes within media queries', () => {
       // Button hover in desktop
-      media('(min-width: 1024px)').select('.btn').hover().style({
+      media().minWidth('1024px').select('.btn').hover().style({
         transform: 'scale(1.05)',
         transition: 'transform 0.2s ease',
       });
 
       // Touch devices - remove hover effects
-      media('(hover: none)').select('.btn').style({
+      media().hover('none').select('.btn').style({
         transform: 'none',
       });
 
       // Focus styles for keyboard navigation
-      media('(prefers-reduced-motion: no-preference)').select('.btn').focus().style({
+      media().prefersReducedMotion('no-preference').select('.btn').focus().style({
         outline: '2px solid #3b82f6',
         outlineOffset: '2px',
         transition: 'outline 0.2s ease',
@@ -387,7 +387,8 @@ h1 {
     });
 
     it('should allow selecting with where clauses in media queries', () => {
-      media('(max-width: 600px)')
+      media()
+        .maxWidth('600px')
         .and()
         .minHeight('200px')
         .select('html')
@@ -439,8 +440,8 @@ h1 {
       select('.bg-gray-100').style({ backgroundColor: '#f3f4f6' });
 
       // Responsive utilities
-      media('(min-width: 768px)').select('.md\\:flex').style({ display: 'flex' });
-      media('(min-width: 1024px)').select('.lg\\:text-xl').style({ fontSize: '1.25rem' });
+      media().minWidth('768px').select('.md\\:flex').style({ display: 'flex' });
+      media().minWidth('1024px').select('.lg\\:text-xl').style({ fontSize: '1.25rem' });
 
       expect(Surimi.build()).toBe(`\
 .p-4 {
