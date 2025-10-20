@@ -2,9 +2,9 @@
  * Shared utils across different builders / mixins.
  */
 
-import selectorParser from 'postcss-selector-parser';
+import * as parsel from 'parsel-js';
 
-import type { ExtractBuildContextFromString, FlatBuilderContext } from '#types/builder.types';
+import type { BuilderContextItem, ExtractBuildContextFromString, FlatBuilderContext } from '#types/builder.types';
 import type { SelectorRelationship } from '#types/css.types';
 import type { JoinSelectors } from '#types/selector.types';
 
@@ -150,13 +150,14 @@ export function joinSelectors<TSelectors extends string[]>(...selectors: TSelect
  *   { pseudoElement: 'after' },
  * ]
  *
- * Uses postcss-selector-parser for robust CSS selector parsing.
+ * Uses parsel-js for robust CSS selector parsing.
  * Supports:
  * - Simple selectors (class, ID, element, attribute)
  * - Pseudo-classes (:hover, :focus, etc.)
  * - Pseudo-elements (::before, ::after, etc.)
  * - Combinators (>, +, ~, space for descendant)
  * - Complex selectors with parentheses and quoted values
+ * - Selector lists (comma-separated)
  *
  * This does NOT support media queries, groups, or other advanced BuildContext features.
  */
@@ -169,14 +170,23 @@ export function parseSelectorString<S extends string>(selector: S): ExtractBuild
   const result: any[] = [];
 
   try {
-    selectorParser(selectors => {
-      // Handle comma-separated selectors - process each one individually
-      selectors.each(selectorNode => {
-        console.log('Parsing selector node:', selectorNode.toString());
-        const parsed = parseSingleSelectorNode(selectorNode);
-        result.push(...parsed);
-      });
-    }).processSync(selector.trim());
+    // Parse with parsel-js, enabling list parsing for comma-separated selectors
+    const parsed = parsel.parse(selector.trim(), { list: true });
+
+    if (!parsed) {
+      throw new Error('Failed to parse selector');
+    }
+
+    if (parsed.type === 'list') {
+      // Handle selector lists - flatten them as individual items
+      // This matches the expected test behavior where comma-separated selectors become individual results
+      const listItems = parsed.list.map(selectorNode => parseParselNode(selectorNode)).flat();
+      result.push(...listItems);
+    } else {
+      // Single selector or complex selector
+      const items = parseParselNode(parsed);
+      result.push(...items);
+    }
   } catch (error) {
     // If parsing fails, fall back to treating it as a simple selector
     console.warn(`Failed to parse selector "${selector}":`, error);
@@ -186,120 +196,118 @@ export function parseSelectorString<S extends string>(selector: S): ExtractBuild
   return result as ExtractBuildContextFromString<S>;
 }
 
-interface BuildContextItem {
-  selector?: string;
-  pseudoClass?: string;
-  pseudoElement?: string;
-  relation?: 'child' | 'adjacent' | 'sibling' | 'descendant';
-}
-
 /**
- * Parse a single selector node from postcss-selector-parser into build context items
+ * Parse a single parsel AST node into build context items
  */
-function parseSingleSelectorNode(selectorNode: selectorParser.Selector): BuildContextItem[] {
-  // Use postcss-selector-parser's built-in combinator detection rather than regex
-  const result: BuildContextItem[] = [];
-  let currentCompound: BuildContextItem[] = [];
-  let pendingRelation: 'child' | 'adjacent' | 'sibling' | 'descendant' | undefined;
+function parseParselNode(node: parsel.AST): BuilderContextItem[] {
+  const result: BuilderContextItem[] = [];
 
-  selectorNode.each(node => {
-    switch (node.type) {
-      case 'combinator': {
-        // Flush current compound
-        if (currentCompound.length > 0) {
-          result.push(...currentCompound);
-          currentCompound = [];
-        }
+  switch (node.type) {
+    case 'complex': {
+      // Handle complex selectors with combinators
+      const leftItems = parseParselNode(node.left);
+      const rightItems = parseParselNode(node.right);
 
-        // Set pending relation for next compound
-        switch (node.value.trim()) {
-          case '>':
-            pendingRelation = 'child';
-            break;
-          case '+':
-            pendingRelation = 'adjacent';
-            break;
-          case '~':
-            pendingRelation = 'sibling';
-            break;
-          default:
-            pendingRelation = 'descendant';
-        }
-        break;
+      // Map combinator to our relation type
+      let relation: 'child' | 'adjacent' | 'sibling' | 'descendant';
+      switch (node.combinator.trim()) {
+        case '>':
+          relation = 'child';
+          break;
+        case '+':
+          relation = 'adjacent';
+          break;
+        case '~':
+          relation = 'sibling';
+          break;
+        case ' ':
+        default:
+          relation = 'descendant';
+          break;
       }
 
-      case 'tag':
-      case 'class':
-      case 'id':
-      case 'attribute':
-      case 'universal': {
-        // If we don't have a base selector yet, create one
-        if (currentCompound.length === 0 || !currentCompound.some(item => item.selector)) {
-          const baseItem: BuildContextItem = { selector: node.toString() };
-
-          // Add pending relation if we have one
-          if (pendingRelation) {
-            baseItem.relation = pendingRelation;
-            pendingRelation = undefined;
-          }
-
-          currentCompound.push(baseItem);
+      // Add the relation to the first selector item in the right part
+      if (rightItems.length > 0) {
+        const firstRightItem = rightItems[0];
+        if (firstRightItem && 'selector' in firstRightItem && firstRightItem.selector) {
+          firstRightItem.relation = relation;
         } else {
-          // Append to existing base selector
-          const baseItem = currentCompound.find(item => item.selector);
-          if (baseItem?.selector) {
-            baseItem.selector += node.toString();
+          // If the first item isn't a selector, we need to find the first selector item
+          const firstSelectorItem = rightItems.find(item => 'selector' in item && item.selector);
+          if (firstSelectorItem && 'selector' in firstSelectorItem) {
+            firstSelectorItem.relation = relation;
           }
         }
-        break;
       }
 
-      case 'pseudo': {
-        // Use toString() to get the full pseudo-class including functional notation
-        const fullPseudo = node.toString();
-        const pseudoValue = fullPseudo.replace(/^::?/, ''); // Remove : or ::
-
-        if (fullPseudo.startsWith('::')) {
-          currentCompound.push({ pseudoElement: pseudoValue });
-        } else {
-          currentCompound.push({ pseudoClass: pseudoValue });
-        }
-        break;
-      }
-
-      default: {
-        // Handle other node types by adding to base selector
-        if (currentCompound.length === 0 || !currentCompound.some(item => item.selector)) {
-          const baseItem: BuildContextItem = { selector: node.toString() };
-
-          if (pendingRelation) {
-            baseItem.relation = pendingRelation;
-            pendingRelation = undefined;
-          }
-
-          currentCompound.push(baseItem);
-        } else {
-          const baseItem = currentCompound.find(item => item.selector);
-          if (baseItem?.selector) {
-            baseItem.selector += node.toString();
-          }
-        }
-        break;
-      }
-    }
-  });
-
-  // Flush final compound
-  if (currentCompound.length > 0) {
-    // Add pending relation to the first selector item
-    if (pendingRelation) {
-      const firstSelectorItem = currentCompound.find(item => item.selector);
-      if (firstSelectorItem) {
-        firstSelectorItem.relation = pendingRelation;
-      }
+      result.push(...leftItems, ...rightItems);
+      break;
     }
 
-    result.push(...currentCompound);
+    case 'compound': {
+      // Handle compound selectors (multiple parts without combinators)
+      const selectorParts: string[] = [];
+      const pseudoItems: BuilderContextItem[] = [];
+
+      for (const item of node.list) {
+        switch (item.type) {
+          case 'type':
+          case 'class':
+          case 'id':
+          case 'attribute':
+          case 'universal':
+            selectorParts.push(item.content);
+            break;
+          case 'pseudo-class':
+            // Use the full content to include arguments like nth-child(2n+1)
+            pseudoItems.push({ pseudoClass: item.content.replace(/^:/, '') });
+            break;
+          case 'pseudo-element':
+            // Use the full content to include vendor prefixes properly
+            pseudoItems.push({ pseudoElement: item.content.replace(/^::/, '') });
+            break;
+        }
+      }
+
+      // Combine all selector parts into a single selector
+      if (selectorParts.length > 0) {
+        result.push({ selector: selectorParts.join('') });
+      }
+
+      // Add pseudo-classes and pseudo-elements
+      result.push(...pseudoItems);
+      break;
+    }
+
+    case 'type':
+    case 'class':
+    case 'id':
+    case 'attribute':
+    case 'universal': {
+      // Simple selector node
+      result.push({ selector: node.content });
+      break;
+    }
+
+    case 'pseudo-class': {
+      result.push({ pseudoClass: node.content.replace(/^:/, '') });
+      break;
+    }
+
+    case 'pseudo-element': {
+      result.push({ pseudoElement: node.content.replace(/^::/, '') });
+      break;
+    }
+
+    case 'list': {
+      // This shouldn't happen in our current usage, but handle it gracefully
+      // We would need to return a group, but that's not supported in this function's return type
+      // Instead, we'll just process the first item
+      if (node.list.length > 0 && node.list[0]) {
+        return parseParselNode(node.list[0]);
+      }
+      break;
+    }
   }
 
   return result;

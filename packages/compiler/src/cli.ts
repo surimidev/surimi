@@ -192,7 +192,7 @@ async function runCompile(options: CLIOptions) {
         s.message(`✅ Compilation complete in ${String(durationMs)}ms`);
         return durationMs;
       } catch (error) {
-        s.message(`❌ ${error instanceof Error ? error.message : String(error)}`);
+        log.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
       }
 
       return null;
@@ -290,7 +290,7 @@ async function runCompile(options: CLIOptions) {
       }
     }
 
-    outro(`👋 Thanks for using surimi${initialCompileTime == null ? ", and sorry it didn't work this time :(" : ''}`);
+    outro(`👋 Thanks for using surimi!`);
   } catch (error) {
     cancel(`Compilation failed: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);

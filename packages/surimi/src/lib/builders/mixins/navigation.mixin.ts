@@ -43,6 +43,8 @@ export class WithNavigation<TContext extends string> extends CoreBuilder<Extract
   /**
    * Navigate back to the root selector
    * Not to be confused with `.root()` which selects the `:root` pseudo-class
+   *
+   * TODO: This does mess things up with media queries right now. Needs to be fixed
    */
   public main(): SelectorBuilder<ExtractContextString<GetFirstSelector<ExtractBuildContextFromString<TContext>>>> {
     if (this.context.length === 0) {

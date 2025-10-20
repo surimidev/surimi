@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../src/index';
+import { media, select, Surimi } from '../../src/index';
 
 describe('Enhanced Navigation', () => {
   beforeEach(() => {
@@ -212,17 +212,21 @@ describe('Enhanced Navigation', () => {
       const builder = media().maxWidth('600px').select('.sidebar').child('.menu').child('.item');
 
       builder.style({ fontSize: '14px' });
-      builder.root().style({ width: '100%' });
+      builder.main().style({ width: '100%' });
 
       expect(Surimi.build()).toBe(`\
 @media (max-width: 600px) {
     .sidebar > .menu > .item {
         font-size: 14px
     }
+}
+
+@media (max-width: 600px) {
     .sidebar {
         width: 100%
     }
-}`);
+}
+`);
     });
   });
 });

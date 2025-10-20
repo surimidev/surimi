@@ -61,6 +61,7 @@ export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBui
    * @returns The innermost at-rule created, or `undefined` if no at-rules are present in the context.
    */
   public createAtRule() {
+    // TODO: Re-use media queries whenever possible!
     // TODO: Figure out why we have to cast to BuilderContext here.
     // Without casting, this.context is limited to some union of BuilderItems, where non of them
     // are at-rules. Might be a limitation of using ExtractBuildContextFromString<> with just `string`?

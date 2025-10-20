@@ -43,13 +43,13 @@
   "dependencies": {
     "@emotion/hash": "catalog:prod",
     "csstype": "catalog:prod",
+    "parsel-js": "^1.2.2",
     "postcss": "catalog:prod",
-    "postcss-selector-parser": "^7.1.0"
+    "ts-mixer": "^6.0.4"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
-    "ts-mixer": "^6.0.4",
     "tsdown": "catalog:build",
     "typescript": "catalog:build"
   }
