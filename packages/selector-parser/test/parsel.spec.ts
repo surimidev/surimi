@@ -1,3 +1,7 @@
+/**
+ * Testing our tokenizer against the parsel-js tokenizer
+ */
+
 import { tokenize } from 'parsel-js';
 import { describe, expect, it } from 'vitest';
 

@@ -232,16 +232,11 @@ type Substring<S extends string, N extends number> = N extends 0
 /**
  * Parse an attribute selector ([attr])
  */
-type ParseAttribute<S extends string, Start extends string = S> = S extends `[${infer Rest}`
+type ParseAttribute<S extends string> = S extends `[${infer Rest}`
   ? ParseAttributeContent<SkipWhitespace<Rest>, `[`>
   : never;
 
-type ParseAttributeContent<
-  S extends string,
-  Content extends string,
-  Namespace extends string | undefined = undefined,
-  Name extends string = '',
-> =
+type ParseAttributeContent<S extends string, Content extends string> =
   // Read first identifier
   ReadIdentifier<S> extends { identifier: infer FirstIdent extends string; rest: infer R extends string }
     ? R extends `|${infer AfterPipe}`
@@ -350,7 +345,7 @@ type ParseAttributeClose<
 /**
  * Parse a type selector (element)
  */
-type ParseType<S extends string, Start extends string = S> =
+type ParseType<S extends string> =
   ReadIdentifier<S> extends { identifier: infer FirstIdent extends string; rest: infer R extends string }
     ? R extends `|${infer AfterPipe}`
       ? AfterPipe extends `*${infer R2}`

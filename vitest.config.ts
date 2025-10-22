@@ -16,7 +16,7 @@ export default defineConfig({
           include: ['./packages/selector-parser/test/**/*.spec.ts'],
           typecheck: {
             enabled: true,
-            include: ['./packages/selector-parser/test/**/*.spec-d.ts'],
+            tsconfig: './packages/selector-parser/tsconfig.json',
           },
         },
       },

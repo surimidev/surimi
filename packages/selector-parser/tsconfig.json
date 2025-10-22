@@ -1,5 +1,5 @@
 {
   "extends": "@surimi/typescript-config/base.json",
-  "include": ["*.config.ts", "src", "test", "parsel-tokenize.ts"],
+  "include": ["*.config.ts", "src", "test", "test/**/*.spec-d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import type { Token } from '#index';
 import { stringify } from '#index';
@@ -8,28 +8,28 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify a simple type selector', () => {
       const input = [{ type: 'type', content: 'div', name: 'div' }] as const satisfies Token[];
 
-      type Expected = 'div';
+      const expected = 'div';
 
       const result = stringify(input);
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify uppercase type selector', () => {
       const input = [{ type: 'type', content: 'DIV', name: 'DIV' }] as const satisfies Token[];
 
-      type Expected = 'DIV';
+      const expected = 'DIV';
 
       const result = stringify(input);
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify different type selectors', () => {
       const input = [{ type: 'type', content: 'span', name: 'span' }] as const satisfies Token[];
 
-      type Expected = 'span';
+      const expected = 'span';
 
       const result = stringify(input);
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -37,11 +37,10 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify universal selector', () => {
       const input = [{ type: 'universal', content: '*' }] as const satisfies Token[];
 
-      type Expected = '*';
+      const expected = '*';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -49,31 +48,28 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify a class selector', () => {
       const input = [{ type: 'class', content: '.my-class', name: 'my-class' }] as const satisfies Token[];
 
-      type Expected = '.my-class';
+      const expected = '.my-class';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify class with underscores', () => {
       const input = [{ type: 'class', content: '.my_class', name: 'my_class' }] as const satisfies Token[];
 
-      type Expected = '.my_class';
+      const expected = '.my_class';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify class with numbers', () => {
       const input = [{ type: 'class', content: '.class123', name: 'class123' }] as const satisfies Token[];
 
-      type Expected = '.class123';
+      const expected = '.class123';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -81,31 +77,28 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify an ID selector', () => {
       const input = [{ type: 'id', content: '#my-id', name: 'my-id' }] as const satisfies Token[];
 
-      type Expected = '#my-id';
+      const expected = '#my-id';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify ID with underscores', () => {
       const input = [{ type: 'id', content: '#my_id', name: 'my_id' }] as const satisfies Token[];
 
-      type Expected = '#my_id';
+      const expected = '#my_id';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify ID with numbers', () => {
       const input = [{ type: 'id', content: '#id123', name: 'id123' }] as const satisfies Token[];
 
-      type Expected = '#id123';
+      const expected = '#id123';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -113,11 +106,10 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify pseudo-class without argument', () => {
       const input = [{ type: 'pseudo-class', content: ':hover', name: 'hover' }] as const satisfies Token[];
 
-      type Expected = ':hover';
+      const expected = ':hover';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify pseudo-class with argument', () => {
@@ -125,11 +117,10 @@ describe('stringify - Simple Selectors', () => {
         { type: 'pseudo-class', content: ':nth-child(2n+1)', name: 'nth-child', argument: '2n+1' },
       ] as const satisfies Token[];
 
-      type Expected = ':nth-child(2n+1)';
+      const expected = ':nth-child(2n+1)';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify pseudo-class with empty argument', () => {
@@ -137,11 +128,10 @@ describe('stringify - Simple Selectors', () => {
         { type: 'pseudo-class', content: ':where()', name: 'where', argument: '' },
       ] as const satisfies Token[];
 
-      type Expected = ':where()';
+      const expected = ':where()';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify pseudo-class with nested selector argument', () => {
@@ -149,11 +139,10 @@ describe('stringify - Simple Selectors', () => {
         { type: 'pseudo-class', content: ':is(.a, :not(.b))', name: 'is', argument: '.a, :not(.b)' },
       ] as const satisfies Token[];
 
-      type Expected = ':is(.a, :not(.b))';
+      const expected = ':is(.a, :not(.b))';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -161,21 +150,19 @@ describe('stringify - Simple Selectors', () => {
     it('should stringify pseudo-element', () => {
       const input = [{ type: 'pseudo-element', content: '::before', name: 'before' }] as const satisfies Token[];
 
-      type Expected = '::before';
+      const expected = '::before';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify ::after', () => {
       const input = [{ type: 'pseudo-element', content: '::after', name: 'after' }] as const satisfies Token[];
 
-      type Expected = '::after';
+      const expected = '::after';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify ::first-line', () => {
@@ -183,11 +170,10 @@ describe('stringify - Simple Selectors', () => {
         { type: 'pseudo-element', content: '::first-line', name: 'first-line' },
       ] as const satisfies Token[];
 
-      type Expected = '::first-line';
+      const expected = '::first-line';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 });
@@ -201,11 +187,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div span';
+      const expected = 'div span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify multiple descendant combinators', () => {
@@ -217,11 +202,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'a', name: 'a' },
       ] as const satisfies Token[];
 
-      type Expected = 'div span a';
+      const expected = 'div span a';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -233,11 +217,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div>span';
+      const expected = 'div>span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify child combinator with spaces', () => {
@@ -247,11 +230,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div > span';
+      const expected = 'div > span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -263,11 +245,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div+span';
+      const expected = 'div+span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify adjacent sibling combinator with spaces', () => {
@@ -277,11 +258,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div + span';
+      const expected = 'div + span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -293,11 +273,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div~span';
+      const expected = 'div~span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
 
     it('should stringify general sibling combinator with spaces', () => {
@@ -307,11 +286,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div ~ span';
+      const expected = 'div ~ span';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -323,11 +301,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'td', name: 'td' },
       ] as const satisfies Token[];
 
-      type Expected = 'col||td';
+      const expected = 'col||td';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 
@@ -343,11 +320,10 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'li', name: 'li' },
       ] as const satisfies Token[];
 
-      type Expected = 'ul>li+li~li';
+      const expected = 'ul>li+li~li';
 
       const result = stringify(input);
-
-      expectTypeOf(result).toEqualTypeOf<Expected>();
+      expect(result).toEqual(expected);
     });
   });
 });
@@ -359,11 +335,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'class', content: '.container', name: 'container' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.container';
+    const expected = 'div.container';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify type with ID', () => {
@@ -372,11 +347,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'id', content: '#main', name: 'main' },
     ] as const satisfies Token[];
 
-    type Expected = 'div#main';
+    const expected = 'div#main';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify type with class and ID', () => {
@@ -386,11 +360,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'id', content: '#main', name: 'main' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.container#main';
+    const expected = 'div.container#main';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify multiple classes', () => {
@@ -401,11 +374,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'class', content: '.class3', name: 'class3' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.class1.class2.class3';
+    const expected = 'div.class1.class2.class3';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify multiple IDs', () => {
@@ -415,11 +387,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'id', content: '#id2', name: 'id2' },
     ] as const satisfies Token[];
 
-    type Expected = 'div#id1#id2';
+    const expected = 'div#id1#id2';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify type with pseudo-class', () => {
@@ -428,11 +399,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'pseudo-class', content: ':hover', name: 'hover' },
     ] as const satisfies Token[];
 
-    type Expected = 'a:hover';
+    const expected = 'a:hover';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify type with pseudo-element', () => {
@@ -441,11 +411,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'pseudo-element', content: '::first-line', name: 'first-line' },
     ] as const satisfies Token[];
 
-    type Expected = 'p::first-line';
+    const expected = 'p::first-line';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify type with pseudo-class and pseudo-element', () => {
@@ -455,11 +424,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'pseudo-element', content: '::after', name: 'after' },
     ] as const satisfies Token[];
 
-    type Expected = 'a:hover::after';
+    const expected = 'a:hover::after';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify complex compound selector', () => {
@@ -472,11 +440,10 @@ describe('stringify - Compound Selectors', () => {
       { type: 'pseudo-element', content: '::before', name: 'before' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.class#id[attr]:hover::before';
+    const expected = 'div.class#id[attr]:hover::before';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });
 
@@ -484,11 +451,10 @@ describe('stringify - Attribute Selectors', () => {
   it('should stringify attribute presence', () => {
     const input = [{ type: 'attribute', content: '[disabled]', name: 'disabled' }] as const satisfies Token[];
 
-    type Expected = '[disabled]';
+    const expected = '[disabled]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with equals', () => {
@@ -496,11 +462,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[type="text"]', name: 'type', operator: '=', value: '"text"' },
     ] as const satisfies Token[];
 
-    type Expected = '[type="text"]';
+    const expected = '[type="text"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with tilde equals', () => {
@@ -508,11 +473,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[class~="active"]', name: 'class', operator: '~=', value: '"active"' },
     ] as const satisfies Token[];
 
-    type Expected = '[class~="active"]';
+    const expected = '[class~="active"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with pipe equals', () => {
@@ -520,11 +484,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[lang|="en"]', name: 'lang', operator: '|=', value: '"en"' },
     ] as const satisfies Token[];
 
-    type Expected = '[lang|="en"]';
+    const expected = '[lang|="en"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with caret equals', () => {
@@ -532,11 +495,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[href^="https"]', name: 'href', operator: '^=', value: '"https"' },
     ] as const satisfies Token[];
 
-    type Expected = '[href^="https"]';
+    const expected = '[href^="https"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with dollar equals', () => {
@@ -544,11 +506,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[href$=".pdf"]', name: 'href', operator: '$=', value: '".pdf"' },
     ] as const satisfies Token[];
 
-    type Expected = '[href$=".pdf"]';
+    const expected = '[href$=".pdf"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with asterisk equals', () => {
@@ -556,11 +517,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[href*="example"]', name: 'href', operator: '*=', value: '"example"' },
     ] as const satisfies Token[];
 
-    type Expected = '[href*="example"]';
+    const expected = '[href*="example"]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with case insensitive flag', () => {
@@ -575,11 +535,10 @@ describe('stringify - Attribute Selectors', () => {
       },
     ] as const satisfies Token[];
 
-    type Expected = '[type="text" i]';
+    const expected = '[type="text" i]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify attribute with case sensitive flag', () => {
@@ -594,11 +553,10 @@ describe('stringify - Attribute Selectors', () => {
       },
     ] as const satisfies Token[];
 
-    type Expected = '[type="text" s]';
+    const expected = '[type="text" s]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify multiple attributes', () => {
@@ -607,11 +565,10 @@ describe('stringify - Attribute Selectors', () => {
       { type: 'attribute', content: '[disabled]', name: 'disabled' },
     ] as const satisfies Token[];
 
-    type Expected = '[type="text"][disabled]';
+    const expected = '[type="text"][disabled]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });
 
@@ -619,31 +576,28 @@ describe('stringify - Namespaces', () => {
   it('should stringify namespace with type', () => {
     const input = [{ type: 'type', content: 'svg|rect', name: 'rect', namespace: 'svg' }] as const satisfies Token[];
 
-    type Expected = 'svg|rect';
+    const expected = 'svg|rect';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify universal namespace', () => {
     const input = [{ type: 'type', content: '*|div', name: 'div', namespace: '*' }] as const satisfies Token[];
 
-    type Expected = '*|div';
+    const expected = '*|div';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify explicit no namespace', () => {
     const input = [{ type: 'type', content: '|div', name: 'div', namespace: '' }] as const satisfies Token[];
 
-    type Expected = '|div';
+    const expected = '|div';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify namespace with attribute', () => {
@@ -651,21 +605,19 @@ describe('stringify - Namespaces', () => {
       { type: 'attribute', content: '[svg|href]', name: 'href', namespace: 'svg' },
     ] as const satisfies Token[];
 
-    type Expected = '[svg|href]';
+    const expected = '[svg|href]';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify universal namespace with universal selector', () => {
     const input = [{ type: 'universal', content: 'svg|*', namespace: 'svg' }] as const satisfies Token[];
 
-    type Expected = 'svg|*';
+    const expected = 'svg|*';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });
 
@@ -677,11 +629,10 @@ describe('stringify - Selector Lists', () => {
       { type: 'type', content: 'span', name: 'span' },
     ] as const satisfies Token[];
 
-    type Expected = 'div,span';
+    const expected = 'div,span';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify comma separated with spaces', () => {
@@ -691,11 +642,10 @@ describe('stringify - Selector Lists', () => {
       { type: 'type', content: 'span', name: 'span' },
     ] as const satisfies Token[];
 
-    type Expected = 'div, span';
+    const expected = 'div, span';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify multiple comma separated selectors', () => {
@@ -707,11 +657,10 @@ describe('stringify - Selector Lists', () => {
       { type: 'type', content: 'div', name: 'div' },
     ] as const satisfies Token[];
 
-    type Expected = '.class1,#id1,div';
+    const expected = '.class1,#id1,div';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });
 
@@ -728,11 +677,10 @@ describe('stringify - Complex Selectors', () => {
       { type: 'pseudo-class', content: ':first-child', name: 'first-child' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.container>ul.list li:first-child';
+    const expected = 'div.container>ul.list li:first-child';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify selector with multiple attributes', () => {
@@ -744,11 +692,10 @@ describe('stringify - Complex Selectors', () => {
       { type: 'type', content: 'label', name: 'label' },
     ] as const satisfies Token[];
 
-    type Expected = 'input[type="radio"][value="female"]+label';
+    const expected = 'input[type="radio"][value="female"]+label';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify selector with :not pseudo-class', () => {
@@ -758,11 +705,10 @@ describe('stringify - Complex Selectors', () => {
       { type: 'pseudo-class', content: ':not([tabindex])', name: 'not', argument: '[tabindex]' },
     ] as const satisfies Token[];
 
-    type Expected = 'a:not([href]):not([tabindex])';
+    const expected = 'a:not([href]):not([tabindex])';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });
 
@@ -770,31 +716,28 @@ describe('stringify - Edge Cases', () => {
   it('should stringify empty array', () => {
     const input = [] as const satisfies Token[];
 
-    type Expected = '';
+    const expected = '';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify single selector alone', () => {
     const input = [{ type: 'class', content: '.standalone', name: 'standalone' }] as const satisfies Token[];
 
-    type Expected = '.standalone';
+    const expected = '.standalone';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify universal selector alone', () => {
     const input = [{ type: 'universal', content: '*' }] as const satisfies Token[];
 
-    type Expected = '*';
+    const expected = '*';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify universal with class', () => {
@@ -803,11 +746,10 @@ describe('stringify - Edge Cases', () => {
       { type: 'class', content: '.class', name: 'class' },
     ] as const satisfies Token[];
 
-    type Expected = '*.class';
+    const expected = '*.class';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 
   it('should stringify very long selector', () => {
@@ -823,10 +765,9 @@ describe('stringify - Edge Cases', () => {
       { type: 'pseudo-element', content: '::before', name: 'before' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.class1.class2.class3#id[attr]:hover:focus::before';
+    const expected = 'div.class1.class2.class3#id[attr]:hover:focus::before';
 
     const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
+    expect(result).toEqual(expected);
   });
 });

@@ -26,12 +26,16 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
   let pos = 0;
 
   // Helper to check if character is whitespace
-  const isWhitespace = (char: string): boolean => {
+  const isWhitespace = (char: string | undefined): boolean => {
+    if (!char) return false;
+
     return char === ' ' || char === '\t' || char === '\n' || char === '\r';
   };
 
   // Helper to check if character is valid for identifier (CSS ident)
-  const isIdentifierChar = (char: string): boolean => {
+  const isIdentifierChar = (char: string | undefined): boolean => {
+    if (!char) return false;
+
     return (
       (char >= 'a' && char <= 'z') ||
       (char >= 'A' && char <= 'Z') ||
@@ -46,8 +50,9 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
   const readIdentifier = (startPos: number): string => {
     let result = '';
     let i = startPos;
-    while (i < selector.length && isIdentifierChar(selector[i]!)) {
-      result += selector[i];
+
+    while (i < selector.length && isIdentifierChar(selector[i])) {
+      result += selector[i] ?? '';
       i++;
     }
     return result;
@@ -56,7 +61,7 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
   // Helper to skip whitespace
   const skipWhitespace = (startPos: number): number => {
     let i = startPos;
-    while (i < selector.length && isWhitespace(selector[i]!)) {
+    while (i < selector.length && isWhitespace(selector[i])) {
       i++;
     }
     return i;
@@ -69,7 +74,7 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
     let escaped = false;
 
     while (i < selector.length) {
-      const char = selector[i];
+      const char = selector[i] ?? '';
       result += char;
 
       if (escaped) {
@@ -87,18 +92,14 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
   };
 
   // Helper to read until a specific character (with nesting support for parentheses)
-  const readUntil = (
-    startPos: number,
-    endChar: string,
-    supportNesting: boolean = false,
-  ): { value: string; endPos: number } => {
+  const readUntil = (startPos: number, endChar: string, supportNesting = false): { value: string; endPos: number } => {
     let result = '';
     let i = startPos;
     let depth = 0;
     let escaped = false;
 
     while (i < selector.length) {
-      const char = selector[i];
+      const char = selector[i] ?? '';
 
       if (escaped) {
         result += char;
@@ -160,9 +161,8 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
     }
 
     // Try to read identifier before |
-    const savedPos = i;
-    while (i < selector.length && isIdentifierChar(selector[i]!)) {
-      namespace += selector[i];
+    while (i < selector.length && isIdentifierChar(selector[i])) {
+      namespace += selector[i] ?? '';
       i++;
     }
 
@@ -175,12 +175,10 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
   };
 
   while (pos < selector.length) {
-    const startPos = pos;
     const char = selector[pos];
 
     // Skip whitespace and check for combinator
     if (char && isWhitespace(char)) {
-      const wsStart = pos;
       pos = skipWhitespace(pos);
 
       // Check if there's a combinator after whitespace
@@ -259,7 +257,6 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
       // Try to read attribute name first, then check for namespace or operator
       let namespace: string | undefined;
       let name = '';
-      const savedPos = pos;
 
       // Read the first identifier
       const firstIdent = readIdentifier(pos);
@@ -294,7 +291,7 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
           selector[pos] === '$' ||
           selector[pos] === '*'
         ) {
-          operator = selector[pos]! + selector[pos + 1]!;
+          operator = (selector[pos] ?? '') + (selector[pos + 1] ?? '');
           pos += 2;
         } else if (selector[pos] === '=') {
           operator = '=';
@@ -305,7 +302,7 @@ export function tokenize<S extends string>(selector: S): Tokenize<S> {
 
         // Read value
         if (selector[pos] === '"' || selector[pos] === "'") {
-          const quoted = readQuotedString(pos, selector[pos]!);
+          const quoted = readQuotedString(pos, selector[pos] ?? '');
           value = quoted.value;
           pos = quoted.endPos;
         } else {
