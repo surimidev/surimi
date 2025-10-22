@@ -19,7 +19,7 @@ const VIRTUAL_CSS_REGEX = new RegExp(`\\${VIRTUAL_CSS_SUFFIX}(?:\\?.*)?$`);
  *
  * for plugin options, see {@link SurimiOptions}
  */
-export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
+export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
   const { include = ['**/*.css.{ts,js}'], exclude = ['node_modules/**', '**/*.d.ts'], inlineCss = false } = options;
   const tsFileFilter = createFilter(include, exclude);
 
@@ -89,143 +89,141 @@ if (import.meta.hot) {
     return jsCode;
   };
 
-  return [
-    {
-      name: 'vite-plugin-surimi',
-      configResolved(config) {
-        resolvedConfig = config;
-        isDev = config.command !== 'build' && !config.build.watch;
-      },
-      buildStart() {
-        this.warn(
-          'Surimi is still in early development. Please report any issues you encounter at https://github.com/janis-me/surimi\n',
-        );
-      },
-      handleHotUpdate({ file, server }) {
-        const modules = [];
+  return {
+    name: 'vite-plugin-surimi',
+    configResolved(config) {
+      resolvedConfig = config;
+      isDev = config.command !== 'build' && !config.build.watch;
+    },
+    buildStart() {
+      this.warn(
+        'Surimi is still in early development. Please report any issues you encounter at https://github.com/janis-me/surimi\n',
+      );
+    },
+    handleHotUpdate({ file, server }) {
+      const modules = [];
 
-        if (tsFileFilter(file)) {
-          // Direct change to a .css.ts file
-          compilationCache.delete(file);
-          modules.push(...collectModulesForInvalidation(file, server, inlineCss));
-          modules.push(...collectDependentModules(file, server));
-        } else {
-          // Check if any .css.ts files depend on this changed file
-          modules.push(...collectDependentModules(file, server));
+      if (tsFileFilter(file)) {
+        // Direct change to a .css.ts file
+        compilationCache.delete(file);
+        modules.push(...collectModulesForInvalidation(file, server, inlineCss));
+        modules.push(...collectDependentModules(file, server));
+      } else {
+        // Check if any .css.ts files depend on this changed file
+        modules.push(...collectDependentModules(file, server));
+      }
+
+      // Only return modules if we found any to handle,
+      // otherwise, let vite handle it as usual
+      if (modules.length > 0) {
+        return modules;
+      }
+    },
+    resolveId: {
+      filter: {
+        id: {
+          include: [VIRTUAL_CSS_REGEX],
+        },
+      },
+      handler(source) {
+        if (!resolvedConfig) throw new Error('resolveId called before config was resolved');
+
+        const [validId, query] = source.split('?');
+
+        // Handle virtual CSS imports
+        if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
+          // In SSR Mode, we can end up with paths like /src/styles.css.ts
+          const absoluteId = getAbsoluteId(validId, resolvedConfig);
+
+          return query ? `${absoluteId}?${query}` : absoluteId;
         }
-
-        // Only return modules if we found any to handle,
-        // otherwise, let vite handle it as usual
-        if (modules.length > 0) {
-          return modules;
-        }
+        return null;
       },
-      resolveId: {
-        filter: {
-          id: {
-            include: [VIRTUAL_CSS_REGEX],
-          },
-        },
-        handler(source) {
-          if (!resolvedConfig) throw new Error('resolveId called before config was resolved');
-
-          const [validId, query] = source.split('?');
-
-          // Handle virtual CSS imports
-          if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-            // In SSR Mode, we can end up with paths like /src/styles.css.ts
-            const absoluteId = getAbsoluteId(validId, resolvedConfig);
-
-            return query ? `${absoluteId}?${query}` : absoluteId;
-          }
-          return null;
+    },
+    load: {
+      filter: {
+        id: {
+          include: [VIRTUAL_CSS_REGEX],
         },
       },
-      load: {
-        filter: {
-          id: {
-            include: [VIRTUAL_CSS_REGEX],
-          },
-        },
-        async handler(id) {
-          if (!resolvedConfig) throw new Error('load handler called before config was resolved');
+      async handler(id) {
+        if (!resolvedConfig) throw new Error('load handler called before config was resolved');
 
-          const [validId] = id.split('?');
-          // Load virtual CSS files. Surimi TS files are handled in transform()
-          if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-            const originalId = getSourceIdFromVirtual(validId);
-            // In SSR Mode, we can end up with paths like /src/styles.css.ts
-            const absoluteId = getAbsoluteId(originalId, resolvedConfig);
-            let cacheEntry = compilationCache.get(absoluteId);
+        const [validId] = id.split('?');
+        // Load virtual CSS files. Surimi TS files are handled in transform()
+        if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
+          const originalId = getSourceIdFromVirtual(validId);
+          // In SSR Mode, we can end up with paths like /src/styles.css.ts
+          const absoluteId = getAbsoluteId(originalId, resolvedConfig);
+          let cacheEntry = compilationCache.get(absoluteId);
 
-            // If cache entry is missing (e.g., during HMR), regenerate it
-            if (!cacheEntry && tsFileFilter(absoluteId)) {
-              this.debug(`Regenerating cache for: ${absoluteId}`);
-              cacheEntry = await getCompilationResult(absoluteId);
-            }
-
-            if (cacheEntry) {
-              return {
-                code: cacheEntry.css,
-                map: {
-                  version: 3,
-                  file: path.basename(validId),
-                  sources: [path.basename(absoluteId)],
-                  names: [],
-                  mappings: '',
-                },
-              };
-            } else {
-              this.error(`Missing build cache entry for virtual CSS file: ${id}`);
-            }
-          }
-          return null;
-        },
-      },
-      transform: {
-        filter: {
-          id: {
-            include,
-            exclude,
-          },
-        },
-        async handler(_, id, options) {
-          if (options?.ssr && inlineCss) {
-            this.error('The inlineCss option is not supported during SSR builds.');
+          // If cache entry is missing (e.g., during HMR), regenerate it
+          if (!cacheEntry && tsFileFilter(absoluteId)) {
+            this.debug(`Regenerating cache for: ${absoluteId}`);
+            cacheEntry = await getCompilationResult(absoluteId);
           }
 
-          try {
-            const { css, js, dependencies } = await getCompilationResult(id);
-            const jsCode = generateJsWithHmr(js, css, id);
-
-            // Add file dependencies for proper HMR
-            if (isDev && !options?.ssr) {
-              dependencies.forEach((dep: string) => {
-                if (!filesWatched.has(dep)) {
-                  filesWatched.add(dep);
-                  this.addWatchFile(dep);
-                }
-              });
-            }
-
+          if (cacheEntry) {
             return {
-              code: jsCode,
+              code: cacheEntry.css,
               map: {
                 version: 3,
-                file: path.basename(id),
-                sources: [path.basename(id)],
+                file: path.basename(validId),
+                sources: [path.basename(absoluteId)],
                 names: [],
                 mappings: '',
               },
             };
-          } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            this.error(`Failed to compile Surimi file ${id}: ${message}`);
+          } else {
+            this.error(`Missing build cache entry for virtual CSS file: ${id}`);
           }
-        },
+        }
+        return null;
       },
     },
-  ];
+    transform: {
+      filter: {
+        id: {
+          include,
+          exclude,
+        },
+      },
+      async handler(_, id, options) {
+        if (options?.ssr && inlineCss) {
+          this.error('The inlineCss option is not supported during SSR builds.');
+        }
+
+        try {
+          const { css, js, dependencies } = await getCompilationResult(id);
+          const jsCode = generateJsWithHmr(js, css, id);
+
+          // Add file dependencies for proper HMR
+          if (isDev && !options?.ssr) {
+            dependencies.forEach((dep: string) => {
+              if (!filesWatched.has(dep)) {
+                filesWatched.add(dep);
+                this.addWatchFile(dep);
+              }
+            });
+          }
+
+          return {
+            code: jsCode,
+            map: {
+              version: 3,
+              file: path.basename(id),
+              sources: [path.basename(id)],
+              names: [],
+              mappings: '',
+            },
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          this.error(`Failed to compile Surimi file ${id}: ${message}`);
+        }
+      },
+    },
+  };
 }
 
 export function injectCssChunk(css: string, id: string, isDev = false): string {

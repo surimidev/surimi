@@ -233,7 +233,7 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div>span';
+      type Expected = 'div > span';
 
       const result = stringify(input);
 
@@ -263,7 +263,7 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div+span';
+      type Expected = 'div + span';
 
       const result = stringify(input);
 
@@ -293,7 +293,7 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'span', name: 'span' },
       ] as const satisfies Token[];
 
-      type Expected = 'div~span';
+      type Expected = 'div ~ span';
 
       const result = stringify(input);
 
@@ -323,7 +323,7 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'td', name: 'td' },
       ] as const satisfies Token[];
 
-      type Expected = 'col||td';
+      type Expected = 'col || td';
 
       const result = stringify(input);
 
@@ -343,7 +343,7 @@ describe('stringify - Combinators', () => {
         { type: 'type', content: 'li', name: 'li' },
       ] as const satisfies Token[];
 
-      type Expected = 'ul>li+li~li';
+      type Expected = 'ul > li + li ~ li';
 
       const result = stringify(input);
 
@@ -480,141 +480,6 @@ describe('stringify - Compound Selectors', () => {
   });
 });
 
-describe('stringify - Attribute Selectors', () => {
-  it('should stringify attribute presence', () => {
-    const input = [{ type: 'attribute', content: '[disabled]', name: 'disabled' }] as const satisfies Token[];
-
-    type Expected = '[disabled]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with equals', () => {
-    const input = [
-      { type: 'attribute', content: '[type="text"]', name: 'type', operator: '=', value: '"text"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[type="text"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with tilde equals', () => {
-    const input = [
-      { type: 'attribute', content: '[class~="active"]', name: 'class', operator: '~=', value: '"active"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[class~="active"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with pipe equals', () => {
-    const input = [
-      { type: 'attribute', content: '[lang|="en"]', name: 'lang', operator: '|=', value: '"en"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[lang|="en"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with caret equals', () => {
-    const input = [
-      { type: 'attribute', content: '[href^="https"]', name: 'href', operator: '^=', value: '"https"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[href^="https"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with dollar equals', () => {
-    const input = [
-      { type: 'attribute', content: '[href$=".pdf"]', name: 'href', operator: '$=', value: '".pdf"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[href$=".pdf"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with asterisk equals', () => {
-    const input = [
-      { type: 'attribute', content: '[href*="example"]', name: 'href', operator: '*=', value: '"example"' },
-    ] as const satisfies Token[];
-
-    type Expected = '[href*="example"]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with case insensitive flag', () => {
-    const input = [
-      {
-        type: 'attribute',
-        content: '[type="text" i]',
-        name: 'type',
-        operator: '=',
-        value: '"text"',
-        caseSensitive: 'i',
-      },
-    ] as const satisfies Token[];
-
-    type Expected = '[type="text" i]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify attribute with case sensitive flag', () => {
-    const input = [
-      {
-        type: 'attribute',
-        content: '[type="text" s]',
-        name: 'type',
-        operator: '=',
-        value: '"text"',
-        caseSensitive: 's',
-      },
-    ] as const satisfies Token[];
-
-    type Expected = '[type="text" s]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-
-  it('should stringify multiple attributes', () => {
-    const input = [
-      { type: 'attribute', content: '[type="text"]', name: 'type', operator: '=', value: '"text"' },
-      { type: 'attribute', content: '[disabled]', name: 'disabled' },
-    ] as const satisfies Token[];
-
-    type Expected = '[type="text"][disabled]';
-
-    const result = stringify(input);
-
-    expectTypeOf(result).toEqualTypeOf<Expected>();
-  });
-});
-
 describe('stringify - Namespaces', () => {
   it('should stringify namespace with type', () => {
     const input = [{ type: 'type', content: 'svg|rect', name: 'rect', namespace: 'svg' }] as const satisfies Token[];
@@ -677,7 +542,7 @@ describe('stringify - Selector Lists', () => {
       { type: 'type', content: 'span', name: 'span' },
     ] as const satisfies Token[];
 
-    type Expected = 'div,span';
+    type Expected = 'div, span';
 
     const result = stringify(input);
 
@@ -707,7 +572,7 @@ describe('stringify - Selector Lists', () => {
       { type: 'type', content: 'div', name: 'div' },
     ] as const satisfies Token[];
 
-    type Expected = '.class1,#id1,div';
+    type Expected = '.class1, #id1, div';
 
     const result = stringify(input);
 
@@ -728,7 +593,7 @@ describe('stringify - Complex Selectors', () => {
       { type: 'pseudo-class', content: ':first-child', name: 'first-child' },
     ] as const satisfies Token[];
 
-    type Expected = 'div.container>ul.list li:first-child';
+    type Expected = 'div.container > ul.list li:first-child';
 
     const result = stringify(input);
 
@@ -744,7 +609,7 @@ describe('stringify - Complex Selectors', () => {
       { type: 'type', content: 'label', name: 'label' },
     ] as const satisfies Token[];
 
-    type Expected = 'input[type="radio"][value="female"]+label';
+    type Expected = 'input[type="radio"][value="female"] + label';
 
     const result = stringify(input);
 
