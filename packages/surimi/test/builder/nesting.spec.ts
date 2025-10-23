@@ -71,7 +71,7 @@ describe('Nesting and Complex Combinations', () => {
 .multi-style:hover {
     background-color: gray
 }
-@media (max-width: 768px) {
+@media ( max-width : 768px ) {
     .multi-style {
         flex-direction: column
     }
@@ -112,7 +112,7 @@ describe('Nesting and Complex Combinations', () => {
 .complex:hover {
     color: blue
 }
-@media (max-width: 600px) {
+@media ( max-width : 600px ) {
     .complex {
         color: green
     }
@@ -131,7 +131,7 @@ describe('Nesting and Complex Combinations', () => {
 .parent > a:hover {
     color: blue
 }
-@media (max-width: 600px) {
+@media ( max-width : 600px ) {
     .parent > a {
         color: red
     }

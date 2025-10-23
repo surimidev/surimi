@@ -198,7 +198,7 @@ describe('Enhanced Navigation', () => {
       builder.parent().style({ display: 'flex' });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 768px) {
+@media ( min-width : 768px ) {
     .container > .item {
         flex-direction: row
     }
@@ -215,18 +215,14 @@ describe('Enhanced Navigation', () => {
       builder.main().style({ width: '100%' });
 
       expect(Surimi.build()).toBe(`\
-@media (max-width: 600px) {
+@media ( max-width : 600px ) {
     .sidebar > .menu > .item {
         font-size: 14px
     }
-}
-
-@media (max-width: 600px) {
     .sidebar {
         width: 100%
     }
-}
-`);
+}`);
     });
   });
 });

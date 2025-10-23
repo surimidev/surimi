@@ -14,7 +14,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 768px) {
+@media ( min-width : 768px ) {
     .container {
         flex-direction: row
     }
@@ -27,7 +27,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (max-width: 768px) {
+@media ( max-width : 768px ) {
     .mobile-nav {
         display: block
     }
@@ -40,7 +40,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 768px) and (max-width: 1024px) {
+@media ( min-width : 768px ) and ( max-width : 1024px ) {
     .tablet-layout {
         columns: 2
     }
@@ -66,7 +66,7 @@ describe('Media Queries', () => {
       media().minWidth('768px').select('.button').hover().style({ backgroundColor: 'blue' });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 768px) {
+@media ( min-width : 768px ) {
     .button:hover {
         background-color: blue
     }
@@ -81,7 +81,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 600px) and (max-width: 1200px) {
+@media ( min-width : 600px ) and ( max-width : 1200px ) {
     .responsive {
         font-size: 18px
     }
@@ -94,7 +94,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (orientation: landscape) {
+@media ( orientation : landscape ) {
     .landscape-only {
         display: block
     }
@@ -107,7 +107,7 @@ describe('Media Queries', () => {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (min-resolution: 2dppx) {
+@media ( min-resolution : 2dppx ) {
     .high-res {
         border: 1px solid black
     }

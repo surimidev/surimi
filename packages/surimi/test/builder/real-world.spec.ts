@@ -310,19 +310,19 @@ a:hover {
     width: 100%;
     padding: 1rem
 }
-@media (min-width: 640px) {
+@media ( min-width : 640px ) {
     .container {
         max-width: 640px;
         margin: 0 auto
     }
 }
-@media (min-width: 768px) {
+@media ( min-width : 768px ) {
     .container {
         max-width: 768px;
         padding: 2rem
     }
 }
-@media (min-width: 1024px) {
+@media ( min-width : 1024px ) {
     .container {
         max-width: 1024px
     }
@@ -330,12 +330,12 @@ a:hover {
 h1 {
     font-size: 2rem
 }
-@media (min-width: ) {
+@media ( min-width : ) {
     h1 {
         font-size: 3rem
     }
 }
-@media (prefers-color-scheme: dark) {
+@media ( prefers-color-scheme : dark ) {
     body {
         background-color: #1f2937;
         color: #f9fafb
@@ -368,18 +368,18 @@ h1 {
       });
 
       expect(Surimi.build()).toBe(`\
-@media (min-width: 1024px) {
+@media ( min-width : 1024px ) {
     .btn:hover {
         transform: scale(1.05);
         transition: transform 0.2s ease
     }
 }
-@media (hover: none) {
+@media ( hover : none ) {
     .btn {
         transform: none
     }
 }
-@media (prefers-reduced-motion: no-preference) {
+@media ( prefers-reduced-motion : no-preference ) {
     .btn:focus {
         outline: 2px solid #3b82f6;
         outline-offset: 2px;
@@ -403,7 +403,7 @@ h1 {
         });
 
       expect(Surimi.build()).toBe(`\
-@media (max-width: 600px) and (min-height: 200px) {
+@media ( max-width : 600px ) and ( min-height : 200px ) {
     html .button:hover > .icon:where(.svg) {
         display: none
     }
@@ -442,8 +442,8 @@ h1 {
       select('.bg-gray-100').style({ backgroundColor: '#f3f4f6' });
 
       // Responsive utilities
-      media().minWidth('768px').select('.md\\:flex').style({ display: 'flex' });
-      media().minWidth('1024px').select('.lg\\:text-xl').style({ fontSize: '1.25rem' });
+      media().minWidth('768px').select('.md:flex').style({ display: 'flex' });
+      media().minWidth('1024px').select('.lg:text-xl').style({ fontSize: '1.25rem' });
 
       expect(Surimi.build()).toBe(`\
 .p-4 {
@@ -503,13 +503,13 @@ h1 {
 .bg-gray-100 {
     background-color: #f3f4f6
 }
-@media (min-width: 768px) {
-    .md\\:flex {
+@media ( min-width : 768px ) {
+    .md:flex {
         display: flex
     }
 }
-@media (min-width: 1024px) {
-    .lg\\:text-xl {
+@media ( min-width : 1024px ) {
+    .lg:text-xl {
         font-size: 1.25rem
     }
 }`);
