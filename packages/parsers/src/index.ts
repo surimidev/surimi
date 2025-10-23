@@ -1,17 +1,3 @@
-export { tokenizeSelector, stringifySelector, tokenizeAtRule, stringifyAtRule } from '#lib/index';
+export { tokenizeSelector, stringifySelector, tokenizeAtRule, stringifyAtRule, stringify, tokenize } from '#lib/index';
 
-export type {
-  Tokenize,
-  Stringify,
-  Token,
-  AttributeToken,
-  IdToken,
-  ClassToken,
-  CommaToken,
-  CombinatorToken,
-  PseudoElementToken,
-  PseudoClassToken,
-  UniversalToken,
-  TypeToken,
-  UnknownToken,
-} from '#types/selector/index';
+export type * from '#types';

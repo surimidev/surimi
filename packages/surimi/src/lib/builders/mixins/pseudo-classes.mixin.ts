@@ -1,4 +1,5 @@
-import type { ExtractBuildContextFromString } from '#types/builder.types';
+import { Tokenize } from '@surimi/parsers';
+
 import type { BasePseudoClasses } from '#types/css.types';
 import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
 
@@ -15,13 +16,23 @@ type WithPseudoClassMethods<_TContext extends string> = {
  * Each method corresponds to a CSS pseudo-class and returns a new SelectorBuilder, tagged with the appropriate pseudo-class.
  */
 export class WithPseudoClasses<TContext extends string>
-  extends CoreBuilder<ExtractBuildContextFromString<TContext>>
+  extends CoreBuilder<Tokenize<TContext>>
   implements WithPseudoClassMethods<TContext>
 {
   protected createPseudoClass<TPseudoClass extends string>(
     pseudoClass: TPseudoClass,
-  ): SelectorBuilder<`${TContext}::${TPseudoClass}`> {
-    return new SelectorBuilder([...this.context, { pseudoClass }] as never, this.postcssRoot);
+  ): SelectorBuilder<`${TContext}:${TPseudoClass}`> {
+    const newToken = {
+      type: 'pseudo-class',
+      name: pseudoClass,
+      content: `:${pseudoClass}`,
+    };
+
+    return new SelectorBuilder<`${TContext}:${TPseudoClass}`>(
+      [...this.context, newToken] as never,
+      this.postcssContainer,
+      this.postcssRoot,
+    );
   }
 
   public dir = (dir: 'rtl' | 'ltr') => this.createPseudoClass(`dir(${dir})`);

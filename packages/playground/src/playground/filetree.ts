@@ -35,7 +35,7 @@ media().maxWidth('600px').and().maxHeight('800px').select('#app').style({
 });
 `;
 
-const PACKAGE_JSON = JSON.stringifySelector(
+const PACKAGE_JSON = JSON.stringify(
   {
     name: 'surimi-playground-app',
     type: 'module',

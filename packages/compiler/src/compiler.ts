@@ -78,13 +78,13 @@ async function execute(code: string): Promise<{ css: string; js: string }> {
       if (key !== 'default' && key !== '__SURIMI_GENERATED_CSS__') {
         if (typeof value === 'string') {
           // Regular string export
-          exports.push(`export const ${key} = ${JSON.stringifySelector(value)};`);
+          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
         } else if (typeof value === 'object' && value !== null) {
           // Other object exports (like theme objects)
-          exports.push(`export const ${key} = ${JSON.stringifySelector(value)};`);
+          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
         } else {
           // Fallback for other types
-          exports.push(`export const ${key} = ${JSON.stringifySelector(String(value))};`);
+          exports.push(`export const ${key} = ${JSON.stringify(String(value))};`);
         }
       }
     }

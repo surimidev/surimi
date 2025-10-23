@@ -1,5 +1,6 @@
+import { stringifyAtRule, TokenizeAtRule, tokenizeAtRule } from '@surimi/parsers';
+
 import { _select } from '#lib/api/select';
-import { Surimi } from '#surimi';
 import type {
   BaseRangedMediaDescriptor,
   DiscreteMediaDescriptor,
@@ -7,8 +8,9 @@ import type {
   MediaQueryRangeOperator,
   MediaType,
 } from '#types/css.types';
-import type { ValidSelector } from '#types/selector.types';
-import type { ArrayWithAtLeastOneItem, KebabCaseToCamelCase } from '#types/util.types';
+import type { KebabCaseToCamelCase } from '#types/util.types';
+
+import { AtRule } from './at-rule.builder';
 
 type MediaQueryBuilderDiscreteFunctions = {
   // Can have either no params, or a single param with some value.
@@ -52,34 +54,31 @@ export type MediaQueryBuilderFunctions<T extends string> = MediaQueryBuilderDisc
   MediaQueryBuilderTypeFunctions<T> &
   MediaQueryBuilderOperatorFunctions<T>;
 
-type RemoveMediaQueryString<T extends string> = T extends `@media ${infer R}` ? R : never;
-
 /**
  * Builder for media queries that supports selecting elements within the media query
  *
  * @experimental The MediaQueryBuilder API is experimental and may cause faulty code if used incorrectly.
  * It gives you full freedome to write incorrect media queries that Surimi cannot validate for you (yet).
  *
+ * Internally, this is an extension to the `AtRule` builder that adds media query specific methods.
+ *
  * @link [CSSWG Specification](https://drafts.csswg.org/mediaqueries/#descdef-media-width)
  */
-export class MediaQueryBuilder<TQuery extends string> implements MediaQueryBuilderFunctions<TQuery> {
-  private query: TQuery = '' as TQuery;
-
-  constructor(query: TQuery = '@media' as TQuery) {
-    this.query = query;
-  }
-
+export class MediaQueryBuilder<TQuery extends string>
+  extends AtRule<TQuery>
+  implements MediaQueryBuilderFunctions<TQuery>
+{
   private createMediaQueryBuilderWithParameter<TNewParam extends string>(
     parameter: TNewParam,
   ): MediaQueryBuilder<`${TQuery} ${TNewParam}`> {
-    return new MediaQueryBuilder(`${this.query} ${parameter}`);
+    const currentContextString = stringifyAtRule(this.context);
+    const newContext = tokenizeAtRule(
+      `${currentContextString} ${parameter}`,
+    ) as TokenizeAtRule<`${TQuery} ${TNewParam}`>;
+
+    return new MediaQueryBuilder(newContext as never, this.postcssContainer, this.postcssRoot);
   }
 
-  public select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: TSelectors) {
-    const params = this.query.replace('@media ', '') as RemoveMediaQueryString<TQuery>;
-
-    return _select([{ atRule: '@media', params }] as const, Surimi.root, selectors);
-  }
   // ------------
   // Media Types
   // ------------

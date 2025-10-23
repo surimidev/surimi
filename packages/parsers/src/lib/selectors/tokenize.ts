@@ -1,4 +1,4 @@
-import type {
+import {
   AttributeToken,
   ClassToken,
   CombinatorToken,
@@ -7,181 +7,42 @@ import type {
   PseudoClassToken,
   PseudoElementToken,
   Token,
-  Tokenize,
+  TokenizeSelector,
   TypeToken,
   UniversalToken,
-} from '#types/selector/index';
+} from '#types';
+
+import {
+  isIdentifierChar,
+  isWhitespace,
+  readIdentifier,
+  readNamespace,
+  readQuotedString,
+  readUntil,
+  skipWhitespace,
+} from '../utils';
 
 /**
  * Tokenizes a CSS selector string into an array of tokens.
  * This implementation uses character-by-character parsing to make it
  * reproducible as TypeScript types.
  */
-export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
+export function tokenizeSelector<S extends string>(selector: S): TokenizeSelector<S> {
   const tokens: Token[] = [];
   let pos = 0;
-
-  // Helper to check if character is whitespace
-  const isWhitespace = (char: string | undefined): boolean => {
-    if (!char) return false;
-
-    return char === ' ' || char === '\t' || char === '\n' || char === '\r';
-  };
-
-  // Helper to check if character is valid for identifier (CSS ident)
-  const isIdentifierChar = (char: string | undefined): boolean => {
-    if (!char) return false;
-
-    return (
-      (char >= 'a' && char <= 'z') ||
-      (char >= 'A' && char <= 'Z') ||
-      (char >= '0' && char <= '9') ||
-      char === '-' ||
-      char === '_' ||
-      char.charCodeAt(0) > 127 // Non-ASCII characters
-    );
-  };
-
-  // Helper to read an identifier
-  const readIdentifier = (startPos: number): string => {
-    let result = '';
-    let i = startPos;
-
-    while (i < selector.length && isIdentifierChar(selector[i])) {
-      result += selector[i] ?? '';
-      i++;
-    }
-    return result;
-  };
-
-  // Helper to skip whitespace
-  const skipWhitespace = (startPos: number): number => {
-    let i = startPos;
-    while (i < selector.length && isWhitespace(selector[i])) {
-      i++;
-    }
-    return i;
-  };
-
-  // Helper to read quoted string
-  const readQuotedString = (startPos: number, quote: string): { value: string; endPos: number } => {
-    let result = quote;
-    let i = startPos + 1;
-    let escaped = false;
-
-    while (i < selector.length) {
-      const char = selector[i] ?? '';
-      result += char;
-
-      if (escaped) {
-        escaped = false;
-      } else if (char === '\\') {
-        escaped = true;
-      } else if (char === quote) {
-        return { value: result, endPos: i + 1 };
-      }
-
-      i++;
-    }
-
-    return { value: result, endPos: i };
-  };
-
-  // Helper to read until a specific character (with nesting support for parentheses)
-  const readUntil = (startPos: number, endChar: string, supportNesting = false): { value: string; endPos: number } => {
-    let result = '';
-    let i = startPos;
-    let depth = 0;
-    let escaped = false;
-
-    while (i < selector.length) {
-      const char = selector[i] ?? '';
-
-      if (escaped) {
-        result += char;
-        escaped = false;
-        i++;
-        continue;
-      }
-
-      if (char === '\\') {
-        escaped = true;
-        result += char;
-        i++;
-        continue;
-      }
-
-      // Handle quoted strings
-      if (char === '"' || char === "'") {
-        const quoted = readQuotedString(i, char);
-        result += quoted.value;
-        i = quoted.endPos;
-        continue;
-      }
-
-      if (supportNesting) {
-        if (char === '(') {
-          depth++;
-        } else if (char === ')') {
-          if (depth === 0) {
-            return { value: result, endPos: i };
-          }
-          depth--;
-        }
-      } else {
-        if (char === endChar) {
-          return { value: result, endPos: i };
-        }
-      }
-
-      result += char;
-      i++;
-    }
-
-    return { value: result, endPos: i };
-  };
-
-  // Helper to read namespace (before |)
-  const readNamespace = (startPos: number): { namespace: string | undefined; endPos: number } => {
-    let i = startPos;
-    let namespace = '';
-
-    // Check for explicit namespace or universal namespace
-    if (selector[i] === '*') {
-      i++;
-      if (selector[i] === '|') {
-        return { namespace: '*', endPos: i + 1 };
-      }
-      // Just a universal selector, not a namespace
-      return { namespace: undefined, endPos: startPos };
-    }
-
-    // Try to read identifier before |
-    while (i < selector.length && isIdentifierChar(selector[i])) {
-      namespace += selector[i] ?? '';
-      i++;
-    }
-
-    if (i < selector.length && selector[i] === '|') {
-      return { namespace: namespace || undefined, endPos: i + 1 };
-    }
-
-    // No namespace found
-    return { namespace: undefined, endPos: startPos };
-  };
 
   while (pos < selector.length) {
     const char = selector[pos];
 
     // Skip whitespace and check for combinator
     if (char && isWhitespace(char)) {
-      pos = skipWhitespace(pos);
+      pos = skipWhitespace(selector, pos);
 
       // Check if there's a combinator after whitespace
       const nextChar = selector[pos];
       if (nextChar === '>' || nextChar === '+' || nextChar === '~') {
         // Skip any whitespace after the combinator
-        pos = skipWhitespace(pos + 1);
+        pos = skipWhitespace(selector, pos + 1);
         tokens.push({
           type: 'combinator',
           content: nextChar,
@@ -199,7 +60,7 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     // Comma
     if (char === ',') {
       pos++;
-      pos = skipWhitespace(pos);
+      pos = skipWhitespace(selector, pos);
       tokens.push({
         type: 'comma',
         content: ',',
@@ -210,7 +71,7 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     // Combinator (without leading whitespace)
     if (char === '>' || char === '+' || char === '~') {
       pos++;
-      pos = skipWhitespace(pos);
+      pos = skipWhitespace(selector, pos);
       tokens.push({
         type: 'combinator',
         content: char,
@@ -221,8 +82,8 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     // ID selector
     if (char === '#') {
       pos++;
-      const name = readIdentifier(pos);
-      pos += name.length;
+      const { value: name, endPos } = readIdentifier(selector, pos, true);
+      pos = endPos;
       tokens.push({
         type: 'id',
         name,
@@ -234,8 +95,8 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     // Class selector
     if (char === '.') {
       pos++;
-      const name = readIdentifier(pos);
-      pos += name.length;
+      const { value: name, endPos } = readIdentifier(selector, pos, true);
+      pos = endPos;
       tokens.push({
         type: 'class',
         name,
@@ -248,15 +109,15 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     if (char === '[') {
       const attrStart = pos;
       pos++; // Skip [
-      pos = skipWhitespace(pos);
+      pos = skipWhitespace(selector, pos);
 
       // Try to read attribute name first, then check for namespace or operator
       let namespace: string | undefined;
       let name = '';
 
       // Read the first identifier
-      const firstIdent = readIdentifier(pos);
-      pos += firstIdent.length;
+      const { value: firstIdent, endPos: firstEnd } = readIdentifier(selector, pos, true);
+      pos = firstEnd;
 
       // Check what comes after the first identifier
       if (selector[pos] === '|' && selector[pos + 1] !== '=') {
@@ -264,14 +125,15 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
         namespace = firstIdent;
         pos++; // Skip |
         // Now read the actual attribute name
-        name = readIdentifier(pos);
-        pos += name.length;
+        const { value: attrName, endPos: attrEnd } = readIdentifier(selector, pos, true);
+        name = attrName;
+        pos = attrEnd;
       } else {
         // No namespace, the first identifier is the attribute name
         name = firstIdent;
       }
 
-      pos = skipWhitespace(pos);
+      pos = skipWhitespace(selector, pos);
 
       let operator: string | undefined;
       let value: string | undefined;
@@ -294,21 +156,21 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
           pos++;
         }
 
-        pos = skipWhitespace(pos);
+        pos = skipWhitespace(selector, pos);
 
         // Read value
         if (selector[pos] === '"' || selector[pos] === "'") {
-          const quoted = readQuotedString(pos, selector[pos] ?? '');
-          value = quoted.value;
-          pos = quoted.endPos;
+          const { value: quotedVal, endPos: quotedEnd } = readQuotedString(selector, pos, selector[pos] ?? '');
+          value = quotedVal;
+          pos = quotedEnd;
         } else {
           // Unquoted value
-          const unquoted = readIdentifier(pos);
-          value = unquoted;
-          pos += unquoted.length;
+          const { value: unquotedVal, endPos: unquotedEnd } = readIdentifier(selector, pos, true);
+          value = unquotedVal;
+          pos = unquotedEnd;
         }
 
-        pos = skipWhitespace(pos);
+        pos = skipWhitespace(selector, pos);
 
         // Check for case sensitivity flag
         if (
@@ -317,7 +179,7 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
         ) {
           caseSensitive = selector[pos] as 'i' | 'I' | 's' | 'S';
           pos++;
-          pos = skipWhitespace(pos);
+          pos = skipWhitespace(selector, pos);
         }
       }
 
@@ -354,17 +216,17 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     if (char === ':' && selector[pos + 1] === ':') {
       const pseudoStart = pos;
       pos += 2; // Skip ::
-      const name = readIdentifier(pos);
-      pos += name.length;
+      const { value: name, endPos } = readIdentifier(selector, pos, true);
+      pos = endPos;
 
       let argument: string | undefined;
 
       // Check for argument
       if (selector[pos] === '(') {
         pos++; // Skip (
-        const result = readUntil(pos, ')', true);
-        argument = result.value;
-        pos = result.endPos;
+        const { value: argValue, endPos: argEnd } = readUntil(selector, pos, ')', true);
+        argument = argValue;
+        pos = argEnd;
         if (selector[pos] === ')') {
           pos++; // Skip )
         }
@@ -389,17 +251,17 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     if (char === ':') {
       const pseudoStart = pos;
       pos++; // Skip :
-      const name = readIdentifier(pos);
-      pos += name.length;
+      const { value: name, endPos } = readIdentifier(selector, pos, true);
+      pos = endPos;
 
       let argument: string | undefined;
 
       // Check for argument
       if (selector[pos] === '(') {
         pos++; // Skip (
-        const result = readUntil(pos, ')', true);
-        argument = result.value;
-        pos = result.endPos;
+        const { value: argValue, endPos: argEnd } = readUntil(selector, pos, ')', true);
+        argument = argValue;
+        pos = argEnd;
         if (selector[pos] === ')') {
           pos++; // Skip )
         }
@@ -440,8 +302,8 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
           } as UniversalToken);
         } else {
           // namespace|type
-          const name = readIdentifier(pos);
-          pos += name.length;
+          const { value: name, endPos } = readIdentifier(selector, pos, true);
+          pos = endPos;
           tokens.push({
             type: 'type',
             namespace: '*',
@@ -460,15 +322,14 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     }
 
     // Type selector (with optional namespace)
-    if (char && isIdentifierChar(char)) {
+    if (char && isIdentifierChar(char, true)) {
       const typeStart = pos;
 
       // Check for namespace
-      const nsResult = readNamespace(pos);
-      const namespace = nsResult.namespace;
+      const { namespace, endPos: nsEnd } = readNamespace(selector, pos);
 
       if (namespace !== undefined) {
-        pos = nsResult.endPos;
+        pos = nsEnd;
 
         // After namespace|, we should have either * or a type name
         if (selector[pos] === '*') {
@@ -483,8 +344,8 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
       }
 
       // Read type name
-      const name = readIdentifier(pos);
-      pos += name.length;
+      const { value: name, endPos } = readIdentifier(selector, pos, true);
+      pos = endPos;
 
       const token: TypeToken = {
         type: 'type',
@@ -504,5 +365,5 @@ export function tokenizeSelector<S extends string>(selector: S): Tokenize<S> {
     pos++;
   }
 
-  return tokens as Tokenize<S>;
+  return tokens as TokenizeSelector<S>;
 }

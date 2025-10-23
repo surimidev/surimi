@@ -85,15 +85,3 @@ export type JoinSelectors<T extends string[]> = T extends []
           ? JoinSelectors<R>
           : `${F}, ${JoinSelectors<R>}`
       : string;
-
-/**
- * Similar to {@link JoinSelectors}, but when more than one selector is provided,
- * the result is wrapped in a group [...].
- */
-export type JoinSelectorsAsGroup<T extends string[]> = T extends []
-  ? ''
-  : T extends [infer F extends string]
-    ? F
-    : T extends [string, ...string[]]
-      ? `[${JoinSelectors<T>}]`
-      : string;

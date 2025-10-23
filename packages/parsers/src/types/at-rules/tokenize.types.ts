@@ -5,7 +5,7 @@
  */
 
 // Placeholder - will be implemented similarly to selector tokenizer
-import type { Token } from './index';
+import type { Token } from '#types';
 
 /**
  * Type-level CSS at-rule tokenizer.
@@ -346,4 +346,4 @@ type TokenizeImpl<S extends string, Tokens extends Token[] = []> = S extends ''
 /**
  * Public tokenizer type
  */
-export type Tokenize<S extends string> = TokenizeImpl<S>;
+export type TokenizeAtRule<S extends string> = TokenizeImpl<S>;

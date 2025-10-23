@@ -1,4 +1,4 @@
-import type { CombinatorToken, CommaToken, Token } from '#types/selector/index';
+import type { CombinatorToken, CommaToken, Token } from '#types';
 
 /**
  * Helper to extract the trimmed content from a combinator string.
@@ -27,12 +27,10 @@ type NormalizeToken<T extends Token> = T extends CombinatorToken
  * Recursively concatenates the normalized content of all tokens into a string literal type.
  * Takes a readonly array of tokens and produces a string literal representing the selector
  * with normalized whitespace around combinators and after commas.
- *
- * If `TDense` is true, no normalization is applied and original content is used.
  */
-export type Stringify<T extends Token[], TDense extends boolean> = T extends readonly [
+export type StringifySelector<T extends Token[]> = T extends readonly [
   infer First extends Token,
   ...infer Rest extends Token[],
 ]
-  ? `${TDense extends true ? First['content'] : NormalizeToken<First>}${Stringify<Rest, TDense>}`
+  ? `${NormalizeToken<First>}${StringifySelector<Rest>}`
   : '';

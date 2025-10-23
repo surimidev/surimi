@@ -1,16 +1,14 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
-const html = select('html').style({ backgroundColor: 'red' });
-
-html
-  .descendant('button')
-  .style({
-    color: 'white',
-    backgroundColor: 'blue',
-  })
+media()
+  .maxWidth('600px')
+  .and()
+  .minHeight('200px')
+  .select('html')
+  .descendant('.button')
   .hover()
+  .child('.icon')
+  .where('.svg')
   .style({
-    backgroundColor: 'darkblue',
+    display: 'none',
   });
-
-export const test = 'test';

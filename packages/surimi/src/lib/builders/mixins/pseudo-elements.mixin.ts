@@ -1,4 +1,5 @@
-import type { ExtractBuildContextFromString } from '#types/builder.types';
+import { Tokenize } from '@surimi/parsers';
+
 import type { BasePseudoElements } from '#types/css.types';
 import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
 
@@ -14,15 +15,24 @@ type WithPseudoElementMethods<_TContext extends string> = {
  * Each method corresponds to a CSS pseudo-element and returns a new SelectorBuilder, tagged with the appropriate pseudo-element.
  */
 export class WithPseudoElements<TContext extends string>
-  extends CoreBuilder<ExtractBuildContextFromString<TContext>>
+  extends CoreBuilder<Tokenize<TContext>>
   implements WithPseudoElementMethods<TContext>
 {
   protected createPseudoElement<TPseudoElement extends string>(
     pseudoElement: TPseudoElement,
-  ): SelectorBuilder<`${TContext}::${TPseudoElement}`> {
-    return new SelectorBuilder([...this.context, { pseudoElement }] as never, this.postcssRoot);
-  }
+  ): SelectorBuilder<`${TContext}:${TPseudoElement}`> {
+    const newToken = {
+      type: 'pseudo-element',
+      name: pseudoElement,
+      content: `::${pseudoElement}`,
+    };
 
+    return new SelectorBuilder<`${TContext}:${TPseudoElement}`>(
+      [...this.context, newToken] as never,
+      this.postcssContainer,
+      this.postcssRoot,
+    );
+  }
   public after = () => this.createPseudoElement('after');
   public backdrop = () => this.createPseudoElement('backdrop');
   public before = () => this.createPseudoElement('before');

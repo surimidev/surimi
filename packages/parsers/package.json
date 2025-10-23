@@ -36,6 +36,7 @@
   "scripts": {
     "build": "tsdown",
     "format": "prettier . --write",
+    "test": "pnpm -w test --project=parsers",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {

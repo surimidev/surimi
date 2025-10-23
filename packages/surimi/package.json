@@ -38,6 +38,7 @@
     "build:watch": "tsup --watch",
     "format": "prettier . --write",
     "prepack": "pnpm -c exec ../../scripts/replace-symlinks.sh",
+    "test": "pnpm -w test --project=surimi",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

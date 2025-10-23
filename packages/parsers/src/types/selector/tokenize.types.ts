@@ -1,4 +1,4 @@
-import type { Token } from '#types/selector/index';
+import type { Token } from '#types';
 
 /**
  * Type-level CSS selector tokenizer.
@@ -379,7 +379,7 @@ type ParseUniversal<S extends string> = S extends `*|*${infer Rest}`
 /**
  * Main tokenizer implementation
  */
-type TokenizeImpl<S extends string, Tokens extends Token[] = []> = S extends ''
+export type TokenizeSelector<S extends string, Tokens extends Token[] = []> = S extends ''
   ? Tokens
   : // Handle whitespace and combinators
     S extends `${infer Char}${infer Rest}`
@@ -387,62 +387,57 @@ type TokenizeImpl<S extends string, Tokens extends Token[] = []> = S extends ''
       ? SkipWhitespace<Rest> extends infer AfterWs extends string
         ? AfterWs extends `${infer NextChar}${infer _}`
           ? NextChar extends '>' | '+' | '~'
-            ? TokenizeImpl<
+            ? TokenizeSelector<
                 SkipWhitespace<Substring<AfterWs, 1>>,
                 [...Tokens, { type: 'combinator'; content: NextChar }]
               >
             : NextChar extends ','
-              ? TokenizeImpl<AfterWs, Tokens>
+              ? TokenizeSelector<AfterWs, Tokens>
               : AfterWs extends ''
                 ? Tokens
-                : TokenizeImpl<AfterWs, [...Tokens, { type: 'combinator'; content: ' ' }]>
+                : TokenizeSelector<AfterWs, [...Tokens, { type: 'combinator'; content: ' ' }]>
           : Tokens
         : Tokens
       : // Handle comma
         Char extends ','
-        ? TokenizeImpl<SkipWhitespace<Rest>, [...Tokens, { type: 'comma'; content: ',' }]>
+        ? TokenizeSelector<SkipWhitespace<Rest>, [...Tokens, { type: 'comma'; content: ',' }]>
         : // Handle combinators without leading whitespace
           Char extends '>' | '+' | '~'
-          ? TokenizeImpl<SkipWhitespace<Rest>, [...Tokens, { type: 'combinator'; content: Char }]>
+          ? TokenizeSelector<SkipWhitespace<Rest>, [...Tokens, { type: 'combinator'; content: Char }]>
           : // Handle ID
             Char extends '#'
             ? ParseId<S> extends { token: infer T extends Token; rest: infer R extends string }
-              ? TokenizeImpl<R, [...Tokens, T]>
+              ? TokenizeSelector<R, [...Tokens, T]>
               : Tokens
             : // Handle class
               Char extends '.'
               ? ParseClass<S> extends { token: infer T extends Token; rest: infer R extends string }
-                ? TokenizeImpl<R, [...Tokens, T]>
+                ? TokenizeSelector<R, [...Tokens, T]>
                 : Tokens
               : // Handle attribute
                 Char extends '['
                 ? ParseAttribute<S> extends { token: infer T extends Token; rest: infer R extends string }
-                  ? TokenizeImpl<R, [...Tokens, T]>
+                  ? TokenizeSelector<R, [...Tokens, T]>
                   : Tokens
                 : // Handle pseudo-element or pseudo-class
                   Char extends ':'
                   ? S extends `::${infer _}`
                     ? ParsePseudoElement<S> extends { token: infer T extends Token; rest: infer R extends string }
-                      ? TokenizeImpl<R, [...Tokens, T]>
+                      ? TokenizeSelector<R, [...Tokens, T]>
                       : Tokens
                     : ParsePseudoClass<S> extends { token: infer T extends Token; rest: infer R extends string }
-                      ? TokenizeImpl<R, [...Tokens, T]>
+                      ? TokenizeSelector<R, [...Tokens, T]>
                       : Tokens
                   : // Handle universal or type with namespace
                     Char extends '*'
                     ? ParseUniversal<S> extends { token: infer T extends Token; rest: infer R extends string }
-                      ? TokenizeImpl<R, [...Tokens, T]>
+                      ? TokenizeSelector<R, [...Tokens, T]>
                       : Tokens
                     : // Handle type selector
                       IsIdentifierStart<Char> extends true
                       ? ParseType<S> extends { token: infer T extends Token; rest: infer R extends string }
-                        ? TokenizeImpl<R, [...Tokens, T]>
+                        ? TokenizeSelector<R, [...Tokens, T]>
                         : Tokens
                       : // Unknown character, skip it
-                        TokenizeImpl<Rest, Tokens>
+                        TokenizeSelector<Rest, Tokens>
     : Tokens;
-
-/**
- * Public tokenizer type
- */
-export type Tokenize<S extends string> = TokenizeImpl<S>;

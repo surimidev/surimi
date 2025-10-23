@@ -355,7 +355,7 @@ describe('combineSelectors', () => {
         },
         { pseudoClass: 'hover' },
       ];
-      const originalInput = JSON.parse(JSON.stringifySelector(input));
+      const originalInput = JSON.parse(JSON.stringify(input));
 
       combineSelectors(input);
 

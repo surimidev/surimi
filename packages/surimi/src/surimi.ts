@@ -1,7 +1,7 @@
 import postcss from 'postcss';
 
 import type { CustomProperty } from '#lib/api/custom-property';
-import { _select } from '#lib/api/select';
+import { _select } from '#lib/api/index';
 import { MediaQueryBuilder } from '#lib/builders/index';
 import type { ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
@@ -61,7 +61,7 @@ export abstract class Surimi {
  * ```
  */
 export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: TSelectors) {
-  return _select([], Surimi.root, selectors);
+  return _select(selectors, Surimi.root, Surimi.root);
 }
 
 /**
@@ -86,5 +86,9 @@ export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>
  * ```
  */
 export function media() {
-  return new MediaQueryBuilder<'@media'>();
+  return new MediaQueryBuilder<'@media'>(
+    [{ type: 'at-rule-name', name: 'media', content: '@media' }],
+    Surimi.root,
+    Surimi.root,
+  );
 }

@@ -1,8 +1,6 @@
-import postcss from 'postcss';
+import { Tokenize } from '@surimi/parsers';
 
-import type { BuilderContext, ExtractBuildContextFromString } from '#types/builder.types';
 import type { CssProperties } from '#types/css.types';
-import { combineSelectors } from '#utils/builder.utils';
 import { createDeclarations } from '#utils/postcss.utils';
 
 import { CoreBuilder } from '../core.builder';
@@ -13,86 +11,7 @@ import { CoreBuilder } from '../core.builder';
  * - Creating the CSS rule and declarations, applying it to the root PostCSS AST
  * - Creating the correct rule, potentially scoped under at rules etc.
  */
-export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBuildContextFromString<TContext>> {
-  /**
-   * Get or create the PostCSS rule(s) for the current selector context.
-   * Used by the `style()` method to apply CSS properties to the root postcss AST.
-   *
-   * If no existing rule is found for the current selector context, a new one is created and appended either to the postcss root,
-   * or to the newly created at-rule container.
-   *
-   * If there are groups of selectors in the context (like `[`.class1`, `#id1`] > .child`), the selectors are combined using the `combineSelectors()` utility function.
-   *
-   * Selectors, pseudo classes etc. are combined into a complete selector string.
-   * If any at-rule (e.g. media query) is present in the context, the rules are created/scoped automatically
-   * using the `getOrCreateAtRules()` method.
-   *
-   * @returns The PostCSS rule for the current selector context.
-   */
-  public getOrCreateRule() {
-    const completeSelector = combineSelectors(this.context);
-
-    const ruleContainer = this.createAtRule() ?? this.postcssRoot;
-
-    let existingRule = ruleContainer.nodes?.find(
-      (node): node is postcss.Rule => node.type === 'rule' && node.selector === completeSelector,
-    );
-
-    if (!existingRule) {
-      existingRule = postcss.rule({ selector: completeSelector });
-      ruleContainer.append(existingRule);
-    }
-
-    return existingRule;
-  }
-
-  /**
-   * Create a nested at-rule based on the current context.
-   * If multiple at-rules are present in the context, they will be nested accordingly.
-   * Each nestable at-rule can also appear with different parameters, resulting in multiple nested at-rules of the same type.
-   *
-   * Note: This method creates new at-rules every time it is called. It does not check for existing at-rules in the PostCSS AST.
-   * Rules might be nested, and checking if ANY rule with the exact same nesting and parameters exists would be unnecessarily complex.
-   * Instead, rules might be merged by PostCSS plugins later in the processing pipeline if needed.
-   *
-   * Note: Rules are nested in the order they are defined in the context. This might not be what users expect. Users should thus
-   * ensure that at-rules are added in the correct order when using the builder.
-   *
-   * @returns The innermost at-rule created, or `undefined` if no at-rules are present in the context.
-   */
-  public createAtRule() {
-    // TODO: Re-use media queries whenever possible!
-    // TODO: Figure out why we have to cast to BuilderContext here.
-    // Without casting, this.context is limited to some union of BuilderItems, where non of them
-    // are at-rules. Might be a limitation of using ExtractBuildContextFromString<> with just `string`?
-    const contextAtRules = (this.context as BuilderContext).filter(item => 'atRule' in item);
-
-    if (Object.keys(contextAtRules).length === 0) {
-      return undefined;
-    }
-
-    // The "innermost" at-rule to nest others into.
-    // Starting with the root, all other at-rules will be nested inside this
-    // in the order they are defined in the context.
-    // TODO: Check if order of at-rules matters? Maybe, we need to reverse them? What do users expect?
-    let baseRule: postcss.AtRule | postcss.Root = this.postcssRoot;
-
-    for (const { atRule, params } of contextAtRules) {
-      // Remove the `@`
-      const pureRuleName = atRule.slice(1);
-
-      const rule = postcss.atRule({ name: pureRuleName, params });
-      baseRule.append(rule);
-      baseRule = rule;
-    }
-
-    if (baseRule instanceof postcss.Root) {
-      return undefined;
-    }
-
-    return baseRule;
-  }
-
+export class WithStyling<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
   /**
    * Apply the given CSS properties to the current selector context.
    * Creates the necessary PostCSS rule and declarations, appending them to the root AST.
@@ -102,6 +21,8 @@ export class WithStyling<TContext extends string> extends CoreBuilder<ExtractBui
    */
   public style(properties: CssProperties) {
     const rule = this.getOrCreateRule();
+    console.log(rule);
+    console.log(rule.parent);
     const declarations = createDeclarations(properties);
     declarations.forEach(decl => rule.append(decl));
 

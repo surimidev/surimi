@@ -1,4 +1,4 @@
-import type { Stringify, Token } from '#types/selector/index';
+import type { StringifySelector, Token } from '#types';
 
 /**
  * Normalizes a single token's content for stringification.
@@ -26,6 +26,6 @@ function normalizeToken(token: Token): string {
  *
  * Tokens are normalized with whitespace around combinators and after commas.
  */
-export function stringifySelector<T extends Token[]>(tokens: T): Stringify<T, false> {
-  return tokens.map(token => normalizeToken(token)).join('') as Stringify<T, false>;
+export function stringifySelector<T extends Token[]>(tokens: T): StringifySelector<T> {
+  return tokens.map(normalizeToken).join('') as StringifySelector<T>;
 }

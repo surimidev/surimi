@@ -1,25 +1,29 @@
-import type { Token } from './index';
+import type { Token } from '#types';
+
+/**
+ * Helper to extract the trimmed content from a combinator string.
+ */
+type TrimCombinator<T extends string> = T extends ` ${infer Rest}`
+  ? TrimCombinator<Rest>
+  : T extends `${infer Rest} `
+    ? TrimCombinator<Rest>
+    : T;
+
+/**
+ * Normalizes a token's content for stringification.
+ * - Combinators: adds spaces around them (except descendant which stays as single space)
+ * - Commas: adds space after them
+ * - Other tokens: keeps original content
+ */
+type NormalizeToken<T extends Token> = `${TrimCombinator<T['content']>} `;
 
 /**
  * Type-level stringify for CSS at-rules
  * Converts token types back to string types
  */
-
-/**
- * Recursively concatenates the content of all tokens into a string literal type.
- * Takes a readonly array of tokens and produces a string literal representing the at-rule prelude.
- * Tokens are joined with spaces.
- */
-type StringifyImpl<T extends Token[], First extends boolean = true> = T extends readonly [
-  infer Head extends Token,
-  ...infer Tail extends Token[],
+export type StringifyAtRule<T extends Token[]> = T extends readonly [
+  infer First extends Token,
+  ...infer Rest extends Token[],
 ]
-  ? First extends true
-    ? `${Head['content']}${StringifyImpl<Tail, false>}`
-    : ` ${Head['content']}${StringifyImpl<Tail, false>}`
+  ? TrimCombinator<`${NormalizeToken<First>}${StringifyAtRule<Rest>}`>
   : '';
-
-/**
- * Public stringify type that converts an array of at-rule tokens to a string
- */
-export type Stringify<T extends Token[]> = StringifyImpl<T>;
