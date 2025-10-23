@@ -1,4 +1,3 @@
-// @ts-check
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { defineConfig, passthroughImageService } from 'astro/config';

@@ -1,4 +1,5 @@
-import { Tokenize, tokenizeSelector } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
+import { tokenizeSelector } from '@surimi/parsers';
 
 import { _select } from '#lib/api/select';
 

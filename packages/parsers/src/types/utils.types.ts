@@ -1,4 +1,4 @@
-import { Token } from './tokens.types';
+import type { Token } from './tokens.types';
 
 export type GetFirstToken<TTokens extends Token[]> = TTokens extends [infer First extends Token, ...infer _Rest]
   ? First

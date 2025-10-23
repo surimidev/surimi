@@ -1,8 +1,8 @@
-import { Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import { _select } from '#lib/api/select';
-import { ValidSelector } from '#types/selector.types';
-import { ArrayWithAtLeastOneItem } from '#types/util.types';
+import type { ValidSelector } from '#types/selector.types';
+import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 
 import { CoreBuilder } from '../core.builder';
 

@@ -2,7 +2,6 @@ import type postcss from 'postcss';
 
 import { tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '#lib/builders/core.builder';
 import type { JoinSelectors, ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 import { joinSelectors } from '#utils/selector.utils';
@@ -15,7 +14,7 @@ import { SelectorBuilder } from '../builders';
  * Using an existing builder context, creates a new SelectorBuilder with the provided selectors.
  * The postcss root is passed to the new selector builder.
  */
-export function _select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>, TParent extends CoreBuilder>(
+export function _select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(
   selectors: TSelectors,
   postcssContainer: postcss.Container,
   postcssRoot: postcss.Root,

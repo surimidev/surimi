@@ -1,6 +1,6 @@
-import { StringifyAtRule, TokenizeAtRule } from './at-rules';
-import { StringifySelector, TokenizeSelector } from './selector';
-import { Token } from './tokens.types';
+import type { StringifyAtRule, TokenizeAtRule } from './at-rules';
+import type { StringifySelector, TokenizeSelector } from './selector';
+import type { Token } from './tokens.types';
 
 export * from './tokens.types';
 export * from './utils.types';

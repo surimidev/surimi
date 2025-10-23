@@ -1,4 +1,4 @@
-import { Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import type { CssProperties } from '#types/css.types';
 import { createDeclarations } from '#utils/postcss.utils';

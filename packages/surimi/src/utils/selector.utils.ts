@@ -1,5 +1,5 @@
-import { JoinSelectors } from '#types/selector.types';
-import { ArrayWithAtLeastOneItem } from '#types/util.types';
+import type { JoinSelectors } from '#types/selector.types';
+import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 
 export function joinSelectors<TSelectors extends ArrayWithAtLeastOneItem<string>>(
   selectors: TSelectors,

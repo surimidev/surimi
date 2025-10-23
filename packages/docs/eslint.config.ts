@@ -1,3 +1,3 @@
-import { baseConfig } from '@surimi/linter-config';
+import { baseConfig, defineConfig, globalIgnores } from '@surimi/linter-config';
 
-export default baseConfig;
+export default defineConfig(...baseConfig, globalIgnores(['**/.astro']));

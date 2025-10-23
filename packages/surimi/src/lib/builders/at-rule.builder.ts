@@ -1,10 +1,11 @@
 import { mix } from 'ts-mixer';
 
-import { Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import { CoreBuilder } from './core.builder';
 import { WithSelecting } from './mixins';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface AtRule<T extends string> extends WithSelecting<T> {}
 
 /**

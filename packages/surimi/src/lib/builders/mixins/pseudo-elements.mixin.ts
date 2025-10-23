@@ -1,4 +1,4 @@
-import { Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import type { BasePseudoElements } from '#types/css.types';
 import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';

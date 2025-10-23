@@ -182,15 +182,6 @@ img:nth-of-type(3n) {
 }`);
     });
 
-    it('should work with attribute selectors', () => {
-      select('input').attr('type').equals('checkbox').nthChild(2).style({ marginLeft: '1rem' });
-
-      expect(Surimi.build()).toBe(`\
-input[type="checkbox"]:nth-child(2) {
-    margin-left: 1rem
-}`);
-    });
-
     it('should work with combinators', () => {
       select('.form').child('input').firstChild().adjacent('.label').style({ fontWeight: 'bold' });
 

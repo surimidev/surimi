@@ -1,4 +1,4 @@
-import { media, select } from 'surimi';
+import { media } from 'surimi';
 
 media()
   .maxWidth('600px')

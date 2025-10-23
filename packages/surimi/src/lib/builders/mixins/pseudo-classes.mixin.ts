@@ -1,4 +1,4 @@
-import { Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import type { BasePseudoClasses } from '#types/css.types';
 import type { KebabCaseToCamelCase, StripColons } from '#types/util.types';
@@ -76,12 +76,12 @@ export class WithPseudoClasses<TContext extends string>
   public readOnly = () => this.createPseudoClass('read-only');
   public readWrite = () => this.createPseudoClass('read-write');
   public hostContext = () => this.createPseudoClass('host-context');
-  public nthChild = (value: string) => this.createPseudoClass(`nth-child(${value})`);
+  public nthChild = (value: string | number) => this.createPseudoClass(`nth-child(${value})`);
   public lastChild = () => this.createPseudoClass('last-child');
-  public nthLastChild = (value: string) => this.createPseudoClass(`nth-last-child(${value})`);
+  public nthLastChild = (value: string | number) => this.createPseudoClass(`nth-last-child(${value})`);
   public lastOfType = () => this.createPseudoClass('last-of-type');
-  public nthLastOfType = (value: string) => this.createPseudoClass(`nth-last-of-type(${value})`);
-  public nthOfType = (value: string) => this.createPseudoClass(`nth-of-type(${value})`);
+  public nthLastOfType = (value: string | number) => this.createPseudoClass(`nth-last-of-type(${value})`);
+  public nthOfType = (value: string | number) => this.createPseudoClass(`nth-of-type(${value})`);
   public firstChild = () => this.createPseudoClass('first-child');
   public firstOfType = () => this.createPseudoClass('first-of-type');
   public focusVisible = () => this.createPseudoClass('focus-visible');

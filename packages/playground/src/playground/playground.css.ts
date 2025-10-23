@@ -1,6 +1,6 @@
 import { select } from 'surimi';
 
-const container = select('.surimi-playground').style({
+const _ = select('.surimi-playground').style({
   height: 'calc(100% - 4rem)',
   padding: '1rem',
   position: 'relative',

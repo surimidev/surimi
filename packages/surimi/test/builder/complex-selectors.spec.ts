@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { select, Surimi } from '#index';
-import { SelectorBuilder } from '#lib/builders/selector.builder';
 
 describe('Complex Selector Combinations', () => {
   beforeEach(() => {
     Surimi.clear();
   });
 
-  describe('.and() - Multiple class selector', () => {
+  describe('.join() - Multiple class selector', () => {
     it('should combine multiple classes', () => {
-      select('.btn').and('.primary').style({ backgroundColor: 'blue' });
+      select('.btn').join('.primary').style({ backgroundColor: 'blue' });
 
       expect(Surimi.build()).toBe(`\
 .btn.primary {
@@ -18,8 +17,8 @@ describe('Complex Selector Combinations', () => {
 }`);
     });
 
-    it('should chain multiple .and() calls', () => {
-      select('.btn').and('.primary').and('.large').style({ padding: '1rem' });
+    it('should chain multiple .join() calls', () => {
+      select('.btn').join('.primary').join('.large').style({ padding: '1rem' });
 
       expect(Surimi.build()).toBe(`\
 .btn.primary.large {
@@ -28,7 +27,7 @@ describe('Complex Selector Combinations', () => {
     });
 
     it('should work with element selectors', () => {
-      select('button').and('.disabled').style({ opacity: '0.5' });
+      select('button').join('.disabled').style({ opacity: '0.5' });
 
       expect(Surimi.build()).toBe(`\
 button.disabled {
@@ -37,7 +36,7 @@ button.disabled {
     });
 
     it('should work with ID selectors', () => {
-      select('#header').and('.sticky').style({ position: 'fixed' });
+      select('#header').join('.sticky').style({ position: 'fixed' });
 
       expect(Surimi.build()).toBe(`\
 #header.sticky {
@@ -204,7 +203,7 @@ input[type="checkbox"]:checked ~ .checkbox-label {
     it('should chain multiple complex selectors', () => {
       select('.form')
         .child('.field')
-        .and('.required')
+        .join('.required')
         .not('.disabled')
         .descendant('input')
         .style({ borderColor: 'red' });
@@ -216,7 +215,7 @@ input[type="checkbox"]:checked ~ .checkbox-label {
     });
 
     it('should work with pseudo-classes and combinators', () => {
-      select('.btn').and('.primary').hover().adjacent('.tooltip').style({ display: 'block' });
+      select('.btn').join('.primary').hover().adjacent('.tooltip').style({ display: 'block' });
 
       expect(Surimi.build()).toBe(`\
 .btn.primary:hover + .tooltip {

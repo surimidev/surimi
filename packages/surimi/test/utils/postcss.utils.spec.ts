@@ -90,12 +90,12 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(3);
-      expect(declarations[0]!.prop).toBe('color');
-      expect(declarations[0]!.value).toBe('red');
-      expect(declarations[1]!.prop).toBe('font-size');
-      expect(declarations[1]!.value).toBe('16px');
-      expect(declarations[2]!.prop).toBe('background-color');
-      expect(declarations[2]!.value).toBe('#ffffff');
+      expect(declarations[0]?.prop).toBe('color');
+      expect(declarations[0]?.value).toBe('red');
+      expect(declarations[1]?.prop).toBe('font-size');
+      expect(declarations[1]?.value).toBe('16px');
+      expect(declarations[2]?.prop).toBe('background-color');
+      expect(declarations[2]?.value).toBe('#ffffff');
     });
 
     it('should handle numeric values', () => {
@@ -109,14 +109,14 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(4);
-      expect(declarations[0]!.prop).toBe('opacity');
-      expect(declarations[0]!.value).toBe('0.5');
-      expect(declarations[1]!.prop).toBe('z-index');
-      expect(declarations[1]!.value).toBe('100');
-      expect(declarations[2]!.prop).toBe('flex-grow');
-      expect(declarations[2]!.value).toBe('1');
-      expect(declarations[3]!.prop).toBe('order');
-      expect(declarations[3]!.value).toBe('-1');
+      expect(declarations[0]?.prop).toBe('opacity');
+      expect(declarations[0]?.value).toBe('0.5');
+      expect(declarations[1]?.prop).toBe('z-index');
+      expect(declarations[1]?.value).toBe('100');
+      expect(declarations[2]?.prop).toBe('flex-grow');
+      expect(declarations[2]?.value).toBe('1');
+      expect(declarations[3]?.prop).toBe('order');
+      expect(declarations[3]?.value).toBe('-1');
     });
 
     it('should handle custom properties', () => {
@@ -132,29 +132,29 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(3);
-      expect(declarations[0]!.prop).toBe('color');
-      expect(declarations[0]!.value).toBe('var(--primary-color)');
-      expect(declarations[1]!.prop).toBe('margin');
-      expect(declarations[1]!.value).toBe('var(--spacing-unit)');
-      expect(declarations[2]!.prop).toBe('font-size');
-      expect(declarations[2]!.value).toBe('16px');
+      expect(declarations[0]?.prop).toBe('color');
+      expect(declarations[0]?.value).toBe('var(--primary-color)');
+      expect(declarations[1]?.prop).toBe('margin');
+      expect(declarations[1]?.value).toBe('var(--spacing-unit)');
+      expect(declarations[2]?.prop).toBe('font-size');
+      expect(declarations[2]?.value).toBe('16px');
     });
 
     it('should skip null and undefined values', () => {
       const properties: CssProperties = {
         color: 'red',
-        fontSize: null as any,
-        backgroundColor: undefined as any,
+        fontSize: null as never,
+        backgroundColor: undefined,
         margin: '10px',
       };
 
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(2);
-      expect(declarations[0]!.prop).toBe('color');
-      expect(declarations[0]!.value).toBe('red');
-      expect(declarations[1]!.prop).toBe('margin');
-      expect(declarations[1]!.value).toBe('10px');
+      expect(declarations[0]?.prop).toBe('color');
+      expect(declarations[0]?.value).toBe('red');
+      expect(declarations[1]?.prop).toBe('margin');
+      expect(declarations[1]?.value).toBe('10px');
     });
 
     it('should handle empty properties object', () => {
@@ -228,16 +228,16 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(5);
-      expect(declarations[0]!.prop).toBe('color');
-      expect(declarations[0]!.value).toBe('var(--theme-color)');
-      expect(declarations[1]!.prop).toBe('background-color');
-      expect(declarations[1]!.value).toBe('white');
-      expect(declarations[2]!.prop).toBe('padding');
-      expect(declarations[2]!.value).toBe('var(--base-spacing)');
-      expect(declarations[3]!.prop).toBe('border');
-      expect(declarations[3]!.value).toBe('1px solid');
-      expect(declarations[4]!.prop).toBe('margin');
-      expect(declarations[4]!.value).toBe('0 auto');
+      expect(declarations[0]?.prop).toBe('color');
+      expect(declarations[0]?.value).toBe('var(--theme-color)');
+      expect(declarations[1]?.prop).toBe('background-color');
+      expect(declarations[1]?.value).toBe('white');
+      expect(declarations[2]?.prop).toBe('padding');
+      expect(declarations[2]?.value).toBe('var(--base-spacing)');
+      expect(declarations[3]?.prop).toBe('border');
+      expect(declarations[3]?.value).toBe('1px solid');
+      expect(declarations[4]?.prop).toBe('margin');
+      expect(declarations[4]?.value).toBe('0 auto');
     });
 
     it('should preserve property order', () => {
@@ -267,10 +267,10 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(4);
-      expect(declarations[0]!.value).toBe('0');
-      expect(declarations[1]!.value).toBe('0px');
-      expect(declarations[2]!.value).toBe('0');
-      expect(declarations[3]!.value).toBe('0');
+      expect(declarations[0]?.value).toBe('0');
+      expect(declarations[1]?.value).toBe('0px');
+      expect(declarations[2]?.value).toBe('0');
+      expect(declarations[3]?.value).toBe('0');
     });
 
     it('should handle custom property with complex syntax', () => {
@@ -289,10 +289,10 @@ describe('postcss.utils', () => {
       const declarations = createDeclarations(properties);
 
       expect(declarations).toHaveLength(2);
-      expect(declarations[0]!.prop).toBe('width');
-      expect(declarations[0]!.value).toBe('var(--complex-value)');
-      expect(declarations[1]!.prop).toBe('height');
-      expect(declarations[1]!.value).toBe('100vh');
+      expect(declarations[0]?.prop).toBe('width');
+      expect(declarations[0]?.value).toBe('var(--complex-value)');
+      expect(declarations[1]?.prop).toBe('height');
+      expect(declarations[1]?.value).toBe('100vh');
     });
   });
 });

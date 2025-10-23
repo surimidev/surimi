@@ -1,4 +1,4 @@
-import type { Token, Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 
 import type { CoreBuilder } from '#lib/builders/core.builder';
 
@@ -7,6 +7,7 @@ export * from './navigation.mixin';
 export * from './pseudo-classes.mixin';
 export * from './pseudo-elements.mixin';
 export * from './selecting.mixin';
+export * from './selector-operations.mixin';
 
 export type MixinConstructor<
   TContext extends string,

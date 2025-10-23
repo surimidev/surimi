@@ -1,7 +1,7 @@
 import eslint from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 export const baseConfig: ReturnType<typeof defineConfig> = defineConfig(
@@ -78,5 +78,5 @@ export const reactConfig: ReturnType<typeof defineConfig> = defineConfig(
 );
 
 // Utility exports for easier consumption in other configs
-export { eslint, tseslint, defineConfig };
+export { eslint, tseslint, defineConfig, globalIgnores };
 export type Config = ReturnType<typeof defineConfig>;

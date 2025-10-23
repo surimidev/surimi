@@ -1,4 +1,5 @@
-import { stringifyAtRule, TokenizeAtRule, tokenizeAtRule } from '@surimi/parsers';
+import type { TokenizeAtRule } from '@surimi/parsers';
+import { stringifyAtRule, tokenizeAtRule } from '@surimi/parsers';
 
 import { _select } from '#lib/api/select';
 import type {
