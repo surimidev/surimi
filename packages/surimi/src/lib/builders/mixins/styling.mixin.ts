@@ -21,8 +21,6 @@ export class WithStyling<TContext extends string> extends CoreBuilder<Tokenize<T
    */
   public style(properties: CssProperties) {
     const rule = this.getOrCreateRule();
-    console.log(rule);
-    console.log(rule.parent);
     const declarations = createDeclarations(properties);
     declarations.forEach(decl => rule.append(decl));
 
