@@ -4,7 +4,8 @@ on:
   push:
     tags:
       - 'surimi@*'
-      - 'compiler@*'
+      - '@surimi/compiler@*'
+      - '@surimi/parsers@*'
       - 'vite-plugin-surimi@*'
 
 permissions:
