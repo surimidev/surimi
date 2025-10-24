@@ -1,0 +1,15 @@
+```ts
+const container = select('#container').style({
+  display: 'flex',
+  padding: '20px',
+  backgroundColor: theme.colors.background,
+});
+
+container.child('.button')
+  .style({
+    color: theme.colors.primary,
+  })
+  .hover().style({
+    color: theme.colors.primaryHover,
+  });
+```

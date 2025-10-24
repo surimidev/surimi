@@ -1,0 +1,66 @@
+---
+title: Using with vite
+category: guides
+categoryOrderId: 10
+layout: "#layouts/Docs/Docs.astro"
+---
+
+# Using Surimi with Vite
+
+To use surimi with Vite, in addition to `surimi`, you need to install the `vite-plugin-surimi` plugin and add it to your Vite configuration.
+
+```bash
+pnpm install -D surimi vite-plugin-surimi
+```
+
+Then, update your `vite.config.ts` file to include the plugin:
+
+```ts title="vite.config.ts"
+import { defineConfig } from 'vite';
+import surimi from 'vite-plugin-surimi';
+
+export default defineConfig({
+  plugins: [surimi()],
+});
+```
+
+:tada: that's it!
+
+You can now create `.css.ts` files in your project and import them in your application code.
+
+There are some config options for you. Pass them as an object to the `surimi` function in your `vite.config.ts`:
+
+```ts title="vite.config.ts"
+export default defineConfig({
+  plugins: [
+    surimi({
+      /**
+       * Files to include for processing as surimi files.
+       * default:
+       */
+      include: ['**\/*.css.{ts,js}'],
+
+      /**
+       * Files to exclude from processing as surimi files.
+       * default:
+       */
+      exclude: ['node_modules/**', '**\/*.d.ts'],
+
+      /**
+       * Whether to inline the generated CSS into the JavaScript module.
+       * If `true`, will not emit separate CSS files, but instead inject CSS via JavaScript.
+       * If `false`, will emit separate CSS files and import them as virtual modules.
+       * default:
+       */
+      inlineCss: false,
+    }),
+  ],
+});
+```
+
+## Under the hood...
+
+...the Vite plugin uses the `@surimi/compiler` package to compile your `.css.ts` files.
+It hooks into Vite's module resolution and transformation pipeline to process the files on demand during development and build time.
+
+When you import a `.css.ts` file, the plugin compiles it to CSS and either inlines it into the JavaScript module (if `inlineCss` is `true`) or emits a separate CSS file and imports it as a virtual module (if `inlineCss` is `false`).

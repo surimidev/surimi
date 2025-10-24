@@ -1,0 +1,11 @@
+---
+import './Footer.css';
+
+const path = Astro.url.pathname;
+const githubTreeUrl = `https://github.com/janis-me/surimi/tree/main/packages/docs/src/pages${path}.mdx`;
+---
+
+<footer class="docs__footer">
+  Found an issue? Please <a href="https://github.com/janis-me/surimi/issues" target="_blank" rel="noopener">report it</a
+  > or <a href={githubTreeUrl} target="_blank" rel="noopener">edit this page</a>
+</footer>

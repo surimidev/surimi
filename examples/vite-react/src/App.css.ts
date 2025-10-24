@@ -24,7 +24,7 @@ _app
   })
   .hover()
   .style({
-    textDecoration: 'underline',
+    textDecorationLine: 'underline',
   });
 
 media().maxWidth('600px').select('#app').style({

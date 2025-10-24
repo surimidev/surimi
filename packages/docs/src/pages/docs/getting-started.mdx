@@ -1,8 +1,8 @@
 ---
-title: Getting Started With Surimi
+title: Getting Started
 category: gettingStarted
 categoryOrderId: 0
-layout: ../../layouts/Docs/Docs.astro
+layout: "#layouts/Docs/Docs.astro"
 ---
 
 # {frontmatter.title}
@@ -11,7 +11,14 @@ Welcome to Surimi! This guide is a quick guide to get you started with Surimi. F
 
 Surimi is a TS-in-CSS library to write type-safe, zero-runtime CSS in typescript. It is meant as a modern, hybrid approach between CSS preprocessors like SCSS and CSS-in-JS libraries like Vanilla Extract.
 
+> [!NOTE]
+> Surimi is still in early development. The API might change, and some features are not yet implemented.
+> If you have feedback or issues, open an issue on [GitHub](janis-me/surimi)
+
 ## Installation
+
+> [!TIP]
+> If you use tools like Vite, Astro etc., have a look at our [Guides Overview](/docs/guides/overview) for specific setup instructions.
 
 Install Surimi with your package manager of choice:
 
@@ -22,6 +29,7 @@ yarn add -D surimi
 # or
 pnpm add -D surimi
 ```
+
 
 Next, you need to run the surimi compiler. While you could do that manually through the `@surimi/compiler` package, we recommend using the vite plugin.
 It will automatically compile your `.css.ts` files on change, and integrate with your build tool to include the generated CSS in your final bundle.
@@ -50,6 +58,8 @@ export default defineConfig({
 });
 ```
 
+Again, for more details on the vite plugin see [Using Surimi with Vite](/docs/guides/vite).
+
 ## Usage
 
 Create a `.css.ts` file somewhere in your project, e.g. `src/styles.css.ts`:
@@ -69,9 +79,11 @@ And import that file somewhere in your app, e.g. in `src/main.ts` or `src/App.ts
 import './styles.css';
 ```
 
-Note, that we left out the `.ts` extension from the import. This is because by default, vite and typescript are setup to resolve the extension automatically. Depending on your setup, you might need to include it.
+> [!NOTE]
+> Note, that we left out the `.ts` extension from the import.
+> This is because by default, vite and typescript are setup to resolve the extension automatically. Depending on your setup, you might need to include it.
 
-And that's it! The Surimi file will be automatically compiled (with HMR support), and exports from the file will be preserved (With some [exceptions](/docs/comiler#limitations)).
+:tada: And that's it! The Surimi file will be automatically compiled (with HMR support), and exports from the file will be preserved (With some [exceptions](/docs/comiler#limitations)).
 
 ## What surimi offers now:
 

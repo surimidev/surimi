@@ -1,4 +1,4 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
 import { config, theme } from '#styles';
 
@@ -49,6 +49,12 @@ const item = list.descendant('.sidebar__doc-item').style({
   padding: `${theme.spacing[2]} 0`,
 });
 
+item.join('.sidebar__doc-item--active').style({}).child('.sidebar__doc-link').style({
+  color: theme.text.primary,
+  textDecoration: 'underline',
+  textUnderlineOffset: '3px',
+});
+
 item.is('.sidebar__doc-item--empty').style({
   color: theme.text.muted,
 });
@@ -60,4 +66,8 @@ const docLink = list.descendant('.sidebar__doc-link').style({
 
 docLink.hover().style({
   color: theme.text.primary,
+});
+
+media().maxWidth(config.breakpoints.mobile).select('.sidebar').style({
+  display: 'none',
 });

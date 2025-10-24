@@ -1,0 +1,26 @@
+---
+title: Overview
+category: guides
+categoryOrderId: 0
+layout: "#layouts/Docs/Docs.astro"
+---
+
+# Guides Overview
+
+This section contains various guides on how to use Surimi with different tools and frameworks.
+While we currently only test Surimi with Vite, it can be used with any bundler or framework with a simple plugin.
+
+If you need help getting started with a specific tool or framework, please open an issue or submit a pull request to add a guide for it!
+
+## Vite
+Vite is the recommended setup to use with Surimi. It provides a fast development server and build times, SSR/SSG support, fast HMR, and a rich plugin ecosystem.
+Check out the [Using with Vite](/docs/guides/vite) guide to get started.
+
+## Astro
+Astro is a modern static site generator that supports multiple frameworks like React, Vue, Svelte etc.
+It is built on top of Vite, so using Surimi with Astro is very similar to using it with Vite.
+You can use the vite plugin as described in the [Using with Vite](/docs/guides/vite) guide.
+
+## Rolldown/Rollup
+If you are using Rollup or Rolldown as your bundler, you can use the `@surimi/compiler` package directly to compile your `.css.ts` files.
+Check out the [API reference for the compiler](/docs/reference/compiler) for more information on how to use it

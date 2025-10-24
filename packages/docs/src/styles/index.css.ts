@@ -43,7 +43,7 @@ select('p, li, dd').style({
 
 const link = select('a').style({
   color: 'inherit',
-  textUnderlineOffset: '2px',
+  textUnderlineOffset: '3px',
 });
 
 link.has('svg, h1, h2, h3, h4, h5, h6').style({

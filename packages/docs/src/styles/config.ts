@@ -10,4 +10,8 @@ export const config = {
       listWidth: '280px',
     },
   },
+  breakpoints: {
+    mobile: '768px',
+    tablet: '1024px',
+  },
 };

@@ -1,8 +1,10 @@
 ---
+import Footer from '#components/_docs/Footer/Footer.astro';
 import Sidebar from '#components/_docs/Sidebar/Sidebar.astro';
 
 import Main from '../Main/Main.astro';
 
+import 'remark-github-blockquote-alert/alert.css';
 import './Docs.css';
 
 const { frontmatter } = Astro.props;
@@ -13,5 +15,6 @@ const { title } = frontmatter;
   <Sidebar />
   <main class="docs__content">
     <slot />
+    <Footer />
   </main>
 </Main>

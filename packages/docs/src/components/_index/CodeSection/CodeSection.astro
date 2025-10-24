@@ -1,46 +1,21 @@
 ---
 import './CodeSection.css';
 
+import { Content as BeforeCode } from './examples/before.mdx';
+import { Content as SurimiCode } from './examples/surimi.mdx';
+
 const codeBlocks = [
   {
     id: 'before',
     label: 'Before',
     className: '',
-    code: `\
-#container {
-  display: flex;
-  padding: 20px;
-  background-color: var(--bg-color);
-}
-
-#container > .button {
-  color: var(--primary-color);
-}
-
-#container > .button:hover {
-  color: var(--primary-hover-color);
-}
-`,
+    code: 'before',
   },
   {
     id: 'surimi',
     label: 'With Surimi',
     className: 'code-block--surimi',
-    code: `\
-const container = select('#container').style({
-  display: 'flex',
-  padding: '20px',
-  backgroundColor: theme.colors.background,
-});
-
-container.child('.button')
-  .style({
-    color: theme.colors.primary,
-  })
-  .hover().style({
-    color: theme.colors.primaryHover,
-  });
-`,
+    code: 'surimi',
   },
 ];
 ---
@@ -64,7 +39,7 @@ container.child('.button')
             <span class="code-label">{block.label}</span>
           </div>
           {/* prettier-ignore */}
-          <pre><code id={`${block.id}-code`}>{block.code}</code></pre>
+          {block.code === 'before' ? <BeforeCode /> : <SurimiCode />}
         </div>
       ))
     }

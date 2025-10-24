@@ -1,4 +1,4 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
 import { theme } from '#styles/theme';
 
@@ -32,6 +32,12 @@ const codeComparison = codeSection.child('.code-comparison').style({
   gap: '24px',
   maxWidth: '70%',
   margin: '0 auto 40px',
+});
+
+media().maxWidth('768px').select('.code-section .code-comparison').style({
+  gridTemplateColumns: '100%',
+  maxWidth: '100%',
+  margin: '0 0 20px 0',
 });
 
 // Code blocks

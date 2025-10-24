@@ -20,6 +20,8 @@ const groupedDocs = Object.entries(SIDEBAR_LABELS).reduce(
   },
   {} as Record<string, typeof docs>,
 );
+
+const currentPath = Astro.url.pathname;
 ---
 
 <nav class="sidebar">
@@ -32,7 +34,14 @@ const groupedDocs = Object.entries(SIDEBAR_LABELS).reduce(
             {docs
               .sort((a, b) => (a.data.categoryOrderId ?? Infinity) - (b.data.categoryOrderId ?? Infinity))
               .map(doc => (
-                <li class="sidebar__doc-item">
+                <li
+                  class:list={[
+                    'sidebar__doc-item',
+                    {
+                      'sidebar__doc-item--active': currentPath === `/docs/${doc.id}`,
+                    },
+                  ]}
+                >
                   <a href={`/docs/${doc.id}`} class="sidebar__doc-link">
                     {doc.data.title}
                   </a>
