@@ -17,24 +17,25 @@ docsContainer.child('.docs__content').style({
   overflowY: 'auto',
   backgroundColor: theme.bg.app,
   maxWidth: config.global.maxInlineWidth,
+  position: 'relative',
+});
+
+media().maxWidth(theme.screen.md).select('.docs').style({
+  gridTemplateColumns: '1fr',
 });
 
 media()
-  .maxWidth(config.breakpoints.tablet)
+  .maxWidth(theme.screen.lg)
   .select('.docs .docs__content')
   .style({
     padding: `${theme.spacing[6]} ${theme.spacing[6]} ${theme.spacing[10]} ${theme.spacing[6]}`,
   });
 
-media().maxWidth(config.breakpoints.mobile).select('.docs').style({
-  gridTemplateColumns: '1fr',
-});
-
 media()
-  .maxWidth(config.breakpoints.mobile)
+  .maxWidth(theme.screen.md)
   .select('.docs .docs__content')
   .style({
-    padding: `${theme.spacing[4]} ${theme.spacing[4]} ${theme.spacing[10]} ${theme.spacing[4]}`,
+    padding: `${theme.spacing[4]} ${theme.spacing[6]}`,
   });
 
 select('.markdown-alert-title').style({

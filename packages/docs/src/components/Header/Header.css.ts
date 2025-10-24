@@ -15,7 +15,8 @@ const header = select('.header').style({
   backdropFilter: 'blur(12px)',
   position: 'sticky',
   top: '0',
-  zIndex: '50',
+  zIndex: 2000,
+  overflow: 'hidden',
 });
 
 header
@@ -32,11 +33,64 @@ header
     fontSize: theme.font.size.xl,
   });
 
+select('.header__toggle', '.header__backdrop').style({
+  display: 'none',
+});
+
+media().maxWidth(theme.screen.sm).select('.header__toggle').style({
+  display: 'block',
+  backgroundColor: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  padding: 0,
+  color: theme.text.subtle,
+});
+
+media().maxWidth(theme.screen.md).select('html').has('.header--open').select('.header__backdrop').style({
+  display: 'block',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  zIndex: 2000,
+});
+
 const right = header.child('.header__right').style({
-  display: 'flex',
   gap: theme.spacing[6],
   alignItems: 'center',
   marginLeft: 'auto',
+});
+
+const mobileRight = media()
+  .maxWidth(theme.screen.sm)
+  .select('.header__right')
+  .style({
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    height: '100vh',
+    width: '75vw',
+    maxWidth: '300px',
+    transform: 'translateX(100%)',
+    transition: 'transform 0.3s ease-in-out',
+    zIndex: 2001,
+    boxShadow: theme.shadow.md,
+    backgroundColor: theme.bg.app,
+    display: 'flex',
+    flexFlow: 'column',
+    padding: `${theme.spacing[9]} ${theme.spacing[6]}`,
+  });
+
+mobileRight.child('.header__nav').style({
+  flexDirection: 'column',
+});
+
+mobileRight.child('.header__social').style({});
+
+media().maxWidth(theme.screen.sm).select('.header--open .header__right').style({
+  transform: 'translateX(0)',
 });
 
 const nav = right.child('.header__nav').style({
@@ -93,26 +147,14 @@ social.descendant('svg').style({
 const onMobile = media().maxWidth(theme.screen.sm);
 
 const headerMobile = onMobile.select('.header').style({
-  padding: `0 ${theme.spacing[4]}`,
+  padding: `0 ${theme.spacing[6]}`,
   gap: theme.spacing[4],
 });
 
-const titleMobile = headerMobile.child('.header__title').style({
+headerMobile.child('.header__title').style({
   fontSize: theme.font.size.lg,
-});
-
-titleMobile.descendant('span').style({
-  display: 'none',
-});
-
-headerMobile.child('.header__right').style({
-  marginLeft: '0',
 });
 
 headerMobile.descendant('.header__nav').style({
   gap: '0 !important',
-});
-
-headerMobile.descendant('.header__social').style({
-  display: 'none !important',
 });
