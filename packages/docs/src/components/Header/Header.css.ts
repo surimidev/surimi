@@ -87,7 +87,6 @@ mobileRight.child('.header__nav').style({
   flexDirection: 'column',
 });
 
-mobileRight.child('.header__social').style({});
 
 media().maxWidth(theme.screen.sm).select('.header--open .header__right').style({
   transform: 'translateX(0)',
