@@ -10,9 +10,34 @@ const sidebar = select('.sidebar').style({
   top: config.header.height,
   right: 0,
   height: `calc(100vh - ${config.header.height})`,
-  overflowY: 'auto',
+  overflowY: 'hidden',
   display: 'grid',
   gridTemplateColumns: `auto ${config.docs.sidebar.listWidth}`,
+});
+
+media().maxWidth(theme.screen.lg).select('.sidebar').style({
+  display: 'block',
+});
+
+media()
+  .maxWidth(theme.screen.md)
+  .select('.sidebar')
+  .style({
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100vh',
+    width: '75vw',
+    maxWidth: '300px',
+    transform: 'translateX(-100%)',
+    transition: 'transform 0.3s ease-in-out',
+    zIndex: 2001,
+    boxShadow: theme.shadow.md,
+    gridTemplateColumns: `auto ${config.docs.sidebar.listWidth}`,
+  });
+
+media().maxWidth(theme.screen.md).select('.sidebar--open').style({
+  transform: 'translateX(0)',
 });
 
 sidebar
@@ -66,8 +91,4 @@ const docLink = list.descendant('.sidebar__doc-link').style({
 
 docLink.hover().style({
   color: theme.text.primary,
-});
-
-media().maxWidth(config.breakpoints.mobile).select('.sidebar').style({
-  display: 'none',
 });

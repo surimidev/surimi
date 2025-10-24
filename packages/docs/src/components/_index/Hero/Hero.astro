@@ -1,5 +1,5 @@
 ---
-import { ActionArrowIcon, DocumentationIcon, ExternalLinkIcon } from '../../icons';
+import { ArrowLeftIcon, BookIcon, ExternalLinkIcon } from '../../icons';
 
 import './Hero.css';
 ---
@@ -16,10 +16,10 @@ import './Hero.css';
   <div class="hero__buttons">
     <a class="hero__button hero__button--primary" href="/docs/getting-started">
       Get Started
-      <span class="hero__button__icon" set:html={ActionArrowIcon.html} />
+      <span class="hero__button__icon" set:html={ArrowLeftIcon.html} />
     </a>
     <a class="hero__button hero__button--secondary" href="/docs/reference">
-      <span class="hero__button__icon" set:html={DocumentationIcon.html} />
+      <span class="hero__button__icon" set:html={BookIcon.html} />
       View Documentation
     </a>
   </div>

@@ -1,0 +1,36 @@
+---
+import { ArrowUpIcon, BarsStaggeredIcon } from '#components/icons/index.ts';
+
+import './SidebarMobileMenu.css';
+---
+
+<menu class="sidebar__mobile">
+  <button class="sidebar__mobile__button sidebar__toggle">
+    <span set:html={BarsStaggeredIcon.html} />
+    Menu
+  </button>
+  <button class="sidebar__mobile__button sidebar__back-to-top">
+    Back to top
+    <span set:html={ArrowUpIcon.html} />
+  </button>
+</menu>
+<div class="sidebar__backdrop"></div>
+
+<script lang="ts">
+  const sidebarToggleButton = document.querySelector('.sidebar__toggle');
+  const sidebarBackdrop = document.querySelector('.sidebar__backdrop');
+  const backToTopButton = document.querySelector('.sidebar__back-to-top');
+  const sidebar = document.querySelector('.sidebar');
+
+  sidebarToggleButton?.addEventListener('click', () => {
+    sidebar?.classList.toggle('sidebar--open');
+  });
+
+  sidebarBackdrop?.addEventListener('click', () => {
+    sidebar?.classList.remove('sidebar--open');
+  });
+
+  backToTopButton?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

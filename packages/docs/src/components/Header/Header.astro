@@ -1,5 +1,5 @@
 ---
-import { ExternalLinkIcon, GithubIcon, NpmIcon } from '../icons';
+import { BarsIcon, ExternalLinkIcon, GithubIcon, NpmIcon } from '../icons';
 
 import './Header.css';
 
@@ -19,6 +19,12 @@ const SOCIAL_LINKS = [
   <a href="/" class="header__title">
     <h1>🍣 <span>surimi</span></h1>
   </a>
+
+  <button class="header__toggle">
+    <span class="header__toggle-icon" set:html={BarsIcon.html} />
+  </button>
+
+  <div class="header__backdrop"></div>
 
   <div class="header__right">
     <nav class="header__nav">
@@ -42,3 +48,17 @@ const SOCIAL_LINKS = [
     </div>
   </div>
 </div>
+
+<script lang="ts">
+  const headerToggleButton = document.querySelector('.header__toggle');
+  const header = document.querySelector('.header');
+  const headerBackdrop = document.querySelector('.header__backdrop');
+
+  headerToggleButton?.addEventListener('click', () => {
+    header?.classList.toggle('header--open');
+  });
+
+  headerBackdrop?.addEventListener('click', () => {
+    header?.classList.remove('header--open');
+  });
+</script>

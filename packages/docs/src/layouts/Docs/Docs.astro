@@ -1,6 +1,7 @@
 ---
 import Footer from '#components/_docs/Footer/Footer.astro';
 import Sidebar from '#components/_docs/Sidebar/Sidebar.astro';
+import SidebarMobileMenu from '#components/_docs/SidebarMobileMenu/SidebarMobileMenu.astro';
 
 import Main from '../Main/Main.astro';
 
@@ -17,4 +18,5 @@ const { title } = frontmatter;
     <slot />
     <Footer />
   </main>
+  <SidebarMobileMenu />
 </Main>
