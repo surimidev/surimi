@@ -16,7 +16,6 @@ const header = select('.header').style({
   position: 'sticky',
   top: '0',
   zIndex: 2000,
-  overflow: 'hidden',
 });
 
 header
@@ -58,6 +57,7 @@ media().maxWidth(theme.screen.md).select('html').has('.header--open').select('.h
 });
 
 const right = header.child('.header__right').style({
+  display: 'flex',
   gap: theme.spacing[6],
   alignItems: 'center',
   marginLeft: 'auto',

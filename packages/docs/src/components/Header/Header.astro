@@ -56,13 +56,9 @@ const SOCIAL_LINKS = [
 
   headerToggleButton?.addEventListener('click', () => {
     header?.classList.toggle('header--open');
-    header.style.overflow = header.classList.contains('header--open') ? 'visible' : 'hidden';
   });
 
   headerBackdrop?.addEventListener('click', () => {
     header?.classList.remove('header--open');
-    window.setTimeout(() => {
-      header.style.overflow = 'hidden';
-    }, 300);
   });
 </script>
