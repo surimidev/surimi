@@ -17,12 +17,12 @@ import './SidebarMobileMenu.css';
 <div class="sidebar__backdrop"></div>
 
 <script lang="ts">
-  const sidebcarToggleButton = document.querySelector('.sidebar__toggle');
+  const sidebarToggleButton = document.querySelector('.sidebar__toggle');
   const sidebarBackdrop = document.querySelector('.sidebar__backdrop');
   const backToTopButton = document.querySelector('.sidebar__back-to-top');
   const sidebar = document.querySelector('.sidebar');
 
-  sidebcarToggleButton?.addEventListener('click', () => {
+  sidebarToggleButton?.addEventListener('click', () => {
     sidebar?.classList.toggle('sidebar--open');
   });
 
