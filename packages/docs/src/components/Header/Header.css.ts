@@ -80,13 +80,20 @@ const mobileRight = media()
     backgroundColor: theme.bg.app,
     display: 'flex',
     flexFlow: 'column',
-    padding: `${theme.spacing[9]} ${theme.spacing[6]}`,
+    padding: `${theme.spacing[6]} 0`,
   });
 
-mobileRight.child('.header__nav').style({
+const mobileNav = mobileRight.child('.header__nav').style({
   flexDirection: 'column',
+  width: '100%',
+  gap: theme.spacing[3],
 });
 
+mobileNav.child('.header__nav-link').style({
+  padding: `${theme.spacing[3]} ${theme.spacing[6]} !important`,
+  width: '100%',
+  borderBottom: `1px solid ${theme.border.default}`,
+});
 
 media().maxWidth(theme.screen.sm).select('.header--open .header__right').style({
   transform: 'translateX(0)',
@@ -137,6 +144,10 @@ social
   .style({
     color: theme.text.primary,
   });
+
+nav.descendant('svg').style({
+  color: theme.text.subtle,
+});
 
 social.descendant('svg').style({
   width: '20px',

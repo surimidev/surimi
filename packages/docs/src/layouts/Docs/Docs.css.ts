@@ -7,7 +7,7 @@ const docsContainer = select('.docs').style({
   gridTemplateColumns: `1fr 2fr`,
 });
 
-docsContainer.is('.container').style({
+docsContainer.is('#container').style({
   backgroundColor: theme.bg.app,
   position: 'relative',
 });

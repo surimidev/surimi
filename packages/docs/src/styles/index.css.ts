@@ -20,7 +20,8 @@ select('html, body').style({
   fontFamily: 'IBM Plex Mono, sans-serif',
   backgroundColor: theme.bg.subtle,
   color: theme.text.default,
-  overflowX: 'hidden',
+  height: '100vh',
+  width: '100vw',
 });
 
 select('html').style({

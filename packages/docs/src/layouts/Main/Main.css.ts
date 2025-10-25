@@ -7,5 +7,3 @@ app.style({
   overflowX: 'hidden',
   position: 'relative',
 });
-
-app.child('.container').style({});
