@@ -22,6 +22,7 @@ select('html, body').style({
   color: theme.text.default,
   height: '100vh',
   width: '100vw',
+  overflowX: 'hidden',
 });
 
 select('html').style({

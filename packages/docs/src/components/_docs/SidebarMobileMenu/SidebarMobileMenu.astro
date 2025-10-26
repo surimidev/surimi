@@ -31,7 +31,6 @@ import './SidebarMobileMenu.css';
   });
 
   backToTopButton?.addEventListener('click', () => {
-    const app = document.querySelector('#app');
-    app.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.scrollTo({ top: 0, behavior: 'smooth' });
   });
 </script>

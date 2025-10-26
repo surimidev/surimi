@@ -5,6 +5,7 @@ import { config, theme } from '#styles';
 const docsContainer = select('.docs').style({
   display: 'grid',
   gridTemplateColumns: `1fr 2fr`,
+  minHeight: '100vh',
 });
 
 docsContainer.is('#container').style({
@@ -21,6 +22,7 @@ docsContainer.child('.docs__content').style({
 
 media().maxWidth(theme.screen.md).select('.docs').style({
   display: 'block',
+  minHeight: '100vh',
 });
 
 media()
