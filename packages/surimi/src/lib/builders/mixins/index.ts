@@ -1,6 +1,6 @@
 import type { Tokenize } from '@surimi/parsers';
 
-import type { CoreBuilder } from '#lib/builders/core.builder';
+import type { CoreBuilder } from '../core.builder';
 
 export * from './styling.mixin';
 export * from './navigation.mixin';

@@ -6,7 +6,7 @@ import { CoreBuilder } from './core.builder';
 import { WithSelecting } from './mixins';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface AtRule<T extends string> extends WithSelecting<T> {}
+export interface AtRuleBuilder<T extends string> extends WithSelecting<T> {}
 
 /**
  * Used for building at-rules (e.g. `@media`, `@keyframes` etc.).
@@ -15,4 +15,4 @@ export interface AtRule<T extends string> extends WithSelecting<T> {}
  * This uses the Selecting mixin, which adds a `select` method for nested selections.
  */
 @mix(WithSelecting)
-export class AtRule<T extends string> extends CoreBuilder<Tokenize<T>> {}
+export class AtRuleBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}
