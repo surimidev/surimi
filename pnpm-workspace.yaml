@@ -13,7 +13,7 @@ catalogs:
     tsdown: ^0.15.9
     tsup: ^8.5.0
     typescript: ^5.9.3
-    vite: ^7.1.11
+    vite: ^6.4.1
   docs:
     "@fontsource/ibm-plex-mono": ^5.2.7
     "@fortawesome/fontawesome-svg-core": ^6.7.2
