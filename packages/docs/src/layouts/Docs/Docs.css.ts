@@ -17,6 +17,8 @@ docsContainer.child('.docs__content').style({
   backgroundColor: theme.bg.app,
   maxWidth: config.global.maxInlineWidth,
   position: 'relative',
+  // Needed for sticky elements inside content
+  overflowY: 'auto',
 });
 
 media().maxWidth(theme.screen.md).select('.docs').style({
