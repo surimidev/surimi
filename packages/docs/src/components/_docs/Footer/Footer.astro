@@ -1,7 +1,7 @@
 ---
 import './Footer.css';
 
-const path = Astro.url.pathname;
+const path = Astro.url.pathname.replace(/\/$/, '');
 const githubTreeUrl = `https://github.com/janis-me/surimi/tree/main/packages/docs/src/pages${path}.mdx`;
 ---
 

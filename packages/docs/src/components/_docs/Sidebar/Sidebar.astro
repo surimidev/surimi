@@ -21,7 +21,8 @@ const groupedDocs = Object.entries(SIDEBAR_LABELS).reduce(
   {} as Record<string, typeof docs>,
 );
 
-const currentPath = Astro.url.pathname;
+// Remove trailing slash for comparison
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
 ---
 
 <nav class="sidebar">
