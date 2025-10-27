@@ -1,2 +1,18 @@
-export { property } from '#lib/api/index';
-export { Surimi, select, media } from './surimi';
+export { media, select, mixin, style } from '#lib/api/index';
+export {
+  property,
+  angle,
+  color,
+  image,
+  integer,
+  length,
+  number,
+  percentage,
+  resolution,
+  string,
+  time,
+  url,
+} from '#lib/api/custom-property';
+export { Surimi } from './surimi';
+
+export type { CssProperties } from '#types/css.types';

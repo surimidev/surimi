@@ -1,6 +1,6 @@
+import type { Tokenize } from '@surimi/parsers';
 import { mix } from 'ts-mixer';
 
-import { CoreBuilder } from './core.builder';
 import {
   WithNavigation,
   WithPseudoClasses,
@@ -8,8 +8,9 @@ import {
   WithSelecting,
   WithStyling,
   WithSelectorOperations,
+  WithUsables,
 } from './mixins';
-import type { Tokenize } from '@surimi/parsers';
+import { CoreBuilder } from './core.builder';
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -17,7 +18,8 @@ export interface SelectorBuilder<T extends string>
     WithPseudoClasses<T>,
     WithPseudoElements<T>,
     WithSelecting<T>,
-    WithSelectorOperations<T> {}
+    WithSelectorOperations<T>,
+    WithUsables<T> {}
 
 /**
  * The primary way to select things in Surimi.
@@ -25,5 +27,13 @@ export interface SelectorBuilder<T extends string>
  *
  * You usually don't instantiate this class directly, but rather start from a helper function like `select()`.
  */
-@mix(WithNavigation, WithStyling, WithPseudoClasses, WithPseudoElements, WithSelecting, WithSelectorOperations)
+@mix(
+  WithNavigation,
+  WithStyling,
+  WithPseudoClasses,
+  WithPseudoElements,
+  WithSelecting,
+  WithSelectorOperations,
+  WithUsables,
+)
 export class SelectorBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}

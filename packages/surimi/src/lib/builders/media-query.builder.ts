@@ -11,7 +11,7 @@ import type {
 } from '#types/css.types';
 import type { KebabCaseToCamelCase } from '#types/util.types';
 
-import { AtRule } from './at-rule.builder';
+import { AtRuleBuilder } from './at-rule.builder';
 
 type MediaQueryBuilderDiscreteFunctions = {
   // Can have either no params, or a single param with some value.
@@ -66,7 +66,7 @@ export type MediaQueryBuilderFunctions<T extends string> = MediaQueryBuilderDisc
  * @link [CSSWG Specification](https://drafts.csswg.org/mediaqueries/#descdef-media-width)
  */
 export class MediaQueryBuilder<TQuery extends string>
-  extends AtRule<TQuery>
+  extends AtRuleBuilder<TQuery>
   implements MediaQueryBuilderFunctions<TQuery>
 {
   private createMediaQueryBuilderWithParameter<TNewParam extends string>(

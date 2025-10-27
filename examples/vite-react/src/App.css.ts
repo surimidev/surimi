@@ -2,7 +2,7 @@ import { media, select } from 'surimi';
 
 import { theme } from '#styles/theme';
 
-const _app = select('#app').style({
+const app = select('#app').style({
   width: '100vw',
   height: '100vh',
   display: 'flex',
@@ -14,7 +14,7 @@ const _app = select('#app').style({
   backgroundColor: theme.colors.background,
 });
 
-_app
+app
   .descendant('a')
   .style({
     color: theme.colors.primaryDark,
@@ -26,6 +26,11 @@ _app
   .style({
     textDecorationLine: 'underline',
   });
+
+app.descendant('.card').style({
+  display: 'flex',
+  gap: '1rem',
+});
 
 media().maxWidth('600px').select('#app').style({
   gap: 0,
