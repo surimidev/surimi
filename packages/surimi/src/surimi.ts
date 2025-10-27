@@ -14,7 +14,7 @@ export abstract class Surimi {
     });
 
     const declarations = [
-      postcss.decl({ prop: 'syntax', value: customProperty.syntax }),
+      postcss.decl({ prop: 'syntax', value: `'${customProperty.syntax}'` }),
       postcss.decl({ prop: 'inherits', value: String(customProperty.inherits) }),
       postcss.decl({ prop: 'initial-value', value: String(customProperty.initialValue) }),
     ];

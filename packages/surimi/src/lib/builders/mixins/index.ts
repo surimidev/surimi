@@ -8,6 +8,7 @@ export * from './pseudo-classes.mixin';
 export * from './pseudo-elements.mixin';
 export * from './selecting.mixin';
 export * from './selector-operations.mixin';
+export * from './usables.mixin';
 
 export type MixinConstructor<
   TContext extends string,

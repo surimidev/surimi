@@ -1,6 +1,6 @@
+import type { Tokenize } from '@surimi/parsers';
 import { mix } from 'ts-mixer';
 
-import { CoreBuilder } from './core.builder';
 import {
   WithNavigation,
   WithPseudoClasses,
@@ -8,10 +8,9 @@ import {
   WithSelecting,
   WithStyling,
   WithSelectorOperations,
+  WithUsables,
 } from './mixins';
-import type { Tokenize } from '@surimi/parsers';
-import { StyleBuilder } from './style.builder';
-import { MixinBuilder } from './mixin.builder';
+import { CoreBuilder } from './core.builder';
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -19,7 +18,8 @@ export interface SelectorBuilder<T extends string>
     WithPseudoClasses<T>,
     WithPseudoElements<T>,
     WithSelecting<T>,
-    WithSelectorOperations<T> {}
+    WithSelectorOperations<T>,
+    WithUsables<T> {}
 
 /**
  * The primary way to select things in Surimi.
@@ -27,34 +27,13 @@ export interface SelectorBuilder<T extends string>
  *
  * You usually don't instantiate this class directly, but rather start from a helper function like `select()`.
  */
-@mix(WithNavigation, WithStyling, WithPseudoClasses, WithPseudoElements, WithSelecting, WithSelectorOperations)
-export class SelectorBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {
-  /**
-   * Apply styles from a StyleBuilder to the current selector.
-   *
-   * A `styleBuilder` is the return type of the `style()` method from Surimi's API.
-   *
-   * @example
-   * ```ts
-   * const buttonStyle = style({
-   *   backgroundColor: 'blue',
-   *   color: 'white',
-   * });
-   *
-   * select('.button').use(buttonStyle);
-   * ```
-   */
-  public use(usable: StyleBuilder | MixinBuilder<string>) {
-    if (usable instanceof StyleBuilder) {
-      const styles = usable.styles;
-
-      this.style(styles);
-    } else if (usable instanceof MixinBuilder) {
-      const styles = usable.styles;
-
-      if (styles) {
-        this.style(styles);
-      }
-    }
-  }
-}
+@mix(
+  WithNavigation,
+  WithStyling,
+  WithPseudoClasses,
+  WithPseudoElements,
+  WithSelecting,
+  WithSelectorOperations,
+  WithUsables,
+)
+export class SelectorBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}

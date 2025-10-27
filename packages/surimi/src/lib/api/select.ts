@@ -1,5 +1,6 @@
 import type postcss from 'postcss';
 
+import type { Stringify, Token } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
 import { Surimi } from '#surimi';
@@ -31,6 +32,20 @@ export function _select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector
   const selectorTokens = tokenize(joinedSelectors);
 
   return new SelectorBuilder(selectorTokens, postcssContainer, postcssRoot);
+}
+
+/**
+ * @internal Helper method for creating 'selectByContext' methods. Should not be exported publicly.
+ *
+ * Using an existing builder context, creates a new SelectorBuilder with the provided tokenized context.
+ * The postcss root is passed to the new selector builder.
+ */
+export function _selectByContext<TContext extends Token[]>(
+  context: TContext,
+  postcssContainer: postcss.Container,
+  postcssRoot: postcss.Root,
+): SelectorBuilder<Stringify<TContext>> {
+  return new SelectorBuilder<Stringify<TContext>>(context as never, postcssContainer, postcssRoot);
 }
 
 /**
