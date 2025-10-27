@@ -1,16 +1,15 @@
-import { mix } from 'ts-mixer';
+import type { Token, Tokenize } from '@surimi/parsers';
+
+import type { CssProperties } from '#types/css.types';
 
 import { CoreBuilder } from './core.builder';
-import { WithNavigation, WithPseudoClasses, WithPseudoElements, WithSelectorOperations } from './mixins';
-import type { Token, Tokenize } from '@surimi/parsers';
-import type { CssProperties } from '#types/css.types';
 
 /**
  * Implementation class for the MixinBuilder, providing style storage and context retrieval.
  *
  * This is defined separately to avoid issues with `ts-mixer` and multiple inheritance.
  */
-class MixinImpl<T extends string> extends CoreBuilder<Tokenize<T>> {
+class MixinBuilderImpl<T extends string> extends CoreBuilder<Tokenize<T>> {
   protected _styles: CssProperties | undefined;
 
   public style(properties: CssProperties) {
@@ -30,17 +29,10 @@ class MixinImpl<T extends string> extends CoreBuilder<Tokenize<T>> {
    *
    * You probably never need to use this directly.
    */
-  public getMixinContext(): Token[] {
-    return this.context;
+  public get context(): Token[] {
+    return this._context;
   }
 }
-
-export interface MixinBuilder<T extends string>
-  extends WithNavigation<T>,
-    WithPseudoClasses<T>,
-    WithPseudoElements<T>,
-    WithSelectorOperations<T>,
-    MixinImpl<T> {}
 
 /**
  * A builder to create re-usable mixins that can be applied to selectors.
@@ -49,5 +41,4 @@ export interface MixinBuilder<T extends string>
  * selecting and selector operations, but cannot apply styles directly.
  * Instead, they can be passed to the `use()` method of builders that support styling.
  */
-@mix(WithNavigation, WithPseudoClasses, WithPseudoElements, WithSelectorOperations, MixinImpl)
-export class MixinBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}
+export class MixinBuilder<T extends string> extends MixinBuilderImpl<T> {}

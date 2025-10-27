@@ -11,7 +11,7 @@ import { CoreBuilder } from '../core.builder';
  * - Creating the CSS rule and declarations, applying it to the root PostCSS AST
  * - Creating the correct rule, potentially scoped under at rules etc.
  */
-export class WithStyling<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
+export abstract class WithStyling<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
   /**
    * Apply the given CSS properties to the current selector context.
    * Creates the necessary PostCSS rule and declarations, appending them to the root AST.

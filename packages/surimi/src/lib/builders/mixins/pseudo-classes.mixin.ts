@@ -15,7 +15,7 @@ type WithPseudoClassMethods<_TContext extends string> = {
  * Mixin that adds pseudo-class methods to a builder.
  * Each method corresponds to a CSS pseudo-class and returns a new SelectorBuilder, tagged with the appropriate pseudo-class.
  */
-export class WithPseudoClasses<TContext extends string>
+export abstract class WithPseudoClasses<TContext extends string>
   extends CoreBuilder<Tokenize<TContext>>
   implements WithPseudoClassMethods<TContext>
 {
@@ -29,9 +29,9 @@ export class WithPseudoClasses<TContext extends string>
     };
 
     return new SelectorBuilder<`${TContext}:${TPseudoClass}`>(
-      [...this.context, newToken] as never,
-      this.postcssContainer,
-      this.postcssRoot,
+      [...this._context, newToken] as never,
+      this._postcssContainer,
+      this._postcssRoot,
     );
   }
 

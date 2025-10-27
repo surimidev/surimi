@@ -15,7 +15,7 @@ import { WithStyling } from './styling.mixin';
  * select('.button').use(buttonStyle);
  * ```
  */
-export class WithUsables<TContext extends string> extends WithStyling<TContext> {
+export abstract class WithUsables<TContext extends string> extends WithStyling<TContext> {
   /**
    * Apply styles from a StyleBuilder to the current selector.
    *
@@ -38,10 +38,10 @@ export class WithUsables<TContext extends string> extends WithStyling<TContext> 
       this.style(styles);
     } else if (usable instanceof MixinBuilder) {
       const styles = usable.styles;
-      const context = usable.getMixinContext();
+      const context = usable.context;
 
       if (styles) {
-        _selectByContext([...this.context, ...context], this.postcssContainer, this.postcssRoot).style(styles);
+        _selectByContext([...this._context, ...context], this._postcssContainer, this._postcssRoot).style(styles);
       }
     }
 

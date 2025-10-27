@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../src/index';
+import { select, Surimi } from '../../../src/index';
 
 describe('Basic Selector & Style Application', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { media, select, Surimi } from '../../src/index';
+import { media, select, Surimi } from '../../../src/index';
 
 describe('Nesting and Complex Combinations', () => {
   beforeEach(() => {
@@ -134,6 +134,54 @@ describe('Nesting and Complex Combinations', () => {
 @media ( max-width : 600px ) {
     .parent > a {
         color: red
+    }
+}`);
+    });
+  });
+
+  describe('Nesting with the .select() method', () => {
+    it('should support nesting selectors using .select()', () => {
+      select('.container').select('.item').style({ margin: '10px' });
+
+      expect(Surimi.build()).toBe(`\
+.container {
+    .item {
+        margin: 10px
+    }
+}`);
+    });
+
+    it('should support multiple levels of nesting', () => {
+      select('.wrapper').select('.content').select('.text').style({ lineHeight: '1.5' });
+
+      expect(Surimi.build()).toBe(`\
+.wrapper {
+    .content {
+        .text {
+            line-height: 1.5
+        }
+    }
+}`);
+    });
+
+    it('should combine nesting with other combinators', () => {
+      select('.list').child('.item').select('.link').style({ textDecoration: 'underline' });
+
+      expect(Surimi.build()).toBe(`\
+.list > .item {
+    .link {
+        text-decoration: underline
+    }
+}`);
+    });
+
+    it('should work with pseudo-classes in nested selectors', () => {
+      select('.menu').select('.item').hover().style({ backgroundColor: 'lightgray' });
+
+      expect(Surimi.build()).toBe(`\
+.menu {
+    .item:hover {
+        background-color: lightgray
     }
 }`);
     });

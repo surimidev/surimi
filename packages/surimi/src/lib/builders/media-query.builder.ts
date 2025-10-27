@@ -72,12 +72,12 @@ export class MediaQueryBuilder<TQuery extends string>
   private createMediaQueryBuilderWithParameter<TNewParam extends string>(
     parameter: TNewParam,
   ): MediaQueryBuilder<`${TQuery} ${TNewParam}`> {
-    const currentContextString = stringifyAtRule(this.context);
+    const currentContextString = stringifyAtRule(this._context);
     const newContext = tokenizeAtRule(
       `${currentContextString} ${parameter}`,
     ) as TokenizeAtRule<`${TQuery} ${TNewParam}`>;
 
-    return new MediaQueryBuilder(newContext as never, this.postcssContainer, this.postcssRoot);
+    return new MediaQueryBuilder(newContext as never, this._postcssContainer, this._postcssRoot);
   }
 
   // ------------

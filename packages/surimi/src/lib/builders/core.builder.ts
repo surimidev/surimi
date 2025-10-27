@@ -1,26 +1,30 @@
 import postcss from 'postcss';
 
-import { stringify, type Token } from '@surimi/parsers';
+import { stringify, stringifySelector, type Token } from '@surimi/parsers';
 
 /**
  * Core builder class that provides access to the PostCSS root and builder context.
  */
-export class CoreBuilder<TContext extends Token[] = []> {
-  protected context: TContext;
-  protected postcssContainer: postcss.Container;
-  protected postcssRoot: postcss.Root;
+export abstract class CoreBuilder<TContext extends Token[] = []> {
+  protected _context: TContext;
+  protected _postcssContainer: postcss.Container;
+  protected _postcssRoot: postcss.Root;
 
   public constructor(context: TContext, container: postcss.Container, root: postcss.Root) {
-    this.context = context;
-    this.postcssContainer = container;
-    this.postcssRoot = root;
+    this._context = context;
+    this._postcssContainer = container;
+    this._postcssRoot = root;
+  }
+
+  public toString() {
+    return stringifySelector(this._context);
   }
 
   /**
    * Get the PostCSS rule for the given selector from the appropriate container if it exists.
    */
   protected getRule(selector: string): postcss.Rule | undefined {
-    return this.postcssContainer.nodes?.find(
+    return this._postcssContainer.nodes?.find(
       (node): node is postcss.Rule => node.type === 'rule' && node.selector === selector,
     );
   }
@@ -34,7 +38,7 @@ export class CoreBuilder<TContext extends Token[] = []> {
    * @returns The PostCSS rule for the current selector context.
    */
   protected getOrCreateRule(): postcss.Rule {
-    const selector = stringify(this.context);
+    const selector = stringify(this._context);
 
     if (!selector) {
       throw new Error('Error while creating CSS selector from builder context');
@@ -43,7 +47,7 @@ export class CoreBuilder<TContext extends Token[] = []> {
     let rule = this.getRule(selector);
     if (!rule) {
       rule = postcss.rule({ selector });
-      this.postcssContainer.append(rule);
+      this._postcssContainer.append(rule);
     }
 
     return rule;

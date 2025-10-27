@@ -14,7 +14,7 @@ type WithPseudoElementMethods<_TContext extends string> = {
  * Mixin that adds pseudo-element methods to a builder.
  * Each method corresponds to a CSS pseudo-element and returns a new SelectorBuilder, tagged with the appropriate pseudo-element.
  */
-export class WithPseudoElements<TContext extends string>
+export abstract class WithPseudoElements<TContext extends string>
   extends CoreBuilder<Tokenize<TContext>>
   implements WithPseudoElementMethods<TContext>
 {
@@ -28,9 +28,9 @@ export class WithPseudoElements<TContext extends string>
     };
 
     return new SelectorBuilder<`${TContext}:${TPseudoElement}`>(
-      [...this.context, newToken] as never,
-      this.postcssContainer,
-      this.postcssRoot,
+      [...this._context, newToken] as never,
+      this._postcssContainer,
+      this._postcssRoot,
     );
   }
   public after = () => this.createPseudoElement('after');

@@ -9,7 +9,7 @@ import { SelectorBuilder } from '../selector.builder';
 /**
  * Mixin mainly for selecting things in a nested way within an existing selector context
  */
-export class WithSelectorOperations<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
+export abstract class WithSelectorOperations<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
   /**
    * Combine a selector with the previous one using a comma (`,`) to create a group of selectors.
    *
@@ -25,9 +25,9 @@ export class WithSelectorOperations<TContext extends string> extends CoreBuilder
     const selectorTokens = tokenizeSelector(selector);
 
     return new SelectorBuilder<`${TContext}, ${TSelector}`>(
-      [...this.context, { type: 'comma', content: ',' }, ...selectorTokens] as never,
-      this.postcssContainer,
-      this.postcssRoot,
+      [...this._context, { type: 'comma', content: ',' }, ...selectorTokens] as never,
+      this._postcssContainer,
+      this._postcssRoot,
     );
   }
 
@@ -49,9 +49,9 @@ export class WithSelectorOperations<TContext extends string> extends CoreBuilder
     const selectorTokens = tokenizeSelector(selector);
 
     return new SelectorBuilder<`${TContext} ${TSelector}`>(
-      [...this.context, ...selectorTokens] as never,
-      this.postcssContainer,
-      this.postcssRoot,
+      [...this._context, ...selectorTokens] as never,
+      this._postcssContainer,
+      this._postcssRoot,
     );
   }
 }
