@@ -24,7 +24,7 @@ export class StyleBuilder {
   public extend(styles: CssProperties | StyleBuilder) {
     const newStyles = styles instanceof StyleBuilder ? styles.styles : styles;
 
-    return new StyleBuilder(newStyles);
+    return new StyleBuilder({ ...this._styles, ...newStyles });
   }
 
   public get styles(): CssProperties {

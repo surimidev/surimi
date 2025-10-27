@@ -1,4 +1,4 @@
-import { color, resolution } from 'surimi';
+import { color, length } from 'surimi';
 
 export const theme = {
   colors: {
@@ -12,8 +12,8 @@ export const theme = {
     text: color('color-text', '#111827'),
   },
   spacing: {
-    small: resolution('space-small', '8px'),
-    medium: resolution('space-medium', '16px'),
-    large: resolution('space-large', '24px'),
+    small: length('space-small', '8px'),
+    medium: length('space-medium', '16px'),
+    large: length('space-large', '24px'),
   },
 } as const;

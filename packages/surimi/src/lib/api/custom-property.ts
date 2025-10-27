@@ -63,7 +63,7 @@ export function property<TValue = string & {}>(
   if (typeof nameOrOptions === 'string') {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime check
     if (initialValue == null || syntax == null || inherits == null) {
-      throw new Error('');
+      throw new Error('Missing parameter(s)');
     }
 
     return new CustomProperty(nameOrOptions, syntax, inherits, initialValue);
