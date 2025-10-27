@@ -5,10 +5,15 @@ import { StyleBuilder } from '../style.builder';
 import { WithStyling } from './styling.mixin';
 
 /**
- * Mixin class for builders that support styling with CSS properties.
- * Responsible for applying styles to the current selector context, including:
- * - Creating the CSS rule and declarations, applying it to the root PostCSS AST
- * - Creating the correct rule, potentially scoped under at rules etc.
+ * Mixin class for builders that support applying reusable styles and mixins.
+ * Provides the `use()` method, which allows you to apply styles or mixins from a `StyleBuilder` or `MixinBuilder`
+ * to the current selector/context. This enables composition and reuse of style logic across components.
+ *
+ * Example usage:
+ * ```ts
+ * const buttonStyle = style({ backgroundColor: 'blue', color: 'white' });
+ * select('.button').use(buttonStyle);
+ * ```
  */
 export class WithUsables<TContext extends string> extends WithStyling<TContext> {
   /**
