@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:format",
+    "@maz-ui/changelogen-monorepo": "^4.2.1",
     "@playwright/test": "catalog:test",
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
