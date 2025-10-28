@@ -81,15 +81,30 @@ export type RangedMediaDescriptor =
   | `min-${BaseRangedMediaDescriptor}`
   | `max-${BaseRangedMediaDescriptor}`;
 
-export type MediaQueryRangeOperator = '<' | '<=' | '=' | '>=' | '>';
 /**
  * All possible media descriptors, including prefixed min- and max- variants for ranged descriptors.
  */
 export type MediaDescriptor = DiscreteMediaDescriptor | RangedMediaDescriptor;
 
 export type MediaOperator = 'not' | 'and' | 'only' | 'or';
-
+export type MediaRangeOperator = '<' | '<=' | '=' | '>=' | '>';
 export type MediaType = 'all' | 'print' | 'screen';
+
+export type BaseRangedContainerDescriptor = 'aspect-ratio' | 'block-size' | 'height' | 'inline-size' | 'width';
+
+export type RangedContainerDescriptor =
+  | BaseRangedContainerDescriptor
+  | `min-${BaseRangedContainerDescriptor}`
+  | `max-${BaseRangedContainerDescriptor}`;
+
+/**
+ * All possible container descriptors, including prefixed min- and max- variants for ranged descriptors.
+ */
+export type ContainerDescriptor = RangedContainerDescriptor;
+
+export type ContainerOperator = Exclude<MediaOperator, 'only'>;
+
+export type ContainerRangeOperator = MediaRangeOperator;
 
 /**
  * An object of CSS properties and their values.

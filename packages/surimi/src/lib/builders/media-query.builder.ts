@@ -6,7 +6,7 @@ import type {
   BaseRangedMediaDescriptor,
   DiscreteMediaDescriptor,
   MediaOperator,
-  MediaQueryRangeOperator,
+  MediaRangeOperator,
   MediaType,
 } from '#types/css.types';
 import type { KebabCaseToCamelCase } from '#types/util.types';
@@ -21,7 +21,7 @@ type MediaQueryBuilderDiscreteFunctions = {
 type MediaQueryBuilderBaseRangedFunctions<T extends string> = {
   [K in BaseRangedMediaDescriptor as KebabCaseToCamelCase<K>]: <
     TValue extends string,
-    TOperator extends MediaQueryRangeOperator,
+    TOperator extends MediaRangeOperator,
   >(
     operator: TOperator,
     value: TValue,
@@ -219,77 +219,59 @@ export class MediaQueryBuilder<TQuery extends string>
   // Ranged Media Descriptors (without min- and max- prefixes)
   // ------------
 
-  public aspectRatio<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public aspectRatio<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(aspect-ratio ${operator} ${value})`);
   }
 
-  public color<TOperator extends MediaQueryRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
+  public color<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(color ${operator} ${value})`);
   }
 
-  public colorIndex<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public colorIndex<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(color-index ${operator} ${value})`);
   }
-  public deviceAspectRatio<TOperator extends MediaQueryRangeOperator, TValue extends string>(
+  public deviceAspectRatio<TOperator extends MediaRangeOperator, TValue extends string>(
     operator: TOperator,
     value: TValue,
   ) {
     return this.createMediaQueryBuilderWithParameter(`(device-aspect-ratio ${operator} ${value})`);
   }
 
-  public deviceHeight<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public deviceHeight<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(device-height ${operator} ${value})`);
   }
 
-  public deviceWidth<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public deviceWidth<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(device-width ${operator} ${value})`);
   }
 
-  public height<TOperator extends MediaQueryRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
+  public height<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(height ${operator} ${value})`);
   }
 
-  public horizontalViewportSegments<TOperator extends MediaQueryRangeOperator, TValue extends string>(
+  public horizontalViewportSegments<TOperator extends MediaRangeOperator, TValue extends string>(
     operator: TOperator,
     value: TValue,
   ) {
     return this.createMediaQueryBuilderWithParameter(`(horizontal-viewport-segments ${operator} ${value})`);
   }
 
-  public monochrome<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public monochrome<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(monochrome ${operator} ${value})`);
   }
 
-  public resolution<TOperator extends MediaQueryRangeOperator, TValue extends string>(
-    operator: TOperator,
-    value: TValue,
-  ) {
+  public resolution<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(resolution ${operator} ${value})`);
   }
 
-  public verticalViewportSegments<TOperator extends MediaQueryRangeOperator, TValue extends string>(
+  public verticalViewportSegments<TOperator extends MediaRangeOperator, TValue extends string>(
     operator: TOperator,
     value: TValue,
   ) {
     return this.createMediaQueryBuilderWithParameter(`(vertical-viewport-segments ${operator} ${value})`);
   }
 
-  public width<TOperator extends MediaQueryRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
+  public width<TOperator extends MediaRangeOperator, TValue extends string>(operator: TOperator, value: TValue) {
     return this.createMediaQueryBuilderWithParameter(`(width ${operator} ${value})`);
   }
 

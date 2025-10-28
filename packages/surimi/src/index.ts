@@ -1,4 +1,4 @@
-export { media, select, mixin, style } from '#lib/api/index';
+export { media, container, select, mixin, style } from '#lib/api/index';
 export {
   property,
   angle,
