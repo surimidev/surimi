@@ -16,8 +16,6 @@
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm --filter=./examples/** dev\"",
     "format": "prettier --write .",
     "lint": "eslint --flag v10_config_lookup_from_file .",
-    "prepare-release": "pnpm test --run && pnpm build  && pnpm clm bump && pnpm clm changelog",
-    "publish-ci": "jiti ./scripts/publish-ci.ts",
     "test": "vitest"
   },
   "devDependencies": {
