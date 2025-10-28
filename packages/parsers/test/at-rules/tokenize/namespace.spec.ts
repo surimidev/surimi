@@ -53,7 +53,11 @@ describe('@namespace - Basic', () => {
     expect(tokens).toEqual([
       { type: 'at-rule-name', name: 'namespace', content: '@namespace' },
       { type: 'identifier', value: 'math', content: 'math' },
-      { type: 'string', value: '"http://www.w3.org/1998/Math/MathML"', content: '"http://www.w3.org/1998/Math/MathML"' },
+      {
+        type: 'string',
+        value: '"http://www.w3.org/1998/Math/MathML"',
+        content: '"http://www.w3.org/1998/Math/MathML"',
+      },
     ]);
   });
 });

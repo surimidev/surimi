@@ -5,3 +5,4 @@ dist/
 .config/
 pnpm-lock.yaml
 pnpm-workspace.yaml
+*.mdx

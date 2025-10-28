@@ -16,11 +16,12 @@
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm --filter=./examples/** dev\"",
     "format": "prettier --write .",
     "lint": "eslint --flag v10_config_lookup_from_file .",
-    "publish-ci": "jiti ./scripts/publish-ci.ts",
+    "release": "pnpm clm release",
     "test": "vitest"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:format",
+    "@maz-ui/changelogen-monorepo": "^4.2.1",
     "@playwright/test": "catalog:test",
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
