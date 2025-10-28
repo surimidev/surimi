@@ -244,8 +244,8 @@ type ParseIdentifier<S extends string> =
     ? // Check if it's a logical operator (and, or, not)
       Name extends 'and' | 'or' | 'not'
       ? { token: { type: 'operator'; operator: Name; content: Name }; rest: R }
-      : // Check if followed by parenthesis (function)
-        SkipWhitespace<R> extends `(${infer AfterParen}`
+      : // Only treat as function if immediately followed by '('
+        R extends `(${infer AfterParen}`
         ? ReadUntilCloseParen<AfterParen> extends { value: infer Arg extends string; rest: infer R2 extends string }
           ? Name extends 'url'
             ? { token: { type: 'url'; value: Arg; content: `${Name}(${Arg})` }; rest: R2 }

@@ -141,44 +141,43 @@ export function tokenizeAtRule<S extends string>(input: S): TokenizeAtRule<S> {
           operator: value,
           content: value,
         });
+        continue;
       }
-      // Check if it's followed by a parenthesis (function)
-      else {
-        pos = skipWhitespace(input, pos);
-        if (input[pos] === '(') {
-          pos++; // skip (
-          const { value: argument, endPos: argEnd } = readUntilCloseParen(input, pos);
-          pos = argEnd;
-          // Skip the closing )
-          if (input[pos] === ')') {
-            pos++;
-          }
 
-          // Special handling for url() function
-          if (value === 'url') {
-            tokens.push({
-              type: 'url',
-              value: argument.trim(),
-              content: `url(${argument})`,
-            });
-          } else {
-            tokens.push({
-              type: 'function',
-              name: value,
-              argument,
-              content: `${value}(${argument})`,
-            });
-          }
+      // Only treat as function if immediately followed by '('
+      if (input[pos] === '(') {
+        pos++; // skip (
+        const { value: argument, endPos: argEnd } = readUntilCloseParen(input, pos);
+        pos = argEnd;
+        // Skip the closing )
+        if (input[pos] === ')') {
+          pos++;
         }
-        // Regular identifier
-        else {
+
+        // Special handling for url() function
+        if (value === 'url') {
           tokens.push({
-            type: 'identifier',
-            value,
-            content: value,
+            type: 'url',
+            value: argument.trim(),
+            content: `url(${argument})`,
+          });
+        } else {
+          tokens.push({
+            type: 'function',
+            name: value,
+            argument,
+            content: `${value}(${argument})`,
           });
         }
+        continue;
       }
+
+      // Otherwise, treat as identifier (e.g. container query name)
+      tokens.push({
+        type: 'identifier',
+        value,
+        content: value,
+      });
       continue;
     }
 

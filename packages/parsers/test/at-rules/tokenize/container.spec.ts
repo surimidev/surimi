@@ -36,13 +36,18 @@ describe('@container - Basic Queries', () => {
 
 describe('@container - Named Containers', () => {
   it('should tokenize named container query', () => {
-    const input = '@container sidebar(min-width: 300px)';
+    const input = '@container sidebar (min-width: 300px)';
 
     const tokens = tokenizeAtRule(input);
 
     expect(tokens).toEqual([
       { type: 'at-rule-name', name: 'container', content: '@container' },
-      { type: 'function', name: 'sidebar', argument: 'min-width: 300px', content: 'sidebar(min-width: 300px)' },
+      { type: 'identifier', value: 'sidebar', content: 'sidebar' },
+      { type: 'delimiter', delimiter: '(', content: '(' },
+      { type: 'identifier', value: 'min-width', content: 'min-width' },
+      { type: 'delimiter', delimiter: ':', content: ':' },
+      { type: 'dimension', value: 300, unit: 'px', content: '300px' },
+      { type: 'delimiter', delimiter: ')', content: ')' },
     ]);
   });
 });

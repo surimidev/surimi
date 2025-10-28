@@ -95,7 +95,12 @@ describe('@container Rules', () => {
     // This is acceptable behavior - the semantic parser can interpret container names
     expect(result).toEqual([
       { type: 'at-rule-name', name: 'container', content: '@container' },
-      { type: 'function', name: 'sidebar', argument: 'min-width: 300px', content: 'sidebar(min-width: 300px)' },
+      { type: 'identifier', value: 'sidebar', content: 'sidebar' },
+      { type: 'delimiter', delimiter: '(', content: '(' },
+      { type: 'identifier', value: 'min-width', content: 'min-width' },
+      { type: 'delimiter', delimiter: ':', content: ':' },
+      { type: 'dimension', value: 300, unit: 'px', content: '300px' },
+      { type: 'delimiter', delimiter: ')', content: ')' },
     ]);
   });
 
