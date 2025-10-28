@@ -41,5 +41,10 @@
   "packageManager": "pnpm@10.19.0",
   "engines": {
     "node": ">=22.18"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "catalog:build"
+    }
   }
 }
