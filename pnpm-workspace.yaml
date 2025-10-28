@@ -10,8 +10,7 @@ catalogs:
     esbuild: ^0.25.11
     fast-glob: ^3.3.3
     rolldown: ^1.0.0-beta.45
-    tsdown: ^0.15.10
-    tsup: ^8.5.0
+    tsdown: ^0.15.11
     typescript: ^5.9.3
     vite: ^7.1.12
   docs:
