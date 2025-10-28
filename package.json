@@ -16,7 +16,7 @@
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm --filter=./examples/** dev\"",
     "format": "prettier --write .",
     "lint": "eslint --flag v10_config_lookup_from_file .",
-    "release": "pnpm clm release --no-root-changelog",
+    "release": "pnpm clm release",
     "test": "vitest"
   },
   "devDependencies": {
