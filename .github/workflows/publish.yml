@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   publish:
+    if: github.repository == 'janis-me/surimi'
     environment: prod
     runs-on: ubuntu-latest
     strategy:
@@ -46,8 +47,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Not generating releases until changelogen supports monorepos
-      # - name: Generate Changelog
-      #   run: pnpm dlx changelogithub
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Releases
+        run: pnpm clm github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
