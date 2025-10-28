@@ -12,7 +12,7 @@ catalogs:
     rolldown: ^1.0.0-beta.45
     tsdown: ^0.15.10
     typescript: ^5.9.3
-    vite: ^7.1.12
+    vite: ^6.4.1
   docs:
     "@fontsource/ibm-plex-mono": ^5.2.7
     "@fortawesome/fontawesome-svg-core": ^6.7.2
