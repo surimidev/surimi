@@ -6,4 +6,9 @@ export default defineConfig({
     packages: ['packages/*'],
     ignorePackageNames: ['@surimi/docs', '@surimi/playground'],
   },
+
+  changelog: {
+    rootChangelog: false,
+    formatCmd: 'pnpm format *.md',
+  },
 });
