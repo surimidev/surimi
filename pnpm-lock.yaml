@@ -283,6 +283,9 @@ importers:
       '@clack/prompts':
         specifier: ^0.11.0
         version: 0.11.0
+      commander:
+        specifier: ^14.0.2
+        version: 14.0.2
       rolldown:
         specifier: catalog:build
         version: 1.0.0-beta.45

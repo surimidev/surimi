@@ -5,6 +5,7 @@ import { basename, dirname, extname, resolve } from 'node:path';
 import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
 import chokidar from 'chokidar';
+import { Command, Option } from 'commander';
 
 import compile from '#compiler';
 
@@ -18,108 +19,22 @@ interface CLIOptions {
   exclude?: string[];
   noJs?: boolean;
   watch?: boolean;
-  help?: boolean;
+}
+const DEFAULT_INCLUDE = ['**/*.ts', '**/*.tsx'] as const;
+const DEFAULT_EXCLUDE = ['**/*.d.ts', '**/node_modules/**'] as const;
+const DEFAULT_OUT_DIR = './dist';
+
+interface CompileCommandRuntimeOptions {
+  include?: unknown;
+  exclude?: unknown;
+  cwd?: unknown;
+  outDir?: unknown;
+  watch?: unknown;
+  js?: unknown;
 }
 
-function showHelp() {
-  intro('Surimi CSS Compiler');
-  console.log(`
-Usage: surimi compile <input> [options]
-
-Commands:
-  compile <input>       Compile a TypeScript file to CSS
-
-Options:
-  -o, --out-dir, --out <path>       Output directory (default: same as input file)
-  -c, --cwd <path>      Working directory (default: current directory)
-  --include <patterns>  Include patterns (comma-separated)
-  --exclude <patterns>  Exclude patterns (comma-separated)
-  --watch               Watch for changes and recompile
-  --no-js               Skip JavaScript file generation
-  -h, --help            Show help
-
-Examples:
-  surimi compile src/styles.ts
-  surimi compile src/styles.ts --outDir dist
-  surimi compile src/styles.ts --include "**/*.ts,**/*.tsx" --no-js
-`);
-}
-
-function parseArgs(args: string[]): CLIOptions {
-  const options: CLIOptions = {
-    input: '',
-    cwd: process.cwd(),
-    include: ['**/*.ts', '**/*.tsx'],
-    exclude: ['**/*.d.ts', '**/node_modules/**'],
-  };
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    switch (arg) {
-      case 'compile':
-        if (i + 1 < args.length) {
-          const nextArg = args[++i];
-          if (nextArg) options.input = nextArg;
-        } else {
-          throw new Error('Missing input file for compile command');
-        }
-        break;
-      case '-o':
-      case '--out-dir':
-      case '--out':
-        if (i + 1 < args.length) {
-          const nextArg = args[++i];
-          if (nextArg) options.outDir = nextArg;
-        } else {
-          throw new Error('Missing output directory path');
-        }
-        break;
-      case '-c':
-      case '--cwd':
-        if (i + 1 < args.length) {
-          const nextArg = args[++i];
-          if (nextArg) options.cwd = nextArg;
-        } else {
-          throw new Error('Missing working directory path');
-        }
-        break;
-      case '--include':
-        if (i + 1 < args.length) {
-          const nextArg = args[++i];
-          if (nextArg) options.include = nextArg.split(',').map(p => p.trim());
-        } else {
-          throw new Error('Missing include patterns');
-        }
-        break;
-      case '--exclude':
-        if (i + 1 < args.length) {
-          const nextArg = args[++i];
-          if (nextArg) options.exclude = nextArg.split(',').map(p => p.trim());
-        } else {
-          throw new Error('Missing exclude patterns');
-        }
-        break;
-      case '--watch':
-        options.watch = true;
-        break;
-      case '--no-js':
-        options.noJs = true;
-        break;
-      case '-h':
-      case '--help':
-        options.help = true;
-        break;
-      default:
-        // If no command specified yet and it doesn't start with -, treat as input
-        if (!options.input && arg && !arg.startsWith('-')) {
-          options.input = arg;
-        }
-        break;
-    }
-  }
-
-  return options;
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry): entry is string => typeof entry === 'string');
 }
 
 function generateOutputPaths(inputPath: string, outDir?: string): { css: string; js: string } {
@@ -301,26 +216,56 @@ async function runCompile(options: CLIOptions) {
 }
 
 async function main() {
-  const args = process.argv.slice(2);
+  const program = new Command();
 
-  if (args.length === 0) {
-    showHelp();
-    process.exit(0);
-  }
+  program.name('surimi').description('🍣 @surimi/compiler').version(version).showHelpAfterError();
 
-  try {
-    const options = parseArgs(args);
+  program.addHelpText(
+    'after',
+    `\nExamples:\n  surimi compile src/styles.css.ts\n  surimi compile src/styles.css.ts --out-dir dist\n  surimi compile src/styles.css.ts --include src/**/*.ts --no-js\n`,
+  );
 
-    if (options.help) {
-      showHelp();
-      process.exit(0);
-    }
+  const compileCommand = new Command('compile')
+    .argument('<input>', 'Path to the .css.ts file to compile')
+    .option('-o, --out-dir <path>, --out <path>, --outDir <path>', 'Output directory', DEFAULT_OUT_DIR)
+    .option('-c, --cwd <path>', 'Working directory', process.cwd())
+    .option('-w, --watch', 'Watch for changes and recompile')
+    .option('--no-js', 'Skip JavaScript file generation')
+    .addOption(new Option('--include <pattern...>', 'Include glob patterns').default(DEFAULT_INCLUDE))
+    .addOption(new Option('--exclude <pattern...>', 'Exclude glob patterns').default(DEFAULT_EXCLUDE))
+    .action(async (input: string, rawOptions: CompileCommandRuntimeOptions) => {
+      const includeCandidate = rawOptions.include;
+      const excludeCandidate = rawOptions.exclude;
+      const cwdCandidate = rawOptions.cwd;
+      const outDirCandidate = rawOptions.outDir;
+      const watchCandidate = rawOptions.watch;
+      const jsCandidate = rawOptions.js;
 
-    await runCompile(options);
-  } catch (error) {
-    cancel(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    process.exit(1);
-  }
+      const include = isStringArray(includeCandidate) ? [...includeCandidate] : [...DEFAULT_INCLUDE];
+      const exclude = isStringArray(excludeCandidate) ? [...excludeCandidate] : [...DEFAULT_EXCLUDE];
+      const cwd = typeof cwdCandidate === 'string' && cwdCandidate.length > 0 ? cwdCandidate : process.cwd();
+      const outDir =
+        typeof outDirCandidate === 'string' && outDirCandidate.length > 0 ? outDirCandidate : DEFAULT_OUT_DIR;
+      const watch = watchCandidate === true;
+      const noJs = jsCandidate === false;
+
+      await runCompile({
+        input,
+        cwd,
+        outDir,
+        include,
+        exclude,
+        watch,
+        noJs,
+      });
+    });
+
+  program.addCommand(compileCommand, { isDefault: true });
+
+  await program.parseAsync(process.argv);
 }
 
-main().catch(console.error);
+main().catch((error: unknown) => {
+  log.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+  process.exit(1);
+});
