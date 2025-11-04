@@ -1,6 +1,6 @@
 {
   "name": "@surimi/parsers",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "A neat little parser for CSS selectors - written in typescript types",
   "keywords": [
     "css",

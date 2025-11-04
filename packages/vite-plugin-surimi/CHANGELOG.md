@@ -1,22 +1,5 @@
 # Changelog
 
-## vite-plugin-surimi@0.2.0...vite-plugin-surimi@0.3.0
-
-[compare changes](https://github.com/janis-me/surimi/compare/vite-plugin-surimi@0.2.0...vite-plugin-surimi@0.3.0)
-
-### 🚀 Enhancements
-
-- Ensure nested CSS files are built, cached and included only once ([8718c90](https://github.com/janis-me/surimi/commit/8718c90))
-
-### 🏡 Chore
-
-- Add changelogen monorepo ([#45](https://github.com/janis-me/surimi/pull/45))
-
-### ❤️ Contributors
-
-- Janis Jansen ([@janis-me](https://github.com/janis-me))
-- Janis ([@janis-me](https://github.com/janis-me))
-
 ## vite-plugin-surimi@0.1.2...vite-plugin-surimi@0.2.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/vite-plugin-surimi@0.1.2...vite-plugin-surimi@0.2.0)

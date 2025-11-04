@@ -1,29 +1,5 @@
 # Changelog
 
-## surimi@0.4.0...surimi@0.5.0
-
-[compare changes](https://github.com/janis-me/surimi/compare/surimi@0.4.0...surimi@0.5.0)
-
-### 🚀 Enhancements
-
-- **surimi:** Add common base class `SurimiBase` for all exported surimi classes ([a825181](https://github.com/janis-me/surimi/commit/a825181))
-- Ensure nested CSS files are built, cached and included only once ([8718c90](https://github.com/janis-me/surimi/commit/8718c90))
-
-### 🩹 Fixes
-
-- **parsers:** Support tokenizing at-rules with names (container queries) ([#51](https://github.com/janis-me/surimi/pull/51))
-- Fix typing of select and styles methods (usables) ([069b4d1](https://github.com/janis-me/surimi/commit/069b4d1))
-- Append custom properties instead of pre-pending them ([0634cf4](https://github.com/janis-me/surimi/commit/0634cf4))
-
-### 🏡 Chore
-
-- Add changelogen monorepo ([#45](https://github.com/janis-me/surimi/pull/45))
-
-### ❤️ Contributors
-
-- Janis ([@janis-me](https://github.com/janis-me))
-- Janis Jansen ([@janis-me](https://github.com/janis-me))
-
 ## surimi@0.3.1...surimi@0.4.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/surimi@0.3.1...surimi@0.4.0)

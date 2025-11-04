@@ -1,24 +1,5 @@
 # Changelog
 
-## @surimi/parsers@0.1.0...@surimi/parsers@0.1.1
-
-[compare changes](https://github.com/janis-me/surimi/compare/@surimi/parsers@0.1.0...@surimi/parsers@0.1.1)
-
-### 🩹 Fixes
-
-- **parsers:** Support tokenizing at-rules with names (container queries) ([#51](https://github.com/janis-me/surimi/pull/51))
-
-### 🏡 Chore
-
-- Fix changelogen config ([7d3069a](https://github.com/janis-me/surimi/commit/7d3069a))
-- Make parsers version 0.0.1 for now, so it's released as 0.1.0 ([abe6828](https://github.com/janis-me/surimi/commit/abe6828))
-- Add changelogen monorepo ([#45](https://github.com/janis-me/surimi/pull/45))
-
-### ❤️ Contributors
-
-- Janis ([@janis-me](https://github.com/janis-me))
-- Janis Jansen ([@janis-me](https://github.com/janis-me))
-
 ## vite-plugin-surimi@0.1.2...@surimi/parsers@0.1.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/vite-plugin-surimi@0.1.2...@surimi/parsers@0.1.0)

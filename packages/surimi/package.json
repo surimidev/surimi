@@ -1,6 +1,6 @@
 {
   "name": "surimi",
-  "version": "0.5.0",
+  "version": "0.4.0",
   "private": false,
   "description": "Next generation CSS-preprocessor (using typescript)",
   "keywords": [

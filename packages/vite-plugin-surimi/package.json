@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-surimi",
-  "version": "0.3.0",
+  "version": "0.2.0",
   "description": "Vite plugin for automatic CSS generation with Surimi",
   "keywords": [
     "vite",
