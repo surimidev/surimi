@@ -17,6 +17,8 @@ export class CustomProperty<TValue> extends SurimiBase {
     this.syntax = angleWrappedSyntax;
     this.inherits = inherits;
     this.initialValue = initialValue;
+
+    this.register();
   }
 
   protected register() {
@@ -32,12 +34,15 @@ export class CustomProperty<TValue> extends SurimiBase {
     ];
 
     rule.append(declarations);
+    this._postcssRoot.prepend(rule);
   }
 
-  public build(): string {
-    this.register();
-
+  public toString() {
     return `var(${this.name})`;
+  }
+
+  public build() {
+    return this.toString();
   }
 }
 
