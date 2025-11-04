@@ -227,7 +227,12 @@ async function main() {
 
   const compileCommand = new Command('compile')
     .argument('<input>', 'Path to the .css.ts file to compile')
-    .option('-o, --out-dir <path>, --out <path>, --outDir <path>', 'Output directory', DEFAULT_OUT_DIR)
+    .addOption(
+      new Option('-o, --out-dir <path>', 'Output directory')
+        .default(DEFAULT_OUT_DIR)
+        .alias('--out')
+        .alias('--outDir')
+    )
     .option('-c, --cwd <path>', 'Working directory', process.cwd())
     .option('-w, --watch', 'Watch for changes and recompile')
     .option('--no-js', 'Skip JavaScript file generation')
