@@ -5,7 +5,7 @@ import { basename, dirname, extname, resolve } from 'node:path';
 import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
 import chokidar from 'chokidar';
-import { Command, Option } from 'commander';
+import { Command } from 'commander';
 
 import compile from '#compiler';
 
@@ -20,8 +20,8 @@ interface CLIOptions {
   noJs?: boolean;
   watch?: boolean;
 }
-const DEFAULT_INCLUDE = ['**/*.ts', '**/*.tsx'] as const;
-const DEFAULT_EXCLUDE = ['**/*.d.ts', '**/node_modules/**'] as const;
+const DEFAULT_INCLUDE = ['**/*.ts', '**/*.tsx'] as const satisfies string[];
+const DEFAULT_EXCLUDE = ['**/*.d.ts', '**/node_modules/**'] as const satisfies string[];
 const DEFAULT_OUT_DIR = './dist';
 
 interface CompileCommandRuntimeOptions {
@@ -227,17 +227,12 @@ async function main() {
 
   const compileCommand = new Command('compile')
     .argument('<input>', 'Path to the .css.ts file to compile')
-    .addOption(
-      new Option('-o, --out-dir <path>', 'Output directory')
-        .default(DEFAULT_OUT_DIR)
-        .alias('--out')
-        .alias('--outDir')
-    )
+    .option('-o, --out-dir <path>', 'Output directory', DEFAULT_OUT_DIR)
     .option('-c, --cwd <path>', 'Working directory', process.cwd())
     .option('-w, --watch', 'Watch for changes and recompile')
     .option('--no-js', 'Skip JavaScript file generation')
-    .addOption(new Option('--include <pattern...>', 'Include glob patterns').default(DEFAULT_INCLUDE))
-    .addOption(new Option('--exclude <pattern...>', 'Exclude glob patterns').default(DEFAULT_EXCLUDE))
+    .option('--include <pattern...>', 'Include glob patterns', DEFAULT_INCLUDE)
+    .option('--exclude <pattern...>', 'Exclude glob patterns', DEFAULT_EXCLUDE)
     .action(async (input: string, rawOptions: CompileCommandRuntimeOptions) => {
       const includeCandidate = rawOptions.include;
       const excludeCandidate = rawOptions.exclude;
