@@ -246,8 +246,8 @@ async function main() {
       const watchCandidate = rawOptions.watch;
       const jsCandidate = rawOptions.js;
 
-      const include = isStringArray(includeCandidate) ? [...includeCandidate] : [...DEFAULT_INCLUDE];
-      const exclude = isStringArray(excludeCandidate) ? [...excludeCandidate] : [...DEFAULT_EXCLUDE];
+      const include = isStringArray(includeCandidate) ? includeCandidate : DEFAULT_INCLUDE;
+      const exclude = isStringArray(excludeCandidate) ? excludeCandidate : DEFAULT_EXCLUDE;
       const cwd = typeof cwdCandidate === 'string' && cwdCandidate.length > 0 ? cwdCandidate : process.cwd();
       const outDir =
         typeof outDirCandidate === 'string' && outDirCandidate.length > 0 ? outDirCandidate : DEFAULT_OUT_DIR;
