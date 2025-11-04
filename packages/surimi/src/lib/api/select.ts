@@ -3,7 +3,7 @@ import type postcss from 'postcss';
 import type { Stringify, Token } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
-import { Surimi } from '#surimi';
+import { SurimiContext } from '#surimi';
 import type { JoinSelectors, ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 import { joinSelectors } from '#utils/selector.utils';
@@ -74,5 +74,5 @@ export function _selectByContext<TContext extends Token[]>(
  * ```
  */
 export function select<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: TSelectors) {
-  return _select(selectors, Surimi.root, Surimi.root);
+  return _select(selectors, SurimiContext.root, SurimiContext.root);
 }

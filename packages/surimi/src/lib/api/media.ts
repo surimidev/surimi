@@ -1,4 +1,4 @@
-import { Surimi } from '#surimi';
+import { SurimiContext } from '#surimi';
 
 import { MediaQueryBuilder } from '../builders';
 
@@ -26,7 +26,7 @@ import { MediaQueryBuilder } from '../builders';
 export function media() {
   return new MediaQueryBuilder<'@media'>(
     [{ type: 'at-rule-name', name: 'media', content: '@media' }],
-    Surimi.root,
-    Surimi.root,
+    SurimiContext.root,
+    SurimiContext.root,
   );
 }

@@ -39,7 +39,7 @@ export function createDeclarations(properties: CssProperties): postcss.Declarati
     if (value != null) {
       // Ensure the property key is formatted to kebab-case
       const formattedProperty = formatPropertyName(property);
-      const formattedValue = value instanceof CustomProperty ? value.toString() : formatPropertyValue(value);
+      const formattedValue = value instanceof CustomProperty ? value.build() : formatPropertyValue(value);
 
       const declaration = postcss.decl({
         prop: formattedProperty,

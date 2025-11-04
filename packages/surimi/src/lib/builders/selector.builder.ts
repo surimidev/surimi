@@ -1,4 +1,4 @@
-import type { Tokenize } from '@surimi/parsers';
+import { type Tokenize } from '@surimi/parsers';
 import { mix } from 'ts-mixer';
 
 import {
@@ -11,6 +11,8 @@ import {
   WithUsables,
 } from './mixins';
 import { CoreBuilder } from './core.builder';
+
+class SelectorBuilderImpl<T extends string> extends CoreBuilder<Tokenize<T>> {}
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -36,4 +38,4 @@ export interface SelectorBuilder<T extends string>
   WithSelectorOperations,
   WithUsables,
 )
-export class SelectorBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}
+export class SelectorBuilder<T extends string> extends SelectorBuilderImpl<T> {}

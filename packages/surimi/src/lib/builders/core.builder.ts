@@ -1,23 +1,25 @@
 import postcss from 'postcss';
 
-import { stringify, stringifySelector, type Token } from '@surimi/parsers';
+import { stringify, type Token } from '@surimi/parsers';
+
+import { SurimiBase } from '#surimi';
 
 /**
  * Core builder class that provides access to the PostCSS root and builder context.
  */
-export abstract class CoreBuilder<TContext extends Token[] = []> {
+export abstract class CoreBuilder<TContext extends Token[] = []> extends SurimiBase {
   protected _context: TContext;
   protected _postcssContainer: postcss.Container;
-  protected _postcssRoot: postcss.Root;
 
   public constructor(context: TContext, container: postcss.Container, root: postcss.Root) {
+    super(root);
+
     this._context = context;
     this._postcssContainer = container;
-    this._postcssRoot = root;
   }
 
-  public toString() {
-    return stringifySelector(this._context);
+  public build(): string {
+    return stringify(this._context);
   }
 
   /**

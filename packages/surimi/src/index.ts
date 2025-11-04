@@ -13,6 +13,6 @@ export {
   time,
   url,
 } from '#lib/api/custom-property';
-export { Surimi } from './surimi';
+export { SurimiContext as Surimi } from './surimi';
 
 export type { CssProperties } from '#types/css.types';

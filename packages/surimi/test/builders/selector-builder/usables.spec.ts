@@ -18,7 +18,7 @@ describe('Usables - style() and use()', () => {
 
       const styleBuilder = style(initialStyles);
 
-      expect(styleBuilder.styles).toEqual(initialStyles);
+      expect(styleBuilder.build()).toEqual(initialStyles);
     });
 
     it('should extend styles with new properties', () => {
@@ -30,7 +30,7 @@ describe('Usables - style() and use()', () => {
         fontSize: '16px',
       });
 
-      expect(extendedStyle.styles).toEqual({
+      expect(extendedStyle.build()).toEqual({
         color: 'red',
         fontSize: '16px',
       });
@@ -47,7 +47,7 @@ describe('Usables - style() and use()', () => {
 
       const extendedStyle = baseStyle.extend(additionalStyle);
 
-      expect(extendedStyle.styles).toEqual({
+      expect(extendedStyle.build()).toEqual({
         color: 'red',
         fontSize: '16px',
       });

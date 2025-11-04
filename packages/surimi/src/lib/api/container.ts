@@ -1,4 +1,4 @@
-import { Surimi } from '#surimi';
+import { SurimiContext } from '#surimi';
 
 import { ContainerQueryBuilder } from '../builders';
 
@@ -22,7 +22,7 @@ import { ContainerQueryBuilder } from '../builders';
 export function container() {
   return new ContainerQueryBuilder<'@container'>(
     [{ type: 'at-rule-name', name: 'container', content: '@container' }],
-    Surimi.root,
-    Surimi.root,
+    SurimiContext.root,
+    SurimiContext.root,
   );
 }

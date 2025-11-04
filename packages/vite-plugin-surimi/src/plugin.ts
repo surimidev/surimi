@@ -31,6 +31,18 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
   // Track files we've already added to watch list to avoid duplicates
   const filesWatched = new Set<string>();
 
+  const normalizeDependencyId = (dependencyId: string, ownerId: string): string => {
+    // Rolldown mixes relative, absolute, and virtual ("\0") ids. Normalizing avoids cache misses when Vite
+    // requests the same file under a different shape (e.g. absolute path during SSR versus relative in dev).
+    const cleanId = dependencyId.split('?')[0] ?? dependencyId;
+
+    if (cleanId.startsWith('\0')) return cleanId;
+    if (path.isAbsolute(cleanId)) return normalizePath(cleanId);
+    if (resolvedConfig) return getAbsoluteId(cleanId, resolvedConfig);
+
+    return normalizePath(path.resolve(path.dirname(ownerId), cleanId));
+  };
+
   const getCompilationResult = async (id: string): Promise<CompileResult> => {
     if (!compilationCache.has(id)) {
       const compileResult = await compile({
@@ -39,8 +51,18 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
         include,
         exclude,
       });
+
       if (compileResult) {
-        compilationCache.set(id, compileResult);
+        const normalizedResult: CompileResult = {
+          ...compileResult,
+          dependencies: compileResult.dependencies.map((dependencyId: string) =>
+            normalizeDependencyId(dependencyId, id),
+          ),
+        };
+
+        // Storing the normalized graph ensures follow-up builds (virtual CSS loads, HMR invalidations)
+        // can reuse work instead of recompiling the same module under multiple cache keys.
+        compilationCache.set(id, normalizedResult);
       }
     }
 
@@ -52,11 +74,14 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
   const collectDependentModules = (changedFile: string, server: ViteDevServer): ModuleNode[] => {
     const modules: ModuleNode[] = [];
 
+    // Vite reports changed files using normalized POSIX paths, so we convert here to keep comparisons stable.
+    const normalizedChangedFile = normalizePath(changedFile);
+
     for (const [cachedFile] of compilationCache) {
       if (!tsFileFilter(cachedFile)) continue;
 
       const cacheEntry = compilationCache.get(cachedFile);
-      if (cacheEntry?.dependencies.includes(changedFile)) {
+      if (cacheEntry?.dependencies.includes(normalizedChangedFile)) {
         compilationCache.delete(cachedFile);
         modules.push(...collectModulesForInvalidation(cachedFile, server, inlineCss));
       }
@@ -68,14 +93,25 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
   /**
    * Generates JavaScript code with HMR support for development builds
    */
-  const generateJsWithHmr = (js: string, css: string, id: string): string => {
+  const generateJsWithHmr = (js: string, css: string, id: string, styleDependencies: string[]): string => {
     let jsCode: string;
 
     if (inlineCss) {
       const inliningSnippet = injectCssChunk(css, id, isDev);
       jsCode = `${js}\n${inliningSnippet}`;
     } else {
-      jsCode = `${js}\nimport "${getVirtualCssId(id)}";`;
+      const cssImports = new Set<string>();
+
+      for (const dependency of styleDependencies) {
+        if (dependency === id) continue;
+        cssImports.add(`import "${getVirtualCssId(dependency)}";`);
+      }
+
+      cssImports.add(`import "${getVirtualCssId(id)}";`);
+
+      // Importing every dependent virtual CSS module lets Vite handle deduplication while ensuring shared
+      // style files (like theme definitions) still emit their own chunks once per entry.
+      jsCode = `${js}\n${Array.from(cssImports).join('\n')}`;
     }
 
     // Add HMR acceptance for development builds
@@ -195,11 +231,25 @@ if (import.meta.hot) {
 
         try {
           const { css, js, dependencies } = await getCompilationResult(id);
-          const jsCode = generateJsWithHmr(js, css, id);
+
+          const styleDependencies = dependencies.filter(
+            dependencyId => dependencyId !== id && tsFileFilter(dependencyId),
+          );
+
+          // Pre-building nested style files guarantees their virtual CSS modules exist before Vite tries to
+          // load them, avoiding waterfalls where parents compile successfully but dependants 404.
+          for (const dependencyId of styleDependencies) {
+            await getCompilationResult(dependencyId);
+          }
+
+          const jsCode = generateJsWithHmr(js, css, id, styleDependencies);
 
           // Add file dependencies for proper HMR
           if (isDev && !options?.ssr) {
             dependencies.forEach((dep: string) => {
+              // Watch only real filesystem entries; virtual ids ("\0" prefixed) cannot be monitored and would
+              // trigger noise in Vite's watcher set.
+              if (!path.isAbsolute(dep)) return;
               if (!filesWatched.has(dep)) {
                 filesWatched.add(dep);
                 this.addWatchFile(dep);

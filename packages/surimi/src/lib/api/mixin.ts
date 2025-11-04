@@ -1,6 +1,6 @@
 import { tokenize } from '@surimi/parsers';
 
-import { Surimi } from '#surimi';
+import { SurimiContext } from '#surimi';
 import type { ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 import { joinSelectors } from '#utils/selector.utils';
@@ -35,5 +35,5 @@ export function mixin<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>
   const joinedSelectors = joinSelectors(selectors);
   const selectorTokens = tokenize(joinedSelectors);
 
-  return new MixinBuilder(selectorTokens, Surimi.root, Surimi.root);
+  return new MixinBuilder(selectorTokens, SurimiContext.root, SurimiContext.root);
 }

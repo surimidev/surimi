@@ -1,5 +1,7 @@
 import { select } from 'surimi';
 
+import { theme } from '#styles/theme.css';
+
 select('*').style({
   boxSizing: 'border-box',
 });
@@ -7,6 +9,7 @@ select('*').style({
 select('html', 'body').style({
   margin: 0,
   padding: 0,
+  backgroundColor: theme.colors.background,
 });
 
 select(':root').style({

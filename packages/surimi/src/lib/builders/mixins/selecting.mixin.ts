@@ -1,7 +1,7 @@
 import type { Token, Tokenize } from '@surimi/parsers';
 
 import { _select, _selectByContext } from '#lib/api/select';
-import type { ValidSelector } from '#types/selector.types';
+import type { JoinSelectors, ValidSelector } from '#types/selector.types';
 import type { ArrayWithAtLeastOneItem } from '#types/util.types';
 
 import { CoreBuilder } from '../core.builder';
@@ -14,12 +14,12 @@ export abstract class WithSelecting<TContext extends string> extends CoreBuilder
   /**
    * Nest a selection within the current selector context.
    */
-  public select(...selectors: ArrayWithAtLeastOneItem<ValidSelector>): ReturnType<typeof _select>;
-  public select(selectorBuilder: SelectorBuilder<string>): ReturnType<typeof _select>;
+  public select<T extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: T): SelectorBuilder<JoinSelectors<T>>;
+  public select<T extends ValidSelector>(selectorBuilder: SelectorBuilder<T>): SelectorBuilder<T>;
   public select<T extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: T | [SelectorBuilder<string>]) {
     if (selectors.length === 1 && selectors[0] instanceof SelectorBuilder) {
       const selectorBuilder = selectors[0];
-      return _select([selectorBuilder.toString()], this.getOrCreateRule(), this._postcssRoot);
+      return _select([selectorBuilder.build()], this.getOrCreateRule(), this._postcssRoot);
     }
 
     return _select(selectors as T, this.getOrCreateRule(), this._postcssRoot);

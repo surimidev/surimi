@@ -1,6 +1,6 @@
 import { mixin, style } from 'surimi';
 
-import { theme } from './theme';
+import { theme } from './theme.css';
 
 export const primaryBackground = style({
   backgroundColor: theme.colors.primary,

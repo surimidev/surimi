@@ -1,6 +1,6 @@
 import { media, select } from 'surimi';
 
-import { theme } from '#styles/theme';
+import { theme } from '#styles/theme.css';
 
 const app = select('#app').style({
   width: '100vw',

@@ -1,12 +1,16 @@
-import { Surimi } from '#surimi';
+import postcss from 'postcss';
 
-export class CustomProperty<TValue> {
+import { SurimiBase, SurimiContext } from '#surimi';
+
+export class CustomProperty<TValue> extends SurimiBase {
   public readonly name: string;
   public readonly syntax: string;
   public readonly inherits: boolean;
   public readonly initialValue: TValue;
 
-  constructor(name: string, syntax: string, inherits: boolean, initialValue: TValue) {
+  constructor(root: postcss.Root, name: string, syntax: string, inherits: boolean, initialValue: TValue) {
+    super(root);
+
     const angleWrappedSyntax = syntax.startsWith('<') && syntax.endsWith('>') ? syntax : `<${syntax}>`;
 
     this.name = name.startsWith('--') ? name : `--${name}`;
@@ -14,11 +18,31 @@ export class CustomProperty<TValue> {
     this.inherits = inherits;
     this.initialValue = initialValue;
 
-    Surimi.registerCustomProperty(this);
+    this.register();
   }
 
-  public toString(): string {
+  protected register() {
+    const rule = postcss.atRule({
+      name: 'property',
+      params: this.name,
+    });
+
+    const declarations = [
+      postcss.decl({ prop: 'syntax', value: `'${this.syntax}'` }),
+      postcss.decl({ prop: 'inherits', value: String(this.inherits) }),
+      postcss.decl({ prop: 'initial-value', value: String(this.initialValue) }),
+    ];
+
+    rule.append(declarations);
+    this._postcssRoot.append(rule);
+  }
+
+  public toString() {
     return `var(${this.name})`;
+  }
+
+  public build() {
+    return this.toString();
   }
 }
 
@@ -66,10 +90,10 @@ export function property<TValue = string & {}>(
       throw new Error('Missing parameter(s)');
     }
 
-    return new CustomProperty(nameOrOptions, syntax, inherits, initialValue);
+    return new CustomProperty(SurimiContext.root, nameOrOptions, syntax, inherits, initialValue);
   } else {
     const { name, syntax = '*', inherits = true, initialValue } = nameOrOptions;
-    return new CustomProperty(name, syntax, inherits, initialValue);
+    return new CustomProperty(SurimiContext.root, name, syntax, inherits, initialValue);
   }
 }
 

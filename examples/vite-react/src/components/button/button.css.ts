@@ -1,7 +1,7 @@
 import { select } from 'surimi';
 
 import { primaryBackground, surimiIconAfter } from '#styles/mixins.css';
-import { theme } from '#styles/theme';
+import { theme } from '#styles/theme.css';
 
 const buttonElem = select('.button').use(primaryBackground).style({
   padding: '0.5rem 1rem',
