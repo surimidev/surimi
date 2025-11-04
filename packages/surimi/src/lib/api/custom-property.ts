@@ -34,7 +34,7 @@ export class CustomProperty<TValue> extends SurimiBase {
     ];
 
     rule.append(declarations);
-    this._postcssRoot.prepend(rule);
+    this._postcssRoot.append(rule);
   }
 
   public toString() {
