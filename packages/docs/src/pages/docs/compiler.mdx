@@ -7,6 +7,41 @@ layout: "#layouts/Docs/Docs.astro"
 
 # {frontmatter.title}
 
-The compiler is what turns your TS into CSS.
+The surimi compiler takes you .css.ts files, and compiles them to pure CSS.
+It also creates some typescript/javascript that is free of any surimi Code, so it's safe to use during runtime.
+Essentially, it just creates a `.css` and a `.js` file for each `.css.ts` file. with some internal "magic" happening
 
-To be done
+> [!NOTE]
+> Use the compiler if you want, but the easiest way to get started with surimi is to use the [Vite plugin](/docs/guides/vite).
+It will automatically run the compiler for you, and offers HMR, SSR and more.
+
+## The magic
+Surimi aims to have **0** runtime. However, we want you to be as flexible in writing your styles as possible. While importing things between surimi files is wasy (and wanted!),
+Importing things into runtime could can be a bit more tricky, but we want to allow it as well. For example, we don't want to stop you from importing variable names into your runtime JS code.
+
+To achieve this, the build process picks up every .css.ts file and resolves it's imports. It then creates a CSS AST using [PostCSS](https://postcss.org) and writes the resulting CSS to a `.css` file.
+At the same time, it creates a `.js` file that contains all the exports you wrote, but CURRENTLY, in a JSON-stringified format. This is a limitation we're working on to remove.
+
+This way, if you really need to, you can export things like variable names or class names into your runtime code, without having to include any surimi code in your final bundle.
+
+## Using the compiler
+The surimi compiler is available as a CLI tool, as well as a library you can use in your own build tools.
+
+### CLI
+You can install the compiler using npm or pnpm:
+```bash
+# npm
+npm install -D @surimi/compiler
+# pnpm
+pnpm add -D @surimi/compiler
+```
+
+Then, you can run the `surimi` command in your terminal:
+```bash
+pnpm surimi compile ./src/styles.css.ts --outDir ./dist/styles --watch
+```
+
+To get a full list of options, run:
+```bash
+pnpm surimi compile --help
+```

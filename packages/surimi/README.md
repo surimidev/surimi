@@ -18,13 +18,13 @@
   </a>
 </p>
 
-# 🍣 `surimi` - the best way to write CSS
+# 🍣 `surimi` - the next generation of writing CSS
 
-The zero-runtime, zero learning curve CSS 'preprocessor'. Use typescript to elevate your CSS game.
+The zero-runtime, zero learning curve, type-save CSS. Use typescript to elevate your CSS game.
 
-- 🔒 Bulletproof compile-time checks! No more typos, wrong variable names.
+- 🔒 Bulletproof compile-time checks! No more typos or wrong variable names.
 - 🚀 No runtime! All code you write is compiled to pure CSS.
-- 🎭 A friendly CSS builder that gives you hints!
+- 🎭 Friendly CSS builders that gives you hints! (It knows the spec!)
 - 🌈 Works with any JS framework, build tool or CSS postprocessor. Especially with Vite.
 - ✅ Fully tested with [Vitest](https://vitest.dev) and against the CSS spec
 

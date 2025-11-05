@@ -1,6 +1,6 @@
 # @surimi/parsers
 
-Zero-dependency parsers/tokenizers for CSS selectors, at-rules etc - written in typescript types.
+Zero-dependency tokenizers / stringifyers for CSS selectors, at-rules etc - written in typescript types.
 
 ## Selectors
 
@@ -41,7 +41,16 @@ becomes something like
 The same thing for `at-rules`: Given something like an `@media screen and (min-width: 600px)`, you will get
 
 ```ts
-[{}];
+[{
+  { type: 'at-rule-name', name: 'media', content: '@media' },
+  { type: 'identifier', value: 'screen', content: 'screen' },
+  { type: 'operator', operator: 'and', content: 'and' },
+  { type: 'delimiter', delimiter: '(', content: '(' },
+  { type: 'identifier', value: 'min-width', content: 'min-width' },
+  { type: 'delimiter', delimiter: ':', content: ':' },
+  { type: 'dimension', value: 768, unit: 'px', content: '768px' },
+  { type: 'delimiter', delimiter: ')', content: ')' },
+}];
 ```
 
 ---
