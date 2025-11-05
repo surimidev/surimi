@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:format",
-    "@maz-ui/changelogen-monorepo": "^4.2.1",
+    "@maz-ui/changelogen-monorepo": "^4.3.0",
     "@playwright/test": "catalog:test",
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
@@ -39,7 +39,7 @@
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
-  "packageManager": "pnpm@10.19.0",
+  "packageManager": "pnpm@10.20.0",
   "engines": {
     "node": ">=22.18"
   },
