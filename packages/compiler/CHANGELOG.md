@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.1...@surimi/compiler@0.3.1
+
+### 🩹 Fixes
+
+- Update readmes for patch release ([6decbdf](https://github.com/janis-me/surimi/commit/6decbdf))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## @surimi/compiler@0.2.0...@surimi/compiler@0.3.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/@surimi/compiler@0.2.0...@surimi/compiler@0.3.0)

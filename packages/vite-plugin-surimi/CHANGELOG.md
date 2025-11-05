@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.1...vite-plugin-surimi@0.3.1
+
+### 🩹 Fixes
+
+- Update readmes for patch release ([6decbdf](https://github.com/janis-me/surimi/commit/6decbdf))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## vite-plugin-surimi@0.2.0...vite-plugin-surimi@0.3.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/vite-plugin-surimi@0.2.0...vite-plugin-surimi@0.3.0)

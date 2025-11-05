@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.2...@surimi/parsers@0.1.2
+
+### 🩹 Fixes
+
+- Update readmes for patch release ([6decbdf](https://github.com/janis-me/surimi/commit/6decbdf))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## @surimi/parsers@0.1.0...@surimi/parsers@0.1.1
 
 [compare changes](https://github.com/janis-me/surimi/compare/@surimi/parsers@0.1.0...@surimi/parsers@0.1.1)

@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.1...surimi@0.5.1
+
+### 🩹 Fixes
+
+- Update readmes for patch release ([6decbdf](https://github.com/janis-me/surimi/commit/6decbdf))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## surimi@0.4.0...surimi@0.5.0
 
 [compare changes](https://github.com/janis-me/surimi/compare/surimi@0.4.0...surimi@0.5.0)
