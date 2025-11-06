@@ -16,3 +16,11 @@ export {
 export { SurimiContext as Surimi } from './surimi';
 
 export type { CssProperties } from '#types/css.types';
+export type {
+  GlobalCssValue,
+  StrictCssProperties,
+  StrictCssPropertiesFull,
+  StrictCustomProperties,
+  VendorPrefixedProperties,
+} from '#types/css-strict.types';
+export type { SurimiConfig, VendorPrefix } from '#types/config.types';
