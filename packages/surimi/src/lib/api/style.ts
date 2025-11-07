@@ -11,7 +11,7 @@ import type { CssProperties } from '#types/css.types';
  *
  * You probably never need to use this class directly, instead use the `style()` API function.
  */
-export class Style extends SurimiBase {
+export class Style extends SurimiBase<CssProperties> {
   protected _styles: CssProperties = {};
 
   constructor(root: postcss.Root, initialStyles: CssProperties = {}) {

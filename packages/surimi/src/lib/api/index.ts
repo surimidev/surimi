@@ -4,3 +4,4 @@ export { mixin } from './mixin';
 export { style } from './style';
 export { container } from './container';
 export { keyframes } from './keyframes';
+export { fontFace } from './font-face';

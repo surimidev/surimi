@@ -1,6 +1,6 @@
 import type csstype from 'csstype';
 
-import type { CustomProperty } from '#lib/api/custom-property';
+import type { SurimiBase } from '#surimi';
 
 import type { ExcludeByPattern, IncludeByPattern } from './util.types';
 
@@ -116,7 +116,16 @@ export type ContainerRangeOperator = MediaRangeOperator;
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Properties
  */
 export type CssProperties = {
-  [K in keyof csstype.Properties]: csstype.Properties[K] | CustomProperty<csstype.Properties[K]>;
+  [K in keyof csstype.Properties]: csstype.Properties[K] | SurimiBase;
+};
+
+/**
+ * All properties available within a \@font-face rule.
+ */
+export type FontFaceProperties = {
+  [K in keyof (csstype.AtRule.FontFace & csstype.AtRule.FontFaceHyphen)]:
+    | (csstype.AtRule.FontFace & csstype.AtRule.FontFaceHyphen)[K]
+    | SurimiBase;
 };
 
 /**
