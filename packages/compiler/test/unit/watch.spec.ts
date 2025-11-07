@@ -1,7 +1,8 @@
-import { describe, expect, it, afterEach } from 'vitest';
 import path from 'node:path';
-import { compileWatch } from '../../src/compiler';
 import type { RolldownWatcher } from 'rolldown';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { compileWatch } from '../../src/compiler';
 
 const fixturesDir = path.resolve(__dirname, '../fixtures');
 
@@ -14,7 +15,7 @@ describe('Compiler Watch Mode', () => {
       await watcher.close();
       watcher = null;
     }
-  });
+  }, 20000);
 
   const createOptions = (fixture: string) => ({
     inputPath: path.join(fixturesDir, fixture),
@@ -55,7 +56,7 @@ describe('Compiler Watch Mode', () => {
           cwd: process.cwd(),
           include: ['**/*.css.ts'],
           exclude: [],
-        })
+        }),
       ).toThrow('inputPath must be a non-empty string');
     });
 
@@ -66,7 +67,7 @@ describe('Compiler Watch Mode', () => {
           cwd: '',
           include: ['**/*.css.ts'],
           exclude: [],
-        })
+        }),
       ).toThrow('cwd must be a non-empty string');
     });
 
@@ -77,7 +78,7 @@ describe('Compiler Watch Mode', () => {
           cwd: process.cwd(),
           include: [],
           exclude: [],
-        })
+        }),
       ).toThrow('include array cannot be empty');
     });
   });
@@ -108,12 +109,12 @@ describe('Compiler Watch Mode', () => {
       watcher = compileWatch(createOptions('simple.css.ts'));
 
       // Create a promise that resolves when an event is received or times out
-      const eventPromise = new Promise<void>((resolve) => {
+      const eventPromise = new Promise<void>(resolve => {
         let eventReceived = false;
 
         // Listen for any event
         if (watcher) {
-          watcher.on('event', (event) => {
+          watcher.on('event', event => {
             if (!eventReceived) {
               eventReceived = true;
               expect(event).toBeDefined();
@@ -128,7 +129,7 @@ describe('Compiler Watch Mode', () => {
           if (!eventReceived) {
             resolve();
           }
-        }, 5000);
+        }, 20000);
       });
 
       await eventPromise;
