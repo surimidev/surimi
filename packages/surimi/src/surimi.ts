@@ -14,12 +14,24 @@ export abstract class SurimiBase {
   }
 
   /**
-   * Transform the current Surimi construct into a simple string, so
-   * there is no runtime dependency on any Surimi code.
+   * Transform the current Surimi construct into a primitive or object, so it can be consumed by CSS.
+   *
+   * it is called on Surimi classes when used in string contexts (e.g. template literals, string concatenation, etc.).
+   * And when generating PostCSS properties from Surimi constructs.
    *
    * For example, calling this on a `property` will return the CSS variable string (e.g. `var(--my-custom-prop)`).
+   * Calling it on a KeyframeBuilder will return the name of the keyframes animation.
    */
   public abstract build(): string | Record<string, unknown>;
+
+  public readonly [Symbol.toStringTag] = 'SurimiBase';
+
+  public [Symbol.toPrimitive](hint: string) {
+    if (hint === 'string' || hint === 'default') {
+      return this.build();
+    }
+    return null;
+  }
 }
 
 /**

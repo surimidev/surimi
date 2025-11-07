@@ -1,4 +1,4 @@
-import postcss, { decl } from 'postcss';
+import postcss from 'postcss';
 
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
@@ -84,16 +84,5 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
 
   public build(): string {
     return this._name;
-  }
-
-  get [Symbol.toStringTag]() {
-    return 'KeyframesBuilder';
-  }
-
-  public [Symbol.toPrimitive](hint: string) {
-    if (hint === 'string' || hint === 'default') {
-      return this.build();
-    }
-    return null;
   }
 }
