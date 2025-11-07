@@ -36,6 +36,7 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
+    "test": "pnpm -w test --project=compiler",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

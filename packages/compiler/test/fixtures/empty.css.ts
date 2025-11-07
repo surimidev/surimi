@@ -1,3 +1,1 @@
-import { select } from 'surimi';
-
-// This file intentionally creates no styles
+// Empty file - no styles or exports

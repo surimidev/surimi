@@ -1,4 +1,4 @@
-/** Constants used throughout the compiler package */
+// Constants used throughout the compiler package
 
 // Package and module names
 export const SURIMI_PACKAGE_NAME = 'surimi';

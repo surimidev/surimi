@@ -1,20 +1,20 @@
-import { media, select } from 'surimi';
+// Test fixture with media queries
+import { select, media } from 'surimi';
 
-select('.responsive').style({
-  width: '100%',
-  padding: '1rem',
+select('.responsive-grid').style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(1, 1fr)',
 });
 
-media('(min-width: 768px)').nest(() => {
-  select('.responsive').style({
-    width: '50%',
-    padding: '2rem',
-  });
+media().minWidth('768px').select('.responsive-grid').style({
+  gridTemplateColumns: 'repeat(2, 1fr)',
 });
 
-media('(min-width: 1024px)').nest(() => {
-  select('.responsive').style({
-    width: '33.333%',
-    padding: '3rem',
-  });
+media().minWidth('1024px').select('.responsive-grid').style({
+  gridTemplateColumns: 'repeat(3, 1fr)',
 });
+
+export const breakpoints = {
+  mobile: '768px',
+  desktop: '1024px',
+};

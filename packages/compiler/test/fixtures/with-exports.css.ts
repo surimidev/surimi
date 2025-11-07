@@ -1,26 +1,17 @@
+// Test fixture with various exports
 import { select } from 'surimi';
 
-// Theme object to be exported
-export const theme = {
-  colors: {
-    primary: '#007bff',
-    secondary: '#6c757d',
-    success: '#28a745',
-  },
-  spacing: {
-    small: '0.5rem',
-    medium: '1rem',
-    large: '2rem',
-  },
-};
-
-// String export
-export const className = 'my-component';
-
-// Number export
-export const zIndex = 1000;
-
-select('.themed').style({
-  backgroundColor: theme.colors.primary,
-  padding: theme.spacing.medium,
+select('.card').style({
+  borderRadius: '8px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 });
+
+// Export various types
+export const className = 'card-component';
+export const spacing = 16;
+export const isEnabled = true;
+export const config = {
+  theme: 'dark',
+  animation: true,
+};
+export const tags = ['react', 'typescript'];

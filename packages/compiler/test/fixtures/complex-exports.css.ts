@@ -1,28 +1,21 @@
+// Test fixture with complex export scenarios
 import { select } from 'surimi';
 
-// Array export
-export const breakpoints = ['640px', '768px', '1024px', '1280px'];
-
-// Boolean export
-export const isDarkMode = false;
-
-// Nested object export
-export const config = {
-  theme: {
-    colors: {
-      primary: '#3b82f6',
-      text: {
-        dark: '#1f2937',
-        light: '#f9fafb',
-      },
-    },
-  },
-  features: {
-    animations: true,
-    darkMode: false,
-  },
-};
-
-select('.complex').style({
-  color: config.theme.colors.text.dark,
+select('.theme').style({
+  fontFamily: 'system-ui',
 });
+
+// Various export types
+export const stringValue = 'hello';
+export const numberValue = 42;
+export const booleanValue = true;
+export const nullValue = null;
+export const arrayValue = [1, 2, 3];
+export const objectValue = { a: 1, b: 'test' };
+export const nestedObject = {
+  colors: {
+    primary: '#007bff',
+    secondary: '#6c757d',
+  },
+  spacing: [0, 4, 8, 16, 32],
+};

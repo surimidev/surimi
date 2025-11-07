@@ -1,12 +1,11 @@
+// Test fixture that imports from another file
 import { select } from 'surimi';
-import { theme } from './with-exports';
+import { buttonClass } from './simple.css';
 
-select('.imported').style({
-  backgroundColor: theme.colors.primary,
+select(`.${buttonClass}`).style({
+  backgroundColor: 'blue',
   color: 'white',
-  padding: theme.spacing.large,
+  padding: '10px 20px',
 });
 
-select('.secondary').style({
-  backgroundColor: theme.colors.secondary,
-});
+export { buttonClass };

@@ -1,12 +1,9 @@
+// Simple test fixture for compiler tests
 import { select } from 'surimi';
 
 select('.container').style({
   display: 'flex',
-  flexDirection: 'column',
-  padding: '1rem',
+  padding: '20px',
 });
 
-select('#header').style({
-  backgroundColor: 'blue',
-  color: 'white',
-});
+export const buttonClass = 'btn-primary';

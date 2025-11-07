@@ -18,43 +18,43 @@ import {
   SURIMI_PACKAGE_NAME,
 } from './constants';
 
-/** Options for compiling Surimi CSS files */
+// Options for compiling Surimi CSS files
 export interface CompileOptions {
-  /** Absolute path to the input file to compile */
+  // Absolute path to the input file to compile
   inputPath: string;
-  /** Working directory for resolving imports */
+  // Working directory for resolving imports
   cwd: string;
-  /** Glob patterns for files to include in compilation */
+  // Glob patterns for files to include in compilation
   include: string[];
-  /** Glob patterns for files to exclude from compilation */
+  // Glob patterns for files to exclude from compilation
   exclude: string[];
 }
 
-/** Result of a successful compilation */
+// Result of a successful compilation
 export interface CompileResult {
-  /** The generated CSS output */
+  // The generated CSS output
   css: string;
-  /** The transformed JavaScript with preserved exports (Surimi runtime removed) */
+  // The transformed JavaScript with preserved exports (Surimi runtime removed)
   js: string;
-  /** List of file dependencies for watch mode */
+  // List of file dependencies for watch mode
   dependencies: string[];
 }
 
-/** Result of executing compiled code */
+// Result of executing compiled code
 export interface ExecuteResult {
-  /** The generated CSS */
+  // The generated CSS
   css: string;
-  /** The transformed JavaScript with preserved exports */
+  // The transformed JavaScript with preserved exports
   js: string;
 }
 
-/** Module interface for dynamically imported code */
+// Module interface for dynamically imported code
 interface SurimiModule extends Record<string, unknown> {
-  /** Default export (ignored) */
+  // Default export (ignored)
   default?: unknown;
 }
 
-/** Type guard to check if a value is serializable to JSON */
+// Type guard to check if a value is serializable to JSON
 function isSerializable(value: unknown): value is string | number | boolean | null | object {
   const type = typeof value;
   return (
@@ -66,7 +66,7 @@ function isSerializable(value: unknown): value is string | number | boolean | nu
   );
 }
 
-/** Validates compilation options - throws {Error} if options are invalid */
+// Validates compilation options - throws Error if options are invalid
 function validateCompileOptions(options: CompileOptions): void {
   if (!options.inputPath || typeof options.inputPath !== 'string') {
     throw new Error('inputPath must be a non-empty string');
@@ -89,7 +89,9 @@ function validateCompileOptions(options: CompileOptions): void {
   }
 }
 
-/** Compiles a Surimi CSS file into pure CSS and JavaScript - Transforms `.css.ts` files by bundling, executing, and extracting CSS + exports - throws {Error} if validation or compilation fails */
+// Compiles a Surimi CSS file into pure CSS and JavaScript
+// Transforms `.css.ts` files by bundling, executing, and extracting CSS + exports
+// throws Error if validation or compilation fails
 export default async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   // Validate input options
   validateCompileOptions(options);
@@ -140,7 +142,8 @@ export const ${SURIMI_CSS_EXPORT_NAME} = ${SURIMI_INSTANCE_VAR}.build();
   };
 }
 
-/** Executes compiled code and extracts CSS and user exports - throws {Error} if execution fails or imports cannot be resolved */
+// Executes compiled code and extracts CSS and user exports
+// throws Error if execution fails or imports cannot be resolved
 export async function execute(code: string): Promise<ExecuteResult> {
   try {
     const dataUrl = `${DATA_URL_PREFIX}${Buffer.from(code).toString('base64')}`;
@@ -196,7 +199,8 @@ export async function execute(code: string): Promise<ExecuteResult> {
   }
 }
 
-/** Extracts module dependencies from compiled output for watch mode - filters out node_modules, development surimi/parsers files, and Rolldown runtime modules */
+// Extracts module dependencies from compiled output for watch mode
+// Filters out node_modules, development surimi/parsers files, and Rolldown runtime modules
 function getModuleDependencies(module: OutputChunk): string[] {
   const watchFiles: string[] = [];
 
@@ -226,12 +230,14 @@ function getModuleDependencies(module: OutputChunk): string[] {
   return watchFiles;
 }
 
-/** Checks if a module ID is from the development surimi or parsers packages - development files are not tracked in watch mode as they're part of the library itself */
+// Checks if a module ID is from the development surimi or parsers packages
+// Development files are not tracked in watch mode as they're part of the library itself
 function isDevelopmentSurimiFile(id: string): boolean {
   return id.includes(DEV_SURIMI_PACKAGE_PATTERN) || id.includes(DEV_PARSERS_PACKAGE_PATTERN);
 }
 
-/** Creates a Rolldown watcher for watch mode - returns watcher instance that emits events for build lifecycle */
+// Creates a Rolldown watcher for watch mode
+// Returns watcher instance that emits events for build lifecycle
 export function compileWatch(options: CompileOptions): RolldownWatcher {
   // Validate input options
   validateCompileOptions(options);
