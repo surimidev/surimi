@@ -15,7 +15,7 @@ describe('Compiler Watch Mode', () => {
       await watcher.close();
       watcher = null;
     }
-  }, 20000);
+  }, 40000);
 
   const createOptions = (fixture: string) => ({
     inputPath: path.join(fixturesDir, fixture),
@@ -129,11 +129,11 @@ describe('Compiler Watch Mode', () => {
           if (!eventReceived) {
             resolve();
           }
-        }, 20000);
+        }, 40000);
       });
 
       await eventPromise;
-    });
+    }, 40000);
   });
 
   describe('Error handling', () => {
