@@ -9,7 +9,7 @@ import { createDeclarationsFromProperties } from '#utils/postcss.utils';
 import { CoreBuilder } from './core.builder';
 
 /**
- * Used for building @keyframes at-rules.
+ * Used for building @font-face at-rules.
  */
 export class FontFaceBuilder extends CoreBuilder<TokenizeAtRule<`@font-face`>> {
   protected _properties: FontFaceProperties | undefined;
