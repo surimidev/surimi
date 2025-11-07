@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/janis-me/surimi" target="_blank" rel="noopener noreferrer">
+  <a href="https://github.com/surimidev/surimi" target="_blank" rel="noopener noreferrer">
     <img width="180" src="https://surimi.dev/surimi-512x512.webp" alt="Surimi logo">
   </a>
 </p>
@@ -10,11 +10,11 @@
   <a href="https://npmjs.com/package/surimi">
     <img alt="surimi on npm" src="https://img.shields.io/npm/v/surimi?label=surimi%20on%20npm%20&labelColor=grey&color=orange">
   </a>
-  <a href="https://github.com/janis-me/surimi">
-    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/janis-me/surimi?style=flat">
+  <a href="https://github.com/surimidev/surimi">
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/surimidev/surimi?style=flat">
   </a>
-  <a href="https://github.com/janis-me/surimi/actions/workflows/unit-test.yml">
-    <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/janis-me/surimi/unit-test.yml?label=Tests">
+  <a href="https://github.com/surimidev/surimi/actions/workflows/unit-test.yml">
+    <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/surimidev/surimi/unit-test.yml?label=Tests">
   </a>
 </p>
 

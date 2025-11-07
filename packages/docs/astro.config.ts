@@ -21,7 +21,7 @@ export default defineConfig({
   },
 
   markdown: {
-    remarkPlugins: [[remarkGithub, { repository: 'janis-me/surimi' }], blockquoteAlert, remarkEmoji],
+    remarkPlugins: [[remarkGithub, { repository: 'surimidev/surimi' }], blockquoteAlert, remarkEmoji],
   },
 
   server: {
