@@ -1,2 +1,2 @@
-export { default } from '#compiler';
-export type { CompileOptions, CompileResult } from '#compiler';
+export { default, compileWatch, execute } from '#compiler';
+export type { CompileOptions, CompileResult, ExecuteResult } from '#compiler';

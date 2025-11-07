@@ -4,10 +4,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, resolve } from 'node:path';
 import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
-import chokidar from 'chokidar';
 import { Command } from 'commander';
 
-import compile from '#compiler';
+import compile, { compileWatch, execute } from '#compiler';
 
 import { version } from '../package.json';
 
@@ -118,9 +117,11 @@ async function runCompile(options: CLIOptions) {
 
     if (options.watch) {
       await new Promise<void>(resolve => {
-        const watcher = chokidar.watch(inputPath, {
-          ignored: exclude,
-          persistent: true,
+        const watcher = compileWatch({
+          inputPath,
+          cwd,
+          include,
+          exclude,
         });
 
         // Cleanup function to restore terminal state
@@ -171,31 +172,51 @@ async function runCompile(options: CLIOptions) {
           process.stdin.on('data', onKeyPress);
         }
 
-        const onChange = () => {
-          s.message(`✅ Compilation done in ${initialCompileTime}ms`);
-          void compileAndLog().then(time => {
-            // if the last compilation was successfull, show the watching message
-            // Else, we continue showing the error.
-            if (time) {
-              setTimeout(() => {
-                s.message(`🔍 Watching ${filename}...`);
-              }, 1000);
+        // Listen to Rolldown watcher events
+        watcher.on('event', async event => {
+          try {
+            switch (event.code) {
+              case 'BUNDLE_START':
+                s.message(`Compiling ${filename}...`);
+                break;
+
+              case 'BUNDLE_END': {
+                const startExecution = Date.now();
+
+                // Generate output from the build result
+                const buildOutput = await event.result.generate();
+                const code = buildOutput.output[0].code as string;
+
+                // Execute and extract CSS/JS
+                const { css, js } = await execute(code);
+
+                // Write output files
+                await mkdir(dirname(outputPaths.css), { recursive: true });
+                await writeFile(outputPaths.css, css, 'utf8');
+                if (!noJs) {
+                  await writeFile(outputPaths.js, js, 'utf8');
+                }
+
+                const duration = Date.now() - startExecution + event.duration;
+                s.message(`✅ Compiled in ${String(duration)}ms - Watching...`);
+                initialCompileTime = duration;
+                break;
+              }
+
+              case 'ERROR':
+                log.error(`${event.error.message}\n`);
+                s.message(`❌ Build failed - Watching...`);
+                break;
             }
-          });
-        };
+          } catch (error) {
+            log.error(`${error instanceof Error ? error.message : String(error)}\n`);
+            s.message(`❌ Error - Watching...`);
+          }
+        });
 
-        onChange();
-
-        watcher.on('change', onChange);
-        watcher.on('unlink', () => {
-          s.stop(`ℹFile ${basename(inputPath)} was unlinked`);
-          cleanup();
-          watcher
-            .close()
-            .then(() => {
-              resolve();
-            })
-            .catch(console.error);
+        // Optional: Listen to file change events for logging
+        watcher.on('change', (id, { event: changeEvent }) => {
+          s.message(`File ${changeEvent}: ${basename(id)}`);
         });
       });
     } else {

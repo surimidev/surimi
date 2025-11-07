@@ -6,6 +6,12 @@ export default defineConfig({
     projects: [
       {
         test: {
+          name: 'compiler',
+          include: ['./packages/compiler/test/**/*.spec.ts'],
+        },
+      },
+      {
+        test: {
           name: 'surimi',
           include: ['./packages/surimi/test/**/*.spec.ts'],
         },
