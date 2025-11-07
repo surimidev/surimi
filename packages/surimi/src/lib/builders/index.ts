@@ -4,5 +4,6 @@ export { AtRuleBuilder } from './at-rule.builder';
 export { CoreBuilder } from './core.builder';
 export { MixinBuilder } from './mixin.builder';
 export { ContainerQueryBuilder } from './container-query.builder';
+export { KeyframesBuilder as KeyframeBuilder } from './keyframe.builder';
 
 export * from './mixins';
