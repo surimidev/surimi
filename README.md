@@ -98,6 +98,10 @@ But surimi also allows you to have a clear interface between CSS and TS. For exa
 
 But most importantly, surimi is not just a wrapper around an object like `{color: "red"}`. It actually _understands_ CSS and helps you write it!
 
+## Contributing
+
+See the contribution help document CONTRIBUTING.md
+
 ---
 
 ~ Cheers, [janis](https://janis.me)
