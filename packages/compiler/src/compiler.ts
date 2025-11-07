@@ -239,6 +239,7 @@ export function compileWatch(options: CompileOptions): RolldownWatcher {
   const { inputPath, cwd, include, exclude } = options;
 
   // Create watcher with Rolldown's native watch API
+  // Note: output is required for watch mode to trigger builds
   const watcher = watch({
     input: inputPath,
     cwd,
@@ -264,6 +265,9 @@ export const ${SURIMI_CSS_EXPORT_NAME} = ${SURIMI_INSTANCE_VAR}.build();
         },
       },
     ],
+    output: {
+      exports: 'named',
+    },
   });
 
   return watcher;

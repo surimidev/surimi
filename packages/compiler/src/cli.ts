@@ -6,7 +6,7 @@ import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
 import { Command } from 'commander';
 
-import compile, { compileWatch, execute } from '#compiler';
+import compile, { compileWatch } from '#compiler';
 
 import { version } from '../package.json';
 
@@ -172,52 +172,48 @@ async function runCompile(options: CLIOptions) {
           process.stdin.on('data', onKeyPress);
         }
 
-        // Listen to Rolldown watcher events
-        watcher.on('event', async event => {
+        // Helper function to compile and write output
+        const compileAndWrite = async (triggerMessage: string) => {
           try {
-            switch (event.code) {
-              case 'BUNDLE_START':
-                s.message(`Compiling ${filename}...`);
-                break;
+            s.message(triggerMessage);
+            const startExecution = Date.now();
 
-              case 'BUNDLE_END': {
-                const startExecution = Date.now();
+            // Use the compile function to get CSS/JS output
+            const result = await compile({
+              inputPath,
+              cwd,
+              include,
+              exclude,
+            });
 
-                // Generate output from the build result
-                const buildOutput = await event.result.generate();
-                const code = buildOutput.output[0].code as string;
-
-                // Execute and extract CSS/JS
-                const { css, js } = await execute(code);
-
-                // Write output files
-                await mkdir(dirname(outputPaths.css), { recursive: true });
-                await writeFile(outputPaths.css, css, 'utf8');
-                if (!noJs) {
-                  await writeFile(outputPaths.js, js, 'utf8');
-                }
-
-                const duration = Date.now() - startExecution + event.duration;
-                s.message(`✅ Compiled in ${String(duration)}ms - Watching...`);
-                initialCompileTime = duration;
-                break;
-              }
-
-              case 'ERROR':
-                log.error(`${event.error.message}\n`);
-                s.message(`❌ Build failed - Watching...`);
-                break;
+            if (!result) {
+              s.message(`❌ Build failed - Watching...`);
+              return;
             }
+
+            // Write output files
+            await mkdir(dirname(outputPaths.css), { recursive: true });
+            await writeFile(outputPaths.css, result.css, 'utf8');
+            if (!noJs) {
+              await writeFile(outputPaths.js, result.js, 'utf8');
+            }
+
+            const duration = Date.now() - startExecution;
+            s.message(`✅ Compiled in ${String(duration)}ms - Watching...`);
+            initialCompileTime = duration;
           } catch (error) {
             log.error(`${error instanceof Error ? error.message : String(error)}\n`);
             s.message(`❌ Error - Watching...`);
           }
+        };
+
+        // Listen to file change events and recompile
+        watcher.on('change', (id, { event: changeEvent }) => {
+          compileAndWrite(`File ${changeEvent}: ${basename(id)} - Recompiling...`).catch(console.error);
         });
 
-        // Optional: Listen to file change events for logging
-        watcher.on('change', (id, { event: changeEvent }) => {
-          s.message(`File ${changeEvent}: ${basename(id)}`);
-        });
+        // Perform initial compilation
+        compileAndWrite(`Compiling ${filename}...`).catch(console.error);
       });
     } else {
       initialCompileTime = await compileAndLog();
