@@ -133,7 +133,7 @@ if (import.meta.hot) {
     },
     buildStart() {
       this.warn(
-        'Surimi is still in early development. Please report any issues you encounter at https://github.com/janis-me/surimi\n',
+        'Surimi is still in early development. Please report any issues you encounter at https://github.com/surimidev/surimi\n',
       );
     },
     handleHotUpdate({ file, server }) {

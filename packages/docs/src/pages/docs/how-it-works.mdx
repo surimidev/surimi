@@ -97,7 +97,7 @@ Let's go through how surimi works, when using the vite plugin (the recommended w
    4.1. It also handles SSR, inlining, cache invalidation, HMR etc.
 5. The compiler loads the file (and it's imports) using [rolldown](https://rolldown.rs/).
    5.1. Rolldown transpiles the TS code to JS
-   5.2. It resolves all imports (currently with limitations, see [github issues](https://github.com/janis-me/surimi/issues))
+   5.2. It resolves all imports (currently with limitations, see [github issues](https://github.com/surimidev/surimi/issues))
    5.3. It bundles everything into an executable (**ESM**!) file
    5.4. The compiler adds custom code to build the AST and export the resulting CSS
    5.5. The file is executed (currently not sandboxed) and the module output is captured
