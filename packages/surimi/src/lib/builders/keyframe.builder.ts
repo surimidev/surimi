@@ -23,6 +23,8 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
 
     this._name = name;
     this._steps = steps;
+
+    this.register(steps);
   }
 
   public register(steps: KeyframeStepConfig) {
@@ -51,7 +53,8 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
       })
       .filter((stepRule): stepRule is postcss.Rule => stepRule !== null);
 
-    rule.nodes = declarations;
+    rule.nodes = [];
+    declarations.forEach(decl => rule.append(decl));
 
     if (!existingRule) {
       this._postcssRoot.append(rule);

@@ -1,3 +1,4 @@
+import type { KeyframeStepConfig } from '#lib/builders/keyframe.builder';
 import { SurimiContext } from '#surimi';
 
 import { KeyframeBuilder } from '../builders';
@@ -26,6 +27,6 @@ import { KeyframeBuilder } from '../builders';
  *   .to({ transform: 'translateX(0)' });
  * ```
  */
-export function keyframes(name: string) {
-  return new KeyframeBuilder(name, {}, SurimiContext.root, SurimiContext.root);
+export function keyframes(name: string, steps: KeyframeStepConfig = {}) {
+  return new KeyframeBuilder(name, steps, SurimiContext.root, SurimiContext.root);
 }
