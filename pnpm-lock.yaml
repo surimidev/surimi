@@ -302,9 +302,6 @@ importers:
       '@types/node':
         specifier: catalog:types
         version: 22.19.0
-      chokidar:
-        specifier: ^4.0.3
-        version: 4.0.3
       tsdown:
         specifier: catalog:build
         version: 0.15.12(typescript@5.9.3)(unrun@0.2.1)
