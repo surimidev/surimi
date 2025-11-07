@@ -5,8 +5,12 @@ import { _select } from '#lib/api/index';
 /**
  * The base class for all surimi constructs.
  * It's used to provide common functionality, just so the compiler can use them properly
+ *
+ * The `build()` method is used to transform the Surimi construct into a primitive or object, so it can be consumed by CSS.
+ *
+ * For example, everything that can be used as a CSS property value (like custom properties, keyframe builders, etc.) should implement SurimiBase<string>,
  */
-export abstract class SurimiBase {
+export abstract class SurimiBase<TBuild extends string | Record<string, unknown> = string> {
   protected _postcssRoot: postcss.Root;
 
   public constructor(root: postcss.Root) {
@@ -20,9 +24,9 @@ export abstract class SurimiBase {
    * And when generating PostCSS properties from Surimi constructs.
    *
    * For example, calling this on a `property` will return the CSS variable string (e.g. `var(--my-custom-prop)`).
-   * Calling it on a KeyframeBuilder will return the name of the keyframes animation.
+   * Calling it on a KeyframesBuilder will return the name of the keyframes animation.
    */
-  public abstract build(): string | Record<string, unknown>;
+  public abstract build(): TBuild;
 
   public readonly [Symbol.toStringTag] = 'SurimiBase';
 

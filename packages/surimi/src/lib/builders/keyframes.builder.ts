@@ -24,10 +24,10 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
     this._name = name;
     this._steps = steps;
 
-    this.register(steps);
+    this.register();
   }
 
-  public register(steps: KeyframeStepConfig) {
+  public register() {
     const existingRule = this._postcssRoot.nodes.find(
       (node): node is postcss.AtRule =>
         node.type === 'atrule' && node.name === 'keyframes' && node.params === this._name,
@@ -40,7 +40,7 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
         params: this._name,
       });
 
-    const declarations = Object.entries(steps)
+    const declarations = Object.entries(this._steps)
       .map(([step, styles]) => {
         if (!styles) {
           return null;
@@ -59,8 +59,6 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
     if (!existingRule) {
       this._postcssRoot.append(rule);
     }
-
-    return this;
   }
 
   /**

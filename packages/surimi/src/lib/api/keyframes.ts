@@ -1,12 +1,12 @@
-import type { KeyframeStepConfig } from '#lib/builders/keyframe.builder';
+import type { KeyframeStepConfig } from '#lib/builders/keyframes.builder';
 import { SurimiContext } from '#surimi';
 
-import { KeyframeBuilder } from '../builders';
+import { KeyframesBuilder } from '../builders';
 
 /**
  * Create a keyframes builder to define CSS keyframe animations.
  *
- * Use the returned KeyframeBuilder to define keyframe steps and their associated styles.
+ * Use the returned KeyframesBuilder to define keyframe steps and their associated styles.
  *
  * @example
  * ```ts
@@ -15,7 +15,7 @@ import { KeyframeBuilder } from '../builders';
  *   .at('50%', { opacity: 0.25 })
  *   .at('100%', { opacity: 1 });
  *
- * // The resulting builder will be `KeyframeBuilder<"fade-in">`
+ * // The resulting builder will be `KeyframesBuilder<"fade-in">`
  *
  * ```
  *
@@ -28,5 +28,5 @@ import { KeyframeBuilder } from '../builders';
  * ```
  */
 export function keyframes(name: string, steps: KeyframeStepConfig = {}) {
-  return new KeyframeBuilder(name, steps, SurimiContext.root, SurimiContext.root);
+  return new KeyframesBuilder(name, steps, SurimiContext.root, SurimiContext.root);
 }
