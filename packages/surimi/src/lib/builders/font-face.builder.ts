@@ -42,6 +42,12 @@ export class FontFaceBuilder extends CoreBuilder<TokenizeAtRule<`@font-face`>> {
    */
   public build(): string {
     const fontFamilyName = this._properties?.fontFamily ?? this._properties?.['font-family'];
-    return fontFamilyName instanceof SurimiBase ? fontFamilyName.build() : (fontFamilyName ?? '');
+    if (fontFamilyName instanceof SurimiBase) {
+      return fontFamilyName.build();
+    } else if (typeof fontFamilyName === 'string') {
+      return fontFamilyName;
+    } else {
+      return '';
+    }
   }
 }
