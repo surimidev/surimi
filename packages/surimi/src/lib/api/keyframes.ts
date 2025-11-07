@@ -11,9 +11,9 @@ import { KeyframeBuilder } from '../builders';
  * @example
  * ```ts
  * const fadeIn = keyframes('fade-in')
- *   .step('0%', { opacity: 0 })
- *   .step('500%', { opacity: 0.25 })
- *   .step('100%', { opacity: 1 });
+ *   .at('0%', { opacity: 0 })
+ *   .at('50%', { opacity: 0.25 })
+ *   .at('10%', { opacity: 1 });
  *
  * // The resulting builder will be `KeyframeBuilder<"fade-in">`
  *

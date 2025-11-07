@@ -63,6 +63,11 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
     return this;
   }
 
+  /**
+   * Add or merge styles for a specific keyframe step.
+   *
+   * If the step already exists, the new styles will be merged with the existing ones.
+   */
   public at(step: KeyframeStep, styles: CssProperties): KeyframesBuilder<T> {
     const newSteps = {
       ...this._steps,
@@ -72,9 +77,14 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
       },
     };
 
-    this.register(newSteps);
-
     return new KeyframesBuilder(this._name, newSteps, this._postcssContainer, this._postcssRoot);
+  }
+
+  /**
+   * Alias for `at` method.
+   */
+  public step(step: KeyframeStep, styles: CssProperties): KeyframesBuilder<T> {
+    return this.at(step, styles);
   }
 
   public from(styles: CssProperties): KeyframesBuilder<T> {
