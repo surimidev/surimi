@@ -13,7 +13,7 @@ import { KeyframeBuilder } from '../builders';
  * const fadeIn = keyframes('fade-in')
  *   .at('0%', { opacity: 0 })
  *   .at('50%', { opacity: 0.25 })
- *   .at('10%', { opacity: 1 });
+ *   .at('100%', { opacity: 1 });
  *
  * // The resulting builder will be `KeyframeBuilder<"fade-in">`
  *
