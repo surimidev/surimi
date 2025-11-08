@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "surimi compile index.ts --out-dir ./dist --no-js"
+    "build": "surimi compile ./src/index.ts --out-dir ./dist --no-js",
+    "build:watch": "pnpm build --watch"
   },
   "devDependencies": {
     "@surimi/compiler": "workspace:*",

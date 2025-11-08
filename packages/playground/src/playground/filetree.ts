@@ -4,7 +4,7 @@ const INDEX_TS = `\
 // Note that this playground is somewhat limited in it's IntelliSense capabilities.
 // For a quicker and more complete experience, check it out locally!
 // We've even got a vite plugin :)
-// https://github.com/janis-me/surimi
+// https://github.com/surimidev/surimi
 
 import { select, media } from "surimi";
 

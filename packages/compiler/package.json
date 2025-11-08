@@ -36,6 +36,7 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
+    "test": "pnpm -w test --project=compiler",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -47,7 +48,6 @@
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
-    "chokidar": "^4.0.3",
     "tsdown": "catalog:build",
     "typescript": "catalog:build"
   },

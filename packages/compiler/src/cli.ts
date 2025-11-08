@@ -4,11 +4,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, resolve } from 'node:path';
 import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
-import chokidar from 'chokidar';
 import { Command } from 'commander';
 
-import compile from '#compiler';
-
+import { compile, compileWatch } from '.';
 import { version } from '../package.json';
 
 interface CLIOptions {
@@ -49,6 +47,30 @@ function generateOutputPaths(inputPath: string, outDir?: string): { css: string;
   };
 }
 
+/**
+ * Writes compilation results to disk
+ */
+async function writeCompilationOutput(
+  result: Awaited<ReturnType<typeof compile>>,
+  outputPaths: { css: string; js: string },
+  options: { noJs: boolean },
+): Promise<void> {
+  if (!result) {
+    throw new Error('No compilation result to write');
+  }
+
+  // Ensure output directory exists
+  await mkdir(dirname(outputPaths.css), { recursive: true });
+
+  // Write CSS output
+  await writeFile(outputPaths.css, result.css, 'utf8');
+
+  // Optionally write JS output
+  if (!options.noJs) {
+    await writeFile(outputPaths.js, result.js, 'utf8');
+  }
+}
+
 async function runCompile(options: CLIOptions) {
   const { input, cwd = process.cwd(), include = [], exclude = [], outDir, noJs = false } = options;
 
@@ -65,147 +87,20 @@ async function runCompile(options: CLIOptions) {
   }
 
   const outputPaths = generateOutputPaths(inputPath, outDir ? resolve(cwd, outDir) : undefined);
+  const compileOptions = { inputPath, cwd, include, exclude };
 
   try {
     intro(`🍣 @surimi/compiler (v${version})`);
     note('Surimi is still in early development. Please report any issues you encounter!', 'Warning: Early Development');
+
     const s = spinner();
     const filename = basename(inputPath);
-    let initialCompileTime: number | null = null;
 
     if (options.watch) {
       log.info(`Running in watch mode. Press 'q' to quit.`);
-    }
-
-    s.start(`${options.watch ? 'Watching' : 'Compiling'} ${filename}...`);
-
-    const compileAndLog = async () => {
-      try {
-        const startTimer = Date.now();
-        const result = await compile({
-          inputPath,
-          cwd,
-          include,
-          exclude,
-        });
-        const endTimer = Date.now();
-
-        if (!result) {
-          s.stop('Compilation failed: No result returned');
-          return null;
-        }
-
-        // Ensure output directory exists
-        await mkdir(dirname(outputPaths.css), { recursive: true });
-
-        // Write CSS output
-        await writeFile(outputPaths.css, result.css, 'utf8');
-
-        // Optionally write JS output
-        if (!noJs) {
-          await writeFile(outputPaths.js, result.js, 'utf8');
-        }
-
-        const durationMs = endTimer - startTimer;
-        s.message(`Compilation complete in ${String(durationMs)}ms`);
-        return durationMs;
-      } catch (error) {
-        log.error(`${error instanceof Error ? error.message : String(error)}\n`);
-      }
-
-      return null;
-    };
-
-    if (options.watch) {
-      await new Promise<void>(resolve => {
-        const watcher = chokidar.watch(inputPath, {
-          ignored: exclude,
-          persistent: true,
-        });
-
-        // Cleanup function to restore terminal state
-        const cleanup = () => {
-          try {
-            if (process.stdin.isTTY) {
-              process.stdin.setRawMode(false);
-              process.stdin.pause();
-            }
-          } catch {
-            // Ignore errors during cleanup
-          }
-        };
-
-        // Handle process termination
-        process.on('SIGINT', () => {
-          cleanup();
-          watcher.close().catch(console.error);
-          process.exit(0);
-        });
-
-        process.on('SIGTERM', () => {
-          cleanup();
-          watcher.close().catch(console.error);
-          process.exit(0);
-        });
-
-        // Set up keyboard input handling
-        if (process.stdin.isTTY) {
-          process.stdin.setRawMode(true);
-          process.stdin.resume();
-          process.stdin.setEncoding('utf8');
-
-          const onKeyPress = (key: string) => {
-            if (key === 'q' || key === '\u0003') {
-              // 'q' or Ctrl+C
-              s.stop('ℹExiting watch mode...');
-              cleanup();
-              watcher
-                .close()
-                .then(() => {
-                  resolve();
-                })
-                .catch(console.error);
-            }
-          };
-
-          process.stdin.on('data', onKeyPress);
-        }
-
-        const onChange = () => {
-          s.message(`✅ Compilation done in ${initialCompileTime}ms`);
-          void compileAndLog().then(time => {
-            // if the last compilation was successfull, show the watching message
-            // Else, we continue showing the error.
-            if (time) {
-              setTimeout(() => {
-                s.message(`🔍 Watching ${filename}...`);
-              }, 1000);
-            }
-          });
-        };
-
-        onChange();
-
-        watcher.on('change', onChange);
-        watcher.on('unlink', () => {
-          s.stop(`ℹFile ${basename(inputPath)} was unlinked`);
-          cleanup();
-          watcher
-            .close()
-            .then(() => {
-              resolve();
-            })
-            .catch(console.error);
-        });
-      });
+      await runWatchMode(compileOptions, outputPaths, { noJs }, s, filename);
     } else {
-      initialCompileTime = await compileAndLog();
-
-      if (initialCompileTime) {
-        s.stop(`Compilation completed in ${String(initialCompileTime)}ms`);
-      } else {
-        s.stop('Compilation failed due to errors above');
-      }
+      await runSingleCompile(compileOptions, outputPaths, { noJs }, s, filename);
     }
 
     outro(`Thanks for using surimi! 👋`);
@@ -213,6 +108,116 @@ async function runCompile(options: CLIOptions) {
     cancel(`Compilation failed: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
+}
+
+/**
+ * Run a single compilation without watch mode
+ */
+async function runSingleCompile(
+  compileOptions: Parameters<typeof compile>[0],
+  outputPaths: { css: string; js: string },
+  options: { noJs: boolean },
+  s: ReturnType<typeof spinner>,
+  filename: string,
+): Promise<void> {
+  s.start(`Compiling ${filename}...`);
+
+  try {
+    const result = await compile(compileOptions);
+
+    if (!result) {
+      s.stop('Compilation failed: No result returned');
+      process.exit(1);
+    }
+
+    await writeCompilationOutput(result, outputPaths, options);
+
+    s.stop(`Compilation completed in ${String(result.duration)}ms`);
+  } catch (error) {
+    s.stop('Compilation failed');
+    log.error(`${error instanceof Error ? error.message : String(error)}\n`);
+    throw error;
+  }
+}
+
+/**
+ * Run compilation in watch mode
+ */
+async function runWatchMode(
+  compileOptions: Parameters<typeof compile>[0],
+  outputPaths: { css: string; js: string },
+  options: { noJs: boolean },
+  s: ReturnType<typeof spinner>,
+  filename: string,
+): Promise<void> {
+  s.start(`Watching ${filename}...`);
+
+  await new Promise<void>(resolve => {
+    const watcher = compileWatch(compileOptions, {
+      onChange: result => {
+        (async () => {
+          try {
+            if (!result) {
+              s.message(`❌ Build failed - Watching...`);
+              return;
+            }
+
+            await writeCompilationOutput(result, outputPaths, options);
+
+            s.message(`✅ Compiled in ${result.duration}ms. Watching...`);
+          } catch (error) {
+            log.error(`${error instanceof Error ? error.message : String(error)}\n`);
+            s.message(`❌ Error writing files - Watching...`);
+          }
+        })().catch(console.error);
+      },
+    });
+
+    // Cleanup function to restore terminal state
+    const cleanup = () => {
+      try {
+        if (process.stdin.isTTY) {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+        }
+      } catch {
+        // Ignore errors during cleanup
+      }
+    };
+
+    // Handle process termination
+    const handleExit = () => {
+      cleanup();
+      watcher.close().catch(console.error);
+      process.exit(0);
+    };
+
+    process.on('SIGINT', handleExit);
+    process.on('SIGTERM', handleExit);
+
+    // Set up keyboard input handling for 'q' to quit
+    if (process.stdin.isTTY) {
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.setEncoding('utf8');
+
+      const onKeyPress = (key: string) => {
+        if (key === 'q' || key === '\u0003') {
+          // 'q' or Ctrl+C
+          s.stop('ℹ Exiting watch mode...');
+          cleanup();
+          watcher
+            .close()
+            .then(() => {
+              resolve();
+            })
+            .catch(console.error);
+        }
+      };
+
+      process.stdin.on('data', onKeyPress);
+    }
+  });
 }
 
 async function main() {

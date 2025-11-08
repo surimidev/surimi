@@ -1,9 +1,6 @@
-import { media, mixin, select, style } from 'surimi';
+import { media, select, style } from 'surimi';
 
-const focusable = mixin(':focus-visible').style({
-  outline: '2px solid blue',
-  outlineOffset: '2px',
-});
+import { focusable } from './mixins';
 
 const interactive = style({
   cursor: 'pointer',
@@ -28,3 +25,7 @@ button.select('.button-primary').style({
 media().maxWidth('600px').select(button).style({
   width: '100%',
 });
+
+export const x = {
+  test: 123,
+};

@@ -32,7 +32,7 @@ export function formatPropertyValue(value: unknown): string {
  * Creates PostCSS declaration nodes from CSS properties.
  * Handles both standard CSS values and custom properties.
  */
-export function createDeclarations(properties: CssProperties): postcss.Declaration[] {
+export function createDeclarationsFromProperties(properties: CssProperties): postcss.Declaration[] {
   const declarations: postcss.Declaration[] = [];
 
   for (const [property, value] of Object.entries(properties)) {

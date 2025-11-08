@@ -1,5 +1,9 @@
 {
   "extends": "@surimi/typescript-config/base.json",
-  "include": ["*.config.ts", "index.ts"],
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["*.config.ts", "src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
