@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    if: github.repository == 'janis-me/surimi'
+    if: github.repository == 'surimidev/surimi'
     runs-on: ubuntu-latest
     strategy:
       matrix:

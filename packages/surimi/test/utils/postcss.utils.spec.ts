@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { property } from '#index';
 import type { CssProperties } from '#types/css.types';
-import { createDeclarations, formatPropertyName, formatPropertyValue } from '#utils/postcss.utils';
+import { createDeclarationsFromProperties, formatPropertyName, formatPropertyValue } from '#utils/postcss.utils';
 
 describe('postcss.utils', () => {
   describe('formatPropertyName', () => {
@@ -87,7 +87,7 @@ describe('postcss.utils', () => {
         backgroundColor: '#ffffff',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(3);
       expect(declarations[0]?.prop).toBe('color');
@@ -106,7 +106,7 @@ describe('postcss.utils', () => {
         order: -1,
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(4);
       expect(declarations[0]?.prop).toBe('opacity');
@@ -129,7 +129,7 @@ describe('postcss.utils', () => {
         fontSize: '16px',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(3);
       expect(declarations[0]?.prop).toBe('color');
@@ -148,7 +148,7 @@ describe('postcss.utils', () => {
         margin: '10px',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(2);
       expect(declarations[0]?.prop).toBe('color');
@@ -159,7 +159,7 @@ describe('postcss.utils', () => {
 
     it('should handle empty properties object', () => {
       const properties: CssProperties = {};
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
       expect(declarations).toHaveLength(0);
     });
 
@@ -171,7 +171,7 @@ describe('postcss.utils', () => {
         fontFamily: '"Helvetica Neue", Arial, sans-serif',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(4);
       expect(declarations[0]?.prop).toBe('background');
@@ -191,7 +191,7 @@ describe('postcss.utils', () => {
         msGridColumns: '1fr 1fr',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(3);
       expect(declarations[0]?.prop).toBe('-webkit-transform');
@@ -225,7 +225,7 @@ describe('postcss.utils', () => {
         margin: '0 auto',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(5);
       expect(declarations[0]?.prop).toBe('color');
@@ -250,7 +250,7 @@ describe('postcss.utils', () => {
         bottom: '0',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(6);
       expect(declarations.map(d => d.prop)).toEqual(['z-index', 'position', 'top', 'left', 'right', 'bottom']);
@@ -264,7 +264,7 @@ describe('postcss.utils', () => {
         zIndex: 0,
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(4);
       expect(declarations[0]?.value).toBe('0');
@@ -286,7 +286,7 @@ describe('postcss.utils', () => {
         height: '100vh',
       };
 
-      const declarations = createDeclarations(properties);
+      const declarations = createDeclarationsFromProperties(properties);
 
       expect(declarations).toHaveLength(2);
       expect(declarations[0]?.prop).toBe('width');
