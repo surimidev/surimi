@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { createFilter, normalizePath } from 'vite';
 
-import compile from '@surimi/compiler';
+import { compile } from '@surimi/compiler';
 import type { CompileResult } from '@surimi/compiler';
 
 import type { SurimiOptions } from './types.js';

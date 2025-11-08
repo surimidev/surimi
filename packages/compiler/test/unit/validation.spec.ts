@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
 import path from 'node:path';
-import compile from '../../src/compiler';
+import { describe, expect, it } from 'vitest';
+
+import { compile } from '../../src';
 
 describe('Compiler Validation', () => {
   const validOptions = {
@@ -16,7 +17,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           inputPath: '',
-        })
+        }),
       ).rejects.toThrow('inputPath must be a non-empty string');
     });
 
@@ -25,7 +26,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           inputPath: 123 as unknown as string,
-        })
+        }),
       ).rejects.toThrow('inputPath must be a non-empty string');
     });
   });
@@ -36,7 +37,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           cwd: '',
-        })
+        }),
       ).rejects.toThrow('cwd must be a non-empty string');
     });
 
@@ -45,7 +46,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           cwd: null as unknown as string,
-        })
+        }),
       ).rejects.toThrow('cwd must be a non-empty string');
     });
   });
@@ -56,7 +57,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           include: 'not-an-array' as unknown as string[],
-        })
+        }),
       ).rejects.toThrow('include must be an array');
     });
 
@@ -65,7 +66,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           include: [],
-        })
+        }),
       ).rejects.toThrow('include array cannot be empty');
     });
   });
@@ -76,7 +77,7 @@ describe('Compiler Validation', () => {
         compile({
           ...validOptions,
           exclude: 'not-an-array' as unknown as string[],
-        })
+        }),
       ).rejects.toThrow('exclude must be an array');
     });
 

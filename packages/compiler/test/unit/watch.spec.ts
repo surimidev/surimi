@@ -2,7 +2,7 @@ import path from 'node:path';
 import type { RolldownWatcher } from 'rolldown';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { compileWatch } from '../../src/compiler';
+import { compileWatch } from '../../src';
 
 const fixturesDir = path.resolve(__dirname, '../fixtures');
 
@@ -24,9 +24,15 @@ describe('Compiler Watch Mode', () => {
     exclude: ['**/node_modules/**'],
   });
 
+  const createWatchOptions = () => ({
+    onChange: () => {
+      // No-op for basic tests
+    },
+  });
+
   describe('Watcher creation', () => {
     it('should create a watcher instance', () => {
-      watcher = compileWatch(createOptions('simple.css.ts'));
+      watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
 
       expect(watcher).toBeDefined();
       expect(watcher).toHaveProperty('on');
@@ -36,13 +42,13 @@ describe('Compiler Watch Mode', () => {
     });
 
     it('should create watcher for file with imports', () => {
-      watcher = compileWatch(createOptions('with-imports.css.ts'));
+      watcher = compileWatch(createOptions('with-imports.css.ts'), createWatchOptions());
 
       expect(watcher).toBeDefined();
     });
 
     it('should create watcher for file with media queries', () => {
-      watcher = compileWatch(createOptions('media-queries.css.ts'));
+      watcher = compileWatch(createOptions('media-queries.css.ts'), createWatchOptions());
 
       expect(watcher).toBeDefined();
     });
@@ -51,41 +57,50 @@ describe('Compiler Watch Mode', () => {
   describe('Watcher validation', () => {
     it('should validate options before creating watcher', () => {
       expect(() =>
-        compileWatch({
-          inputPath: '',
-          cwd: process.cwd(),
-          include: ['**/*.css.ts'],
-          exclude: [],
-        }),
+        compileWatch(
+          {
+            inputPath: '',
+            cwd: process.cwd(),
+            include: ['**/*.css.ts'],
+            exclude: [],
+          },
+          createWatchOptions(),
+        ),
       ).toThrow('inputPath must be a non-empty string');
     });
 
     it('should require valid cwd', () => {
       expect(() =>
-        compileWatch({
-          inputPath: path.join(fixturesDir, 'simple.css.ts'),
-          cwd: '',
-          include: ['**/*.css.ts'],
-          exclude: [],
-        }),
+        compileWatch(
+          {
+            inputPath: path.join(fixturesDir, 'simple.css.ts'),
+            cwd: '',
+            include: ['**/*.css.ts'],
+            exclude: [],
+          },
+          createWatchOptions(),
+        ),
       ).toThrow('cwd must be a non-empty string');
     });
 
     it('should require non-empty include array', () => {
       expect(() =>
-        compileWatch({
-          inputPath: path.join(fixturesDir, 'simple.css.ts'),
-          cwd: process.cwd(),
-          include: [],
-          exclude: [],
-        }),
+        compileWatch(
+          {
+            inputPath: path.join(fixturesDir, 'simple.css.ts'),
+            cwd: process.cwd(),
+            include: [],
+            exclude: [],
+          },
+          createWatchOptions(),
+        ),
       ).toThrow('include array cannot be empty');
     });
   });
 
   describe('Watcher lifecycle', () => {
     it('should close watcher successfully', async () => {
-      watcher = compileWatch(createOptions('simple.css.ts'));
+      watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
 
       // Should not throw when closing
       await expect(watcher.close()).resolves.not.toThrow();
@@ -94,7 +109,7 @@ describe('Compiler Watch Mode', () => {
     });
 
     it('should handle multiple close calls gracefully', async () => {
-      watcher = compileWatch(createOptions('simple.css.ts'));
+      watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
 
       await watcher.close();
       // Second close should not throw
@@ -106,7 +121,7 @@ describe('Compiler Watch Mode', () => {
 
   describe('Watcher events', () => {
     it('should support event listeners', async () => {
-      watcher = compileWatch(createOptions('simple.css.ts'));
+      watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
 
       // Create a promise that resolves when an event is received or times out
       const eventPromise = new Promise<void>(resolve => {
@@ -142,7 +157,7 @@ describe('Compiler Watch Mode', () => {
       const options = createOptions('non-existent-file.css.ts');
 
       // Creating the watcher might not throw, but the first build will
-      watcher = compileWatch(options);
+      watcher = compileWatch(options, createWatchOptions());
 
       expect(watcher).toBeDefined();
     });
