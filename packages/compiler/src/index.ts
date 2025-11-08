@@ -1,43 +1,30 @@
 import type { RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
 import { watch } from 'rolldown';
 
+import { BuildCache } from '#cache';
 import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
 
 export interface CompileOptions {
-  /** Absolute path to the input file to compile */
   inputPath: string;
-  /** Working directory for resolving modules */
   cwd: string;
-  /** Glob patterns for files to include in compilation */
   include: string[];
-  /** Glob patterns for files to exclude from compilation */
   exclude: string[];
 }
 
 export interface WatchOptions {
-  /**
-   * Callback invoked when a file changes
-   * Receives the changed file ID, the type of event, and the latest compile result
-   * The compileResult can be undefined if the compilation failed, or if there is no output (file was deleted etc.)
-   */
   onChange: (compileResult: CompileResult | undefined, event: RolldownWatcherEvent) => void;
 }
 
 export interface CompileResult {
-  /** The generated CSS output */
   css: string;
-  /** The transformed JavaScript with preserved, JSON-serialized exports (Surimi runtime removed) */
   js: string;
-  /** List of file dependencies. Can be used for HMR, watch mode etc. */
   dependencies: string[];
-  /** Duration of the compilation in milliseconds */
   duration: number;
 }
 
 export async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const startTime = Date.now();
   const rolldownInput = getRolldownInput(options);
-  // Rolldown nicely provides an `asyncDispose` symbol.
   await using rolldownCompiler = await getRolldownInstance(rolldownInput);
   const rolldownOutput = await rolldownCompiler.generate();
   const chunk = rolldownOutput.output[0];
@@ -48,15 +35,11 @@ export async function compile(options: CompileOptions): Promise<CompileResult | 
   return result ? { ...result, duration } : undefined;
 }
 
-/**
- * Performs the compilation and sets up a file watcher to recompile on changes.
- *
- * `watchOptions.onChange` is called whenever a file changes, with the new compilation result.
- *
- * @returns The Rolldown watcher instance for further handling.
- */
+// Compiles and watches for file changes with incremental caching
 export function compileWatch(options: CompileOptions, watchOptions: WatchOptions): RolldownWatcher {
   const rolldownInput = getRolldownInput(options);
+  const buildCache = new BuildCache();
+
   const watcher = watch({
     ...rolldownInput,
     watch: {
@@ -83,17 +66,40 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
         return;
       }
 
-      const result = await getCompileResult(
-        chunk.getCode(),
-        chunk.getImports(),
-        chunk.getDynamicImports(),
-        chunk.getModuleIds(),
-      );
+      // Get module information for cache checking
+      const moduleIds = chunk.getModuleIds();
+      const imports = chunk.getImports();
+      const dynamicImports = chunk.getDynamicImports();
+
+      // Try to get cached result first
+      const cachedResult = await buildCache.get(options.inputPath);
+
+      if (cachedResult) {
+        // Cache hit - use cached result
+        const duration = Date.now() - startTime;
+
+        void event.result.close();
+
+        watchOptions.onChange(
+          {
+            ...cachedResult,
+            duration: duration + event.duration,
+          },
+          event,
+        );
+        return;
+      }
+
+      // Cache miss - perform compilation
+      const result = await getCompileResult(chunk.getCode(), imports, dynamicImports, moduleIds);
 
       if (!result) {
         watchOptions.onChange(undefined, event);
         return;
       }
+
+      // Store result in cache
+      await buildCache.set(options.inputPath, result);
 
       const duration = Date.now() - startTime;
 
