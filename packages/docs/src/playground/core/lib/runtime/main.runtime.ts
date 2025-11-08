@@ -29,6 +29,7 @@ export default class Runtime {
     const webContainerInstance = await WebContainer.boot({
       workdirName: name,
     });
+
     this._instance = webContainerInstance;
 
     return () => {
@@ -110,6 +111,12 @@ export default class Runtime {
     this.terminal.registerTerminalStreams(outputStream, inputStream.readable);
 
     await terminalReady.promise;
+  }
+
+  public spawn(command: string, args?: string[]) {
+    if (!this._instance) throw new Error('Instance not initialized');
+
+    return this._instance.spawn(command, args ?? []);
   }
 
   public onServerReady(callback: (port: number, url: string) => void) {

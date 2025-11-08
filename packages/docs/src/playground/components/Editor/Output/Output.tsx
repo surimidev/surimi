@@ -15,21 +15,24 @@ export default function EditorOutput() {
   useEffect(() => {
     if (!state.outputFilePath) return undefined;
 
+    const readFile = () => {
+      state
+        .readFileHandler?.(state.outputFilePath ?? 'build/index.css.css')
+        .then(content => {
+          setOutputValue(content);
+        })
+        .catch((err: unknown) => {
+          console.error(`Failed to read output file: ${String(err)}`);
+        });
+    };
+
+    readFile();
+
     const unwatch = state.watchFileHandler?.(state.outputFilePath, { persistent: false }, event => {
       if (event === 'change') {
-        console.log('Loading content for file:', state.outputFilePath);
-
-        state
-          .readFileHandler?.(state.outputFilePath ?? '/dist/index.css')
-          .then(content => {
-            setOutputValue(content);
-          })
-          .catch((err: unknown) => {
-            console.error(`Failed to read output file: ${String(err)}`);
-          });
+        readFile();
       } else {
         setOutputValue('');
-        console.warn(`Output file was removed: ${state.outputFilePath}`);
       }
     });
 
@@ -43,16 +46,10 @@ export default function EditorOutput() {
   return (
     <Panel
       resizable
-      enable={{
-        bottom: true,
-      }}
-      defaultSize={{
-        height: '60%',
-      }}
-      handleStyles={{ bottom: { height: '3px' } }}
-      handleClasses={{ bottom: 'resizable-handle-bottom' }}
-      maxHeight="90%"
-      minHeight="50%"
+      enable={{ top: false }}
+      defaultSize={{ height: '40%' }}
+      maxHeight="50%"
+      minHeight="10%"
       className="surimi-editor__output"
       as="div"
     >

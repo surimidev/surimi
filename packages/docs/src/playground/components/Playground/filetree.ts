@@ -1,37 +1,73 @@
 import type { FileSystemTree } from '#playground/types';
 
 const INDEX_TS = `\
-// Note that this playground is somewhat limited in it's IntelliSense capabilities.
-// For a quicker and more complete experience, check it out locally!
-// We've even got a vite plugin :)
-// https://github.com/surimidev/surimi
+// If you have any issues, questions or feedback, visit the docs at https://surimi.dev/docs
+// or open an issue on GitHub at https://github.com/surimidev/surimi
 
-import { select, media } from "surimi";
+import { color, mixin, select } from 'surimi';
 
 const theme = {
-  primary: '#3498db',
-  primaryHover: '#2980b9',
-  background: '#f5f5f5',
-  text: '#333',
+  primary: color('primary', '#3498db'),
+  primaryHover: color('primaryHover', '#2980b9'),
+  background: color('background', '#f5f5f5'),
+  text: color('text', '#333'),
 } as const;
 
-select('html', 'button').style({ backgroundColor: theme.background, color: theme.text });
+const hoverable = mixin(':hover').style({
+  backgroundColor: theme.primaryHover,
+});
 
-const button = select('button').style({
+select('body').style({
+  backgroundColor: theme.background,
+  color: theme.text,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  flexDirection: 'column',
+});
+
+select('h1').style({ color: theme.primary });
+
+select('button').use(hoverable).style({
   padding: '10px 20px',
   border: 'none',
-  borderRadius: '5px',
+  borderRadius: '4px',
   backgroundColor: theme.primary,
   color: '#fff',
   cursor: 'pointer',
 });
 
-button.hover().style({ backgroundColor: theme.primaryHover });
+select('body').has('button:active').style({
+  backgroundColor: '#3498db2e',
+});
+`;
 
-media().maxWidth('600px').and().maxHeight('800px').select('#app').style({
-  flexDirection: 'column',
-  justifyContent: 'center',
-  height: '100vh',
+const INDEX_HTML = `\
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Surimi playground</title>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Welcome to surimi!</h1>
+      <p>Use the editor on the left to style this page! (this is a paragraph element)</p>
+      <button>Click me</button>
+    </div>
+    <script type="module" src="./src/index.css.ts"></script>
+  </body>
+</html>
+`;
+
+const VITE_CONFIG_TS = `\
+import { defineConfig } from 'vite';
+import surimi from 'vite-plugin-surimi';
+
+export default defineConfig({
+  plugins: [surimi()],
 });
 `;
 
@@ -41,11 +77,14 @@ const PACKAGE_JSON = JSON.stringify(
     type: 'module',
     dependencies: {
       surimi: 'latest',
+      vite: 'latest',
+      'vite-plugin-surimi': 'latest',
       '@surimi/compiler': 'latest',
       '@rolldown/binding-wasm32-wasi': 'latest',
     },
     scripts: {
-      build: 'surimi compile index.ts --out-dir ./dist --no-js --watch',
+      dev: 'pnpm vite',
+      build: 'pnpm surimi compile ./src/index.css.ts --out-dir=./build --no-js --watch',
     },
   },
   null,
@@ -53,19 +92,33 @@ const PACKAGE_JSON = JSON.stringify(
 );
 
 export const files = {
-  'index.ts': {
-    file: {
-      contents: INDEX_TS,
-    },
-  },
   'package.json': {
     file: {
       contents: PACKAGE_JSON,
     },
   },
-  dist: {
+  'index.html': {
+    file: {
+      contents: INDEX_HTML,
+    },
+  },
+  'vite.config.ts': {
+    file: {
+      contents: VITE_CONFIG_TS,
+    },
+  },
+  src: {
     directory: {
-      'index.css': {
+      'index.css.ts': {
+        file: {
+          contents: INDEX_TS,
+        },
+      },
+    },
+  },
+  build: {
+    directory: {
+      'index.css.css': {
         file: {
           contents: '// The output will appear here',
         },

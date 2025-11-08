@@ -13,8 +13,10 @@ export default function Playgroun() {
   const [runtime, setRuntime] = useState<Runtime | undefined>();
   const [status, setStatus] = useState<string | null>('Loading...');
   const [outputFilePath, setOutputFilePath] = useState<string | undefined>();
+  const [iframeSrc, setIframeSrc] = useState<string | undefined>();
 
   const handleTerminalMount = async (xterm: XTerm) => {
+    const startTimer = Date.now();
     const _runtime = new Runtime();
     setStatus('Initializing web container...');
     await _runtime.init('surimi');
@@ -27,16 +29,27 @@ export default function Playgroun() {
     await _runtime.terminal?.command('pnpm', ['install', '--prefer-offline']);
 
     setRuntime(_runtime);
-    setOutputFilePath('/dist/index.css');
+    setOutputFilePath('build/index.css.css');
 
     setStatus('Starting build in watch mode...');
     await _runtime.terminal?.command('export', ['NODE_NO_WARNINGS=1']);
     await _runtime.terminal?.command('clear');
-    void _runtime.terminal?.command('pnpm', ['run', 'build']);
 
+    // Spawning a build watch process in the background, to watch the "actual" output
+    await _runtime.spawn('pnpm', ['run', 'build']);
+
+    void _runtime.terminal?.command('pnpm', ['run', 'dev']);
+
+    _runtime.onServerReady((port, url) => {
+      console.log(port, url);
+      setIframeSrc(url);
+    });
+
+    const endTimer = Date.now();
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    setStatus('Done! Enabling editors and terminal...');
+    const duration = (endTimer - startTimer) / 1000;
+    setStatus(`Ready (initialized in ${duration.toFixed(1)}s)`);
     await new Promise(resolve => setTimeout(resolve, 500));
 
     setStatus(null);
@@ -113,7 +126,7 @@ export default function Playgroun() {
       ?.write('\x03')
       .then(async () => {
         await runtime.terminal?.command('clear');
-        void runtime.terminal?.command('pnpm', ['run', 'build']);
+        void runtime.terminal?.command('pnpm', ['run', 'dev']);
       })
       .catch((err: unknown) => {
         console.log(err);
@@ -152,7 +165,7 @@ export default function Playgroun() {
 
         <Editor.Root
           tree={files}
-          selectedFile={runtime ? 'index.ts' : undefined}
+          selectedFile={runtime ? '/src/index.css.ts' : undefined}
           status={status ?? 'Done'}
           ready={status === null}
           outputFilePath={outputFilePath}
@@ -160,19 +173,35 @@ export default function Playgroun() {
           readFile={handleReadFile}
           watchFile={handleWatchFile}
         >
-          <Editor.View onMount={handleEditorMount} />
           <Editor.Panel
             resizable
             hideOverlay
-            defaultSize={{ width: '40%' }}
+            defaultSize={{ width: '50%' }}
+            enable={{
+              right: true,
+            }}
+            maxWidth="80%"
+            minWidth="20%"
+            handleStyles={{ right: { width: '3px' } }}
+            handleClasses={{ right: 'resizable-handle-right' }}
+            className="surimi-editor__left"
+            as="div"
+          >
+            <Editor.Input onMount={handleEditorMount} />
+            <Editor.Terminal onMount={handleTerminalMount} onResize={handleTerminalResize} />
+          </Editor.Panel>
+          <Editor.Panel
+            resizable
+            hideOverlay
+            defaultSize={{ width: '50%' }}
             enable={false}
             maxWidth="80%"
             minWidth="20%"
             className="surimi-editor__right"
             as="div"
           >
+            <Editor.View src={iframeSrc} />
             <Editor.Output />
-            <Editor.Terminal onMount={handleTerminalMount} onResize={handleTerminalResize} />
           </Editor.Panel>
         </Editor.Root>
       </Editor.Provider>

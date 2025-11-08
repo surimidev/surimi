@@ -86,7 +86,7 @@ export default function Terminal({ onMount, onResize }: TerminalProps) {
       enable={{ top: false }}
       defaultSize={{ height: '40%' }}
       maxHeight="50%"
-      minHeight="10%"
+      minHeight="20%"
       className="surimi-editor__terminal"
       as="div"
     >
