@@ -1,7 +1,7 @@
-import type { RolldownWatcher } from 'rolldown';
+import type { RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
 import { watch } from 'rolldown';
 
-import { getRolldownInput, getRolldownInstance, performCompile } from '#compiler';
+import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
 
 export interface CompileOptions {
   /** Absolute path to the input file to compile */
@@ -20,7 +20,7 @@ export interface WatchOptions {
    * Receives the changed file ID, the type of event, and the latest compile result
    * The compileResult can be undefined if the compilation failed, or if there is no output (file was deleted etc.)
    */
-  onChange: (id: string, event: 'create' | 'update' | 'delete', compileResult: CompileResult | undefined) => void;
+  onChange: (compileResult: CompileResult | undefined, event: RolldownWatcherEvent) => void;
 }
 
 export interface CompileResult {
@@ -35,11 +35,17 @@ export interface CompileResult {
 }
 
 export async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
+  const startTime = Date.now();
   const rolldownInput = getRolldownInput(options);
   // Rolldown nicely provides an `asyncDispose` symbol.
   await using rolldownCompiler = await getRolldownInstance(rolldownInput);
+  const rolldownOutput = await rolldownCompiler.generate();
+  const chunk = rolldownOutput.output[0];
 
-  return await performCompile(rolldownCompiler);
+  const result = await getCompileResult(chunk.code, chunk.imports, chunk.dynamicImports, chunk.moduleIds);
+  const duration = Date.now() - startTime;
+
+  return result ? { ...result, duration } : undefined;
 }
 
 /**
@@ -51,27 +57,52 @@ export async function compile(options: CompileOptions): Promise<CompileResult | 
  */
 export function compileWatch(options: CompileOptions, watchOptions: WatchOptions): RolldownWatcher {
   const rolldownInput = getRolldownInput(options);
-  const watcher = watch(rolldownInput);
+  const watcher = watch({
+    ...rolldownInput,
+    watch: {
+      skipWrite: true,
+      include: options.include,
+      exclude: options.exclude,
+    },
+  });
 
-  getRolldownInstance(rolldownInput)
-    .then(rolldownCompiler => {
-      // Initial compilation
-      performCompile(rolldownCompiler)
-        .then(result => {
-          watchOptions.onChange(rolldownInput.input, 'create', result);
-        })
-        .catch((error: unknown) => {
-          throw error;
-        });
+  watcher.on('event', async event => {
+    if (event.code === 'BUNDLE_END') {
+      const startTime = Date.now();
+      const output = await event.result.generate();
 
-      watcher.on('change', async (id, { event }) => {
-        const compileResult = await performCompile(rolldownCompiler);
-        watchOptions.onChange(id, event, compileResult);
-      });
-    })
-    .catch((error: unknown) => {
-      throw new Error(`Failed to initialize watcher: ${error instanceof Error ? error.message : String(error)}`);
-    });
+      if ('errors' in output) {
+        watchOptions.onChange(undefined, event);
+        return;
+      }
+
+      const chunk = output.chunks[0];
+
+      if (!chunk) {
+        watchOptions.onChange(undefined, event);
+        return;
+      }
+
+      const result = await getCompileResult(
+        chunk.getCode(),
+        chunk.getImports(),
+        chunk.getDynamicImports(),
+        chunk.getModuleIds(),
+      );
+
+      if (!result) {
+        watchOptions.onChange(undefined, event);
+        return;
+      }
+
+      const duration = Date.now() - startTime;
+      result.duration = duration + event.duration;
+
+      void event.result.close();
+
+      watchOptions.onChange(result, event);
+    }
+  });
 
   return watcher;
 }

@@ -153,21 +153,10 @@ async function runWatchMode(
   s.start(`Watching ${filename}...`);
 
   await new Promise<void>(resolve => {
-    let isFirstCompile = true;
-
     const watcher = compileWatch(compileOptions, {
-      onChange: (id, event, result) => {
+      onChange: result => {
         (async () => {
           try {
-            const changedFile = basename(id);
-
-            if (isFirstCompile) {
-              s.message(`Initial compilation complete (${result?.duration ?? 0}ms) - Writing files...`);
-              isFirstCompile = false;
-            } else {
-              s.message(`File ${event}: ${changedFile} - Recompiling...`);
-            }
-
             if (!result) {
               s.message(`❌ Build failed - Watching...`);
               return;
@@ -175,7 +164,7 @@ async function runWatchMode(
 
             await writeCompilationOutput(result, outputPaths, options);
 
-            s.message(`✅ Compiled in ${String(result.duration)}ms. Watching...`);
+            s.message(`✅ Compiled in ${result.duration}ms. Watching...`);
           } catch (error) {
             log.error(`${error instanceof Error ? error.message : String(error)}\n`);
             s.message(`❌ Error writing files - Watching...`);

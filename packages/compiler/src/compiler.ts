@@ -1,4 +1,4 @@
-import type { InputOptions, OutputChunk, RolldownBuild } from 'rolldown';
+import type { InputOptions } from 'rolldown';
 import { rolldown } from 'rolldown';
 
 import type { CompileOptions, CompileResult } from '.';
@@ -48,6 +48,30 @@ export const ${SURIMI_CSS_EXPORT_NAME} = __surimi__instance__.build();
 
 export async function getRolldownInstance(input: InputOptions) {
   return rolldown(input);
+}
+
+/**
+ * Execute the compiled Surimi code and extract the CSS and preserved exports.
+ *
+ * Code, imports etc. are passed indivudually to support `BindingOutput` chunks form Rolldown watch mode
+ */
+export async function getCompileResult(
+  code: string,
+  imports: string[],
+  dynamicImports: string[],
+  moduleIds: string[],
+): Promise<CompileResult | undefined> {
+  const { css, js } = await execute(code);
+
+  // Extract all imported modules as watch files
+  const watchFiles = getModuleDependencies(imports, dynamicImports, moduleIds);
+
+  return {
+    css,
+    js,
+    dependencies: [...new Set(watchFiles)],
+    duration: 0,
+  };
 }
 
 /**
@@ -106,26 +130,6 @@ export async function execute(code: string) {
   }
 }
 
-export async function performCompile(instance: RolldownBuild): Promise<CompileResult | undefined> {
-  const startTime = Date.now();
-  const buildRes = await instance.generate({ exports: 'named' });
-
-  const output = buildRes.output[0];
-  const { css, js } = await execute(output.code);
-
-  // Extract all imported modules as watch files
-  const watchFiles = getModuleDependencies(output);
-
-  const duration = Date.now() - startTime;
-
-  return {
-    css,
-    js,
-    dependencies: [...new Set(watchFiles)],
-    duration,
-  };
-}
-
 // Type guard to check if a value is serializable to JSON
 function isSerializable(value: unknown): value is string | number | boolean | null | object {
   const type = typeof value;
@@ -161,21 +165,21 @@ function validateCompileOptions(options: CompileOptions): void {
  * Will exclude dependencies from `node_modules`, rolldown runtime modules
  * and development Surimi packages (only relevant in development).
  */
-function getModuleDependencies(module: OutputChunk): string[] {
+function getModuleDependencies(imports: string[], dynamicImports: string[], moduleIds: string[]): string[] {
   const watchFiles: string[] = [];
 
   // Add all imports from the rolldown output
-  if (module.imports.length > 0) {
-    watchFiles.push(...module.imports);
+  if (imports.length > 0) {
+    watchFiles.push(...imports);
   }
 
   // Add dynamic imports if any
-  if (module.dynamicImports.length > 0) {
-    watchFiles.push(...module.dynamicImports);
+  if (dynamicImports.length > 0) {
+    watchFiles.push(...dynamicImports);
   }
 
-  if ('modules' in module && Object.keys(module.modules).length > 0) {
-    for (const moduleId of Object.keys(module.modules)) {
+  if (moduleIds.length > 0) {
+    for (const moduleId of moduleIds) {
       if (!moduleId.includes('node_modules') && !isDevelopmentSurimiFile(moduleId)) {
         if (moduleId.includes('rolldown:runtime')) continue;
 

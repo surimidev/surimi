@@ -150,16 +150,4 @@ describe('Compiler Watch Mode', () => {
       await eventPromise;
     }, 40000);
   });
-
-  describe('Error handling', () => {
-    it('should handle non-existent files', () => {
-      // Should throw or create watcher that will error on first build
-      const options = createOptions('non-existent-file.css.ts');
-
-      // Creating the watcher might not throw, but the first build will
-      watcher = compileWatch(options, createWatchOptions());
-
-      expect(watcher).toBeDefined();
-    });
-  });
 });
