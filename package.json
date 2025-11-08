@@ -12,7 +12,6 @@
     "build": "pnpm --filter=!./examples/** build",
     "build:all": "pnpm -r build",
     "build:ci": "pnpm build",
-    "build:docs": "pnpm --filter=docs build",
     "deps": "pnpm taze",
     "examples": "pnpm build && concurrently \"pnpm build:watch\" \"pnpm --filter=./examples/** dev\"",
     "format": "prettier --write .",
