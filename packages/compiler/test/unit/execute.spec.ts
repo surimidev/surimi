@@ -218,7 +218,7 @@ describe('Execute Function', () => {
       try {
         await execute(code);
         // If no error is thrown, fail the test
-        expect(true).toBe(false);
+        expect.fail();
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         if (error instanceof Error) {

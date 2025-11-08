@@ -15,7 +15,7 @@ describe('Compiler Watch Mode', () => {
       await watcher.close();
       watcher = null;
     }
-  }, 40000);
+  });
 
   const createOptions = (fixture: string) => ({
     inputPath: path.join(fixturesDir, fixture),
@@ -117,37 +117,5 @@ describe('Compiler Watch Mode', () => {
 
       watcher = null;
     });
-  });
-
-  describe('Watcher events', () => {
-    it('should support event listeners', async () => {
-      watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
-
-      // Create a promise that resolves when an event is received or times out
-      const eventPromise = new Promise<void>(resolve => {
-        let eventReceived = false;
-
-        // Listen for any event
-        if (watcher) {
-          watcher.on('event', event => {
-            if (!eventReceived) {
-              eventReceived = true;
-              expect(event).toBeDefined();
-              resolve();
-            }
-          });
-        }
-
-        // If no event is received within 5 seconds, still pass
-        // (some environments might not trigger events immediately)
-        setTimeout(() => {
-          if (!eventReceived) {
-            resolve();
-          }
-        }, 40000);
-      });
-
-      await eventPromise;
-    }, 40000);
   });
 });

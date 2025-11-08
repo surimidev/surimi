@@ -96,11 +96,16 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
       }
 
       const duration = Date.now() - startTime;
-      result.duration = duration + event.duration;
 
       void event.result.close();
 
-      watchOptions.onChange(result, event);
+      watchOptions.onChange(
+        {
+          ...result,
+          duration: duration + event.duration,
+        },
+        event,
+      );
     }
   });
 
