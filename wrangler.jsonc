@@ -1,0 +1,10 @@
+{
+  "name": "surimi",
+  "compatibility_date": "2025-11-08",
+  "build": {
+    "command": "pnpm run build:docs",
+  },
+  "assets": {
+    "directory": "./packages/docs/dist",
+  },
+}
