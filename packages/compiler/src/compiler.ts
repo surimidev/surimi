@@ -53,7 +53,7 @@ export async function getRolldownInstance(input: InputOptions) {
 /**
  * Execute the compiled Surimi code and extract the CSS and preserved exports.
  *
- * Code, imports etc. are passed indivudually to support `BindingOutput` chunks form Rolldown watch mode
+ * Code, imports etc. are passed individually to support `BindingOutput` chunks from Rolldown watch mode
  */
 export async function getCompileResult(
   code: string,
