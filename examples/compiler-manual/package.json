@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "surimi compile index.ts --out-dir ./dist --no-js",
-    "watch": "surimi compile index.ts --out-dir ./dist --no-js --watch"
+    "build:watch": "pnpm build --watch"
   },
   "devDependencies": {
     "@surimi/compiler": "workspace:*",

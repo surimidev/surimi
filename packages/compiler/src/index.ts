@@ -55,6 +55,15 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
 
   getRolldownInstance(rolldownInput)
     .then(rolldownCompiler => {
+      // Initial compilation
+      performCompile(rolldownCompiler)
+        .then(result => {
+          watchOptions.onChange(rolldownInput.input, 'create', result);
+        })
+        .catch((error: unknown) => {
+          throw error;
+        });
+
       watcher.on('change', async (id, { event }) => {
         const compileResult = await performCompile(rolldownCompiler);
         watchOptions.onChange(id, event, compileResult);
