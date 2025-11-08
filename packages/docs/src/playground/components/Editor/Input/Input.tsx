@@ -57,7 +57,7 @@ export default function Input({ onMount }: InputProps) {
       }}
       handleStyles={{ bottom: { height: '3px' } }}
       handleClasses={{ bottom: 'resizable-handle-bottom' }}
-      // Should be 80, but we're leaving some rome to not "squeeze" the terminal
+      // Should be 80, but we're leaving some room to not "squeeze" the terminal
       maxHeight="75%"
       minHeight="50%"
       className="surimi-editor__input"
