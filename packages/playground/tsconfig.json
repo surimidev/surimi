@@ -1,5 +1,0 @@
-{
-  "extends": "@surimi/typescript-config/react.json",
-  "include": ["src", "*.config.ts"],
-  "exclude": ["node_modules", "dist"]
-}

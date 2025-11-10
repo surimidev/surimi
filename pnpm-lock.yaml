@@ -311,15 +311,33 @@ importers:
 
   packages/docs:
     dependencies:
+      '@monaco-editor/react':
+        specifier: ^4.7.0
+        version: 4.7.0(monaco-editor@0.54.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@surimi/compiler':
         specifier: workspace:*
         version: link:../compiler
-      '@surimi/playground':
-        specifier: workspace:*
-        version: link:../playground
       '@webcontainer/api':
         specifier: ^1.6.1
         version: 1.6.1
+      '@xterm/addon-fit':
+        specifier: ^0.10.0
+        version: 0.10.0(@xterm/xterm@5.5.0)
+      '@xterm/addon-web-links':
+        specifier: ^0.11.0
+        version: 0.11.0(@xterm/xterm@5.5.0)
+      '@xterm/xterm':
+        specifier: ^5.5.0
+        version: 5.5.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      comlink:
+        specifier: ^4.4.2
+        version: 4.4.2
+      re-resizable:
+        specifier: ^6.11.2
+        version: 6.11.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -411,49 +429,6 @@ importers:
       typescript:
         specifier: catalog:build
         version: 5.9.3
-
-  packages/playground:
-    dependencies:
-      '@monaco-editor/react':
-        specifier: ^4.7.0
-        version: 4.7.0(monaco-editor@0.54.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@webcontainer/api':
-        specifier: ^1.6.1
-        version: 1.6.1
-      '@xterm/addon-fit':
-        specifier: ^0.10.0
-        version: 0.10.0(@xterm/xterm@5.5.0)
-      '@xterm/addon-web-links':
-        specifier: ^0.11.0
-        version: 0.11.0(@xterm/xterm@5.5.0)
-      '@xterm/xterm':
-        specifier: ^5.5.0
-        version: 5.5.0
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      comlink:
-        specifier: ^4.4.2
-        version: 4.4.2
-      re-resizable:
-        specifier: ^6.11.2
-        version: 6.11.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react:
-        specifier: ^19.2.0
-        version: 19.2.0
-      react-dom:
-        specifier: ^19.2.0
-        version: 19.2.0(react@19.2.0)
-      surimi:
-        specifier: workspace:*
-        version: link:../surimi
-    devDependencies:
-      '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.2
-      '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.2(@types/react@19.2.2)
 
   packages/surimi:
     dependencies:
