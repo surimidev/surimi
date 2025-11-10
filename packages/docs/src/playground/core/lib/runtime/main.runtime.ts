@@ -77,12 +77,13 @@ export default class Runtime {
     this.terminal = new Terminal(this._instance);
     this.xterm = xterm;
 
-    const terminalReady = Promise.withResolvers<void>();
+    const terminalReady = Promise.withResolvers<undefined>();
     let isInteractive = false;
 
     const outputStream = new WritableStream<string>({
       write(data) {
         if (!isInteractive) {
+          // eslint-disable-next-line no-control-regex
           const [, osc] = /\x1b\]654;([^\x07]+)\x07/.exec(data) ?? [];
 
           if (osc === 'interactive') {
