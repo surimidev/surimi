@@ -1,4 +1,4 @@
-import { select, style } from 'surimi';
+import { select } from 'surimi';
 
 export const card = select('.card').style({
   backgroundColor: 'white',

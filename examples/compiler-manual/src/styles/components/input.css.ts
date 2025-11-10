@@ -1,4 +1,4 @@
-import { select, style } from 'surimi';
+import { select } from 'surimi';
 import { focusable, disabled } from '../utils/mixins.css';
 
 export const input = select('input[type="text"], input[type="email"], input[type="password"]')
