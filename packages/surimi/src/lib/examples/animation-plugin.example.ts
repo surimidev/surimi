@@ -6,12 +6,12 @@
 
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '../builders/core.builder';
+import { WithStyling } from '../builders/mixins/styling.mixin';
 
 /**
  * Plugin that adds animation helper methods to builders
  */
-export abstract class WithAnimations<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
+export abstract class WithAnimations<TContext extends string> extends WithStyling<TContext> {
   /**
    * Apply a fade-in animation
    * @param duration - Animation duration (default: '0.3s')

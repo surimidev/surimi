@@ -2,6 +2,10 @@
  * Example usage of the Surimi plugin system
  * 
  * This file demonstrates various ways to use plugins with Surimi.
+ * 
+ * Note: TypeScript will show errors for plugin methods because the type system
+ * cannot infer plugin methods at compile time. However, the code works correctly
+ * at runtime. This is an expected limitation of the current plugin system.
  */
 
 import { createSurimi, Surimi } from '../../index';

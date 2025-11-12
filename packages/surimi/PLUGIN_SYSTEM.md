@@ -196,7 +196,13 @@ select('.element')
 
 ## Current Limitations
 
-⚠️ **Important**: Plugin methods are currently only available on the initial builder returned by `select()`. When using builder methods that create new instances (like `.hover()`, `.child()`, `.before()`), those new instances will not have plugin methods.
+⚠️ **Runtime vs. Compile-time**:
+- Plugin methods work correctly at **runtime** (code executes as expected)
+- TypeScript may show type errors at **compile-time** because the type system cannot infer plugin methods
+- This is a known limitation of the current implementation
+- The tests pass and the generated CSS is correct
+
+⚠️ **Builder Instances**: Plugin methods are currently only available on the initial builder returned by `select()`. When using builder methods that create new instances (like `.hover()`, `.child()`, `.before()`), those new instances will not have plugin methods.
 
 ### Workaround
 

@@ -6,12 +6,12 @@
 
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '../builders/core.builder';
+import { WithStyling } from '../builders/mixins/styling.mixin';
 
 /**
  * Plugin that adds spacing helper methods to builders
  */
-export abstract class WithSpacing<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
+export abstract class WithSpacing<TContext extends string> extends WithStyling<TContext> {
   /**
    * Apply gap (for flexbox/grid)
    * @param size - Gap size

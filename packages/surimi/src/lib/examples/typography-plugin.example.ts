@@ -6,7 +6,7 @@
 
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '../builders/core.builder';
+import { WithStyling } from '../builders/mixins/styling.mixin';
 
 type FontSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 type FontWeight = 'thin' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
@@ -37,7 +37,7 @@ const fontWeightMap: Record<FontWeight, string> = {
 /**
  * Plugin that adds typography helper methods to builders
  */
-export abstract class WithTypography<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {
+export abstract class WithTypography<TContext extends string> extends WithStyling<TContext> {
   /**
    * Set font size using predefined scale or custom value
    * @param size - Font size (preset or custom CSS value)

@@ -19,8 +19,9 @@ import { SelectorBuilder } from './builders/selector.builder';
 /**
  * Base type for plugin mixins.
  * All plugins should extend CoreBuilder with their custom methods.
+ * Note: The type uses `any` for flexibility since plugins use generic contexts.
  */
-export type PluginMixin = abstract new (...args: ConstructorParameters<typeof CoreBuilder>) => CoreBuilder;
+export type PluginMixin = abstract new (...args: any[]) => any;
 
 /**
  * Configuration for creating a Surimi instance with plugins
@@ -108,13 +109,10 @@ export function createSurimi(config?: SurimiConfig) {
 /**
  * Helper to create an extended builder class with plugins mixed in
  */
-function createExtendedBuilder<TBuilder extends typeof SelectorBuilder>(
-  BaseBuilder: TBuilder,
-  plugins: PluginMixin[],
-) {
+function createExtendedBuilder(BaseBuilder: typeof SelectorBuilder, plugins: PluginMixin[]) {
   // Create a new class that mixes the base builder with all plugins
   @mix(BaseBuilder, ...plugins)
-  class ExtendedBuilder extends BaseBuilder {}
+  class ExtendedBuilder extends BaseBuilder<any> {}
 
   return ExtendedBuilder;
 }
@@ -122,14 +120,11 @@ function createExtendedBuilder<TBuilder extends typeof SelectorBuilder>(
 /**
  * Internal helper for creating select with a specific builder class
  */
-function _selectWithBuilder<
-  TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>,
-  TBuilder extends typeof SelectorBuilder,
->(
+function _selectWithBuilder<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector>>(
   selectors: TSelectors,
   postcssContainer: postcss.Container,
   postcssRoot: postcss.Root,
-  BuilderClass: TBuilder,
+  BuilderClass: typeof SelectorBuilder,
 ): SelectorBuilder<JoinSelectors<TSelectors>> {
   const result = _select(selectors, postcssContainer, postcssRoot);
 
@@ -149,6 +144,7 @@ function standardSelect<TSelectors extends ArrayWithAtLeastOneItem<ValidSelector
 }
 
 /**
- * Re-export CoreBuilder for plugin authors
+ * Re-export CoreBuilder and WithStyling for plugin authors
  */
 export { CoreBuilder };
+export { WithStyling } from './builders/mixins/styling.mixin';
