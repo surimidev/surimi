@@ -1,16 +1,15 @@
 # Surimi Plugin System
 
-The Surimi plugin system allows you to extend builder functionality with custom methods while maintaining full TypeScript type safety.
+The Surimi plugin system allows you to extend builder functionality with custom methods, add new top-level APIs, and maintain full TypeScript type safety.
 
 ## Quick Start
 
 ```typescript
-import { createSurimi, CoreBuilder } from 'surimi';
-import type { Tokenize } from '@surimi/parsers';
+import { createSurimi, WithStyling } from 'surimi';
 
 // 1. Define a plugin as a mixin class
 export abstract class WithAnimations<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
+  extends WithStyling<TContext> {
   
   public fadeIn(duration = '0.3s') {
     this.style({
@@ -21,29 +20,77 @@ export abstract class WithAnimations<TContext extends string>
   }
 }
 
-// 2. Use the plugin
-const { select } = createSurimi({ plugins: [WithAnimations] });
+// 2. Use the plugin to extend SelectorBuilder
+const { select } = createSurimi({ 
+  selectorPlugins: [WithAnimations] 
+});
 
-// 3. Plugin methods are now available!
+// 3. Plugin methods are now available with full type safety!
 select('.modal').fadeIn('0.5s');
+```
+
+## Plugin Configuration Options
+
+The `createSurimi` function accepts a configuration object with the following options:
+
+### Extending Builders
+
+```typescript
+const { select, media, container, mixin, style } = createSurimi({
+  // Extend SelectorBuilder (returned by select())
+  selectorPlugins: [WithAnimations, WithSpacing],
+  
+  // Extend MediaQueryBuilder (returned by media())
+  mediaPlugins: [WithMediaHelpers],
+  
+  // Extend ContainerQueryBuilder (returned by container())
+  containerPlugins: [WithContainerHelpers],
+  
+  // Extend MixinBuilder (returned by mixin())
+  mixinPlugins: [WithMixinHelpers],
+  
+  // Extend Style class (returned by style())
+  stylePlugins: [WithStyleHelpers],
+});
+```
+
+### Adding Custom APIs
+
+```typescript
+const { select, customMethod, anotherApi } = createSurimi({
+  selectorPlugins: [WithAnimations],
+  apis: {
+    customMethod: () => {
+      // Custom logic
+      return 'custom value';
+    },
+    anotherApi: (param: string) => {
+      // Another custom API
+      return `result: ${param}`;
+    },
+  },
+});
+
+// Use the custom APIs
+console.log(customMethod()); // 'custom value'
+console.log(anotherApi('test')); // 'result: test'
 ```
 
 ## Creating Plugins
 
 ### Basic Plugin Structure
 
-A plugin is an abstract class that extends `CoreBuilder` and adds custom methods:
+A plugin is an abstract class that extends `WithStyling` (or `CoreBuilder`) and adds custom methods:
 
 ```typescript
-import { CoreBuilder } from 'surimi';
-import type { Tokenize } from '@surimi/parsers';
+import { WithStyling } from 'surimi';
 
 export abstract class MyPlugin<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
+  extends WithStyling<TContext> {
   
   public myMethod(param: string) {
     // Access this.style() to apply CSS properties
-    this.style({ /* CSS properties */ });
+    this.style({ color: param });
     
     // Always return this for method chaining
     return this;
@@ -51,23 +98,30 @@ export abstract class MyPlugin<TContext extends string>
 }
 ```
 
+### Available Base Classes
+
+- **`WithStyling<TContext>`** - Provides `this.style()` method (recommended for most plugins)
+- **`CoreBuilder<Tokenize<TContext>>`** - Lower-level base class with PostCSS access
+
 ### Available Methods in Plugins
 
-When writing plugins, you have access to:
+When extending `WithStyling`, you have access to:
 
 - **`this.style(properties)`** - Apply CSS properties to the current selector
 - **`this._context`** - The current selector context (as tokens)
 - **`this._postcssContainer`** - The PostCSS container for this builder
 - **`this._postcssRoot`** - The PostCSS root node
+- **`this.getOrCreateRule()`** - Get or create the PostCSS rule for the current selector
 
-### Example: Animation Plugin
+## Example Plugins
+
+### Animation Plugin
 
 ```typescript
-import { CoreBuilder } from 'surimi';
-import type { Tokenize } from '@surimi/parsers';
+import { WithStyling } from 'surimi';
 
 export abstract class WithAnimations<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
+  extends WithStyling<TContext> {
   
   public fadeIn(duration = '0.3s') {
     this.style({
@@ -93,14 +147,13 @@ export abstract class WithAnimations<TContext extends string>
 }
 ```
 
-### Example: Spacing Plugin
+### Spacing Plugin
 
 ```typescript
-import { CoreBuilder } from 'surimi';
-import type { Tokenize } from '@surimi/parsers';
+import { WithStyling } from 'surimi';
 
 export abstract class WithSpacing<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
+  extends WithStyling<TContext> {
   
   public gap(size: string) {
     this.style({ gap: size });
@@ -133,118 +186,27 @@ export abstract class WithSpacing<TContext extends string>
 }
 ```
 
-## Using Plugins
-
-### Single Plugin
+### Typography Plugin
 
 ```typescript
-import { createSurimi } from 'surimi';
-import { WithAnimations } from './plugins/animations';
+import { WithStyling } from 'surimi';
 
-const { select } = createSurimi({ 
-  plugins: [WithAnimations] 
-});
+type FontSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl';
 
-select('.modal').fadeIn('0.5s');
-```
+const fontSizeMap: Record<FontSize, string> = {
+  xs: '0.75rem',
+  sm: '0.875rem',
+  base: '1rem',
+  lg: '1.125rem',
+  xl: '1.25rem',
+  '2xl': '1.5rem',
+};
 
-### Multiple Plugins
-
-```typescript
-import { createSurimi } from 'surimi';
-import { WithAnimations } from './plugins/animations';
-import { WithSpacing } from './plugins/spacing';
-import { WithTypography } from './plugins/typography';
-
-const { select } = createSurimi({ 
-  plugins: [WithAnimations, WithSpacing, WithTypography] 
-});
-
-select('.card')
-  .fadeIn('0.3s')      // from WithAnimations
-  .padding('1rem')     // from WithSpacing
-  .fontSize('lg');     // from WithTypography
-```
-
-### No Plugins (Standard Surimi)
-
-```typescript
-import { createSurimi } from 'surimi';
-
-const { select } = createSurimi(); // No plugins
-
-// Only standard methods available
-select('.button').hover().style({ color: 'blue' });
-```
-
-## Method Chaining
-
-Plugin methods support full method chaining with other plugin methods and the standard `style()` method:
-
-```typescript
-const { select } = createSurimi({ 
-  plugins: [WithAnimations, WithSpacing, WithTypography] 
-});
-
-select('.element')
-  .fadeIn()
-  .padding('1rem')
-  .fontSize('lg')
-  .fontWeight('bold')
-  .style({ backgroundColor: 'white' });
-```
-
-## Current Limitations
-
-⚠️ **Runtime vs. Compile-time**:
-- Plugin methods work correctly at **runtime** (code executes as expected)
-- TypeScript may show type errors at **compile-time** because the type system cannot infer plugin methods
-- This is a known limitation of the current implementation
-- The tests pass and the generated CSS is correct
-
-⚠️ **Builder Instances**: Plugin methods are currently only available on the initial builder returned by `select()`. When using builder methods that create new instances (like `.hover()`, `.child()`, `.before()`), those new instances will not have plugin methods.
-
-### Workaround
-
-Apply plugin methods before navigating or using pseudo-selectors:
-
-```typescript
-// ✅ This works
-select('.button').padding('1rem').hover().style({ color: 'blue' });
-
-// ❌ This doesn't work (yet)
-// select('.button').hover().padding('1rem')
-```
-
-For complex scenarios, you can make multiple `select()` calls:
-
-```typescript
-// Apply padding to the button
-select('.button').padding('1rem');
-
-// Apply styles to hover state separately
-select('.button').hover().style({ color: 'blue' });
-```
-
-## Example Plugins
-
-### Typography Utilities
-
-```typescript
 export abstract class WithTypography<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
+  extends WithStyling<TContext> {
   
-  private fontSizeMap = {
-    xs: '0.75rem',
-    sm: '0.875rem',
-    base: '1rem',
-    lg: '1.125rem',
-    xl: '1.25rem',
-    '2xl': '1.5rem',
-  };
-
-  public fontSize(size: keyof typeof this.fontSizeMap | string) {
-    const value = this.fontSizeMap[size as keyof typeof this.fontSizeMap] ?? size;
+  public fontSize(size: FontSize | string) {
+    const value = size in fontSizeMap ? fontSizeMap[size as FontSize] : size;
     this.style({ fontSize: value });
     return this;
   }
@@ -264,94 +226,85 @@ export abstract class WithTypography<TContext extends string>
     });
     return this;
   }
-
-  public lineClamp(lines: number) {
-    this.style({
-      display: '-webkit-box',
-      WebkitLineClamp: lines.toString(),
-      WebkitBoxOrient: 'vertical',
-      overflow: 'hidden',
-    });
-    return this;
-  }
 }
 ```
 
-### Layout Utilities
+## Usage Examples
+
+### Single Plugin
 
 ```typescript
-export abstract class WithLayout<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
-  
-  public flex(direction?: 'row' | 'column') {
-    this.style({
-      display: 'flex',
-      ...(direction && { flexDirection: direction }),
-    });
-    return this;
-  }
+import { createSurimi } from 'surimi';
+import { WithAnimations } from './plugins/animations';
 
-  public grid(columns?: string) {
-    this.style({
-      display: 'grid',
-      ...(columns && { gridTemplateColumns: columns }),
-    });
-    return this;
-  }
+const { select } = createSurimi({ 
+  selectorPlugins: [WithAnimations] 
+});
 
-  public center() {
-    this.style({
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    });
-    return this;
-  }
-
-  public absolute() {
-    this.style({ position: 'absolute' });
-    return this;
-  }
-
-  public relative() {
-    this.style({ position: 'relative' });
-    return this;
-  }
-}
+select('.modal').fadeIn('0.5s');
 ```
 
-### Color Utilities
+### Multiple Plugins
 
 ```typescript
-export abstract class WithColors<TContext extends string> 
-  extends CoreBuilder<Tokenize<TContext>> {
-  
-  private colors = {
-    primary: '#3490dc',
-    secondary: '#6574cd',
-    success: '#38c172',
-    danger: '#e3342f',
-    warning: '#f6993f',
-  };
+import { createSurimi } from 'surimi';
+import { WithAnimations } from './plugins/animations';
+import { WithSpacing } from './plugins/spacing';
+import { WithTypography } from './plugins/typography';
 
-  public bg(color: keyof typeof this.colors | string) {
-    const value = this.colors[color as keyof typeof this.colors] ?? color;
-    this.style({ backgroundColor: value });
-    return this;
+const { select } = createSurimi({ 
+  selectorPlugins: [WithAnimations, WithSpacing, WithTypography] 
+});
+
+select('.card')
+  .fadeIn('0.3s')      // from WithAnimations
+  .padding('1rem')     // from WithSpacing (assuming it has a padding method)
+  .fontSize('lg');     // from WithTypography
+```
+
+### Extending Different Builders
+
+```typescript
+import { createSurimi } from 'surimi';
+
+// Plugin for MediaQueryBuilder
+abstract class WithMediaHelpers<TContext extends string> 
+  extends WithStyling<TContext> {
+  public mobile() {
+    return this.maxWidth('768px');
   }
-
-  public text(color: keyof typeof this.colors | string) {
-    const value = this.colors[color as keyof typeof this.colors] ?? color;
-    this.style({ color: value });
-    return this;
-  }
-
-  public border(color: keyof typeof this.colors | string, width = '1px') {
-    const value = this.colors[color as keyof typeof this.colors] ?? color;
-    this.style({ border: `${width} solid ${value}` });
-    return this;
+  public tablet() {
+    return this.minWidth('769px').maxWidth('1024px');
   }
 }
+
+const { media } = createSurimi({
+  mediaPlugins: [WithMediaHelpers],
+});
+
+// Now you can use the helper methods
+media().mobile().select('.card').style({ padding: '1rem' });
+```
+
+### Adding Custom APIs
+
+```typescript
+const { select, generateColorPalette } = createSurimi({
+  selectorPlugins: [WithAnimations],
+  apis: {
+    generateColorPalette: (baseColor: string) => {
+      // Generate a color palette from a base color
+      return {
+        light: `lighten(${baseColor}, 20%)`,
+        base: baseColor,
+        dark: `darken(${baseColor}, 20%)`,
+      };
+    },
+  },
+});
+
+const palette = generateColorPalette('#3498db');
+select('.primary').style({ backgroundColor: palette.base });
 ```
 
 ## Plugin Composition
@@ -360,16 +313,18 @@ Multiple plugins can be composed together. Methods from all plugins are availabl
 
 ```typescript
 const { select } = createSurimi({
-  plugins: [WithAnimations, WithSpacing, WithTypography, WithLayout, WithColors],
+  selectorPlugins: [
+    WithAnimations, 
+    WithSpacing, 
+    WithTypography
+  ],
 });
 
 select('.card')
-  .flex('column')      // from WithLayout
-  .gap('1rem')         // from WithSpacing
-  .padding('2rem')     // from WithSpacing
-  .bg('white')         // from WithColors
-  .fadeIn('0.5s')      // from WithAnimations
-  .fontSize('base')    // from WithTypography
+  .fadeIn('0.3s')      // from WithAnimations
+  .paddingY('1rem')    // from WithSpacing
+  .fontSize('lg')      // from WithTypography
+  .fontWeight('bold')  // from WithTypography
   .style({             // standard method
     borderRadius: '8px',
   });
@@ -454,18 +409,53 @@ npm install @your-org/surimi-plugin-animations
 import { createSurimi } from 'surimi';
 import { WithAnimations } from '@your-org/surimi-plugin-animations';
 
+const { select } = createSurimi({ 
+  selectorPlugins: [WithAnimations] 
+});
+```
+
+## Advanced Features
+
+### Plugin Methods on Derived Builders
+
+Currently, plugin methods are only available on the initial builder returned by the API functions. Methods that create new builder instances (like `.hover()`, `.child()`) return builders without plugin methods.
+
+**Workaround:**
+
+```typescript
+// ✅ Apply plugin methods first
+select('.button').padding('1rem').hover().style({ color: 'blue' });
+
+// Or use multiple select() calls
+select('.button').padding('1rem');
+select('.button').hover().style({ color: 'blue' });
+```
+
+This is a known limitation that may be addressed in future versions.
+
+## Migration from Old Plugin API
+
+If you were using the old plugin API:
+
+**Old:**
+```typescript
 const { select } = createSurimi({ plugins: [WithAnimations] });
 ```
 
+**New:**
+```typescript
+const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+```
+
+The new API provides more granular control over which builders are extended.
+
 ## Future Enhancements
 
-The plugin system is currently in its initial version. Future enhancements may include:
-
 - Plugin methods available on all builder instances (including after `.hover()`, `.child()`, etc.)
-- Support for plugins extending other builders (MediaBuilder, ContainerBuilder, etc.)
 - Plugin lifecycle hooks
 - Plugin dependencies and composition helpers
 - Built-in plugin utilities and helpers
+- Official plugin packages
 
 ## Feedback
 

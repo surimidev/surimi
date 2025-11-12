@@ -15,6 +15,6 @@ export {
 } from '#lib/api/custom-property';
 export { SurimiContext as Surimi } from './surimi';
 export { createSurimi, CoreBuilder, WithStyling } from '#lib/plugin';
-export type { SurimiConfig, PluginMixin } from '#lib/plugin';
+export type { SurimiPluginConfig, BuilderPluginMixin } from '#lib/plugin';
 
 export type { CssProperties } from '#types/css.types';
