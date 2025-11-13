@@ -14,5 +14,7 @@ export {
   url,
 } from '#lib/api/custom-property';
 export { SurimiContext as Surimi } from './surimi';
+export { createSurimi, CoreBuilder, WithStyling } from '#lib/plugin';
+export type { SurimiPlugin, SurimiPluginInput, BuilderPluginMixin } from '#lib/plugin';
 
 export type { CssProperties } from '#types/css.types';
