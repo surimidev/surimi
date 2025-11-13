@@ -1,10 +1,8 @@
 /**
- * Comprehensive Plugin System for Surimi
+ * Simplified Plugin System for Surimi
  * 
- * This module provides a flexible plugin system that allows:
- * 1. Extending existing builders (SelectorBuilder, MediaQueryBuilder, etc.)
- * 2. Adding new top-level API methods to createSurimi return value
- * 3. Full TypeScript type inference
+ * Plugins are passed directly as arguments to createSurimi() and each plugin
+ * defines which builders it extends via its exported structure.
  */
 
 import { mix } from 'ts-mixer';
@@ -25,108 +23,100 @@ import { Style } from './api/style';
 
 /**
  * Base type for builder plugin mixins.
- * These extend existing builders with new methods.
  */
 export type BuilderPluginMixin = abstract new (...args: any[]) => any;
 
 /**
- * Plugin configuration for extending Surimi
+ * Plugin definition that specifies which builders to extend and custom APIs
  */
-export interface SurimiPluginConfig<TApis extends Record<string, any> = Record<string, never>> {
+export interface SurimiPlugin {
   /**
-   * Plugins that extend the SelectorBuilder (returned by select())
+   * Name of the plugin (optional, for debugging)
    */
-  selectorPlugins?: BuilderPluginMixin[];
+  name?: string;
   
   /**
-   * Plugins that extend the MediaQueryBuilder (returned by media())
+   * Mixins to extend SelectorBuilder (returned by select())
    */
-  mediaPlugins?: BuilderPluginMixin[];
+  selector?: BuilderPluginMixin[];
   
   /**
-   * Plugins that extend the ContainerQueryBuilder (returned by container())
+   * Mixins to extend MediaQueryBuilder (returned by media())
    */
-  containerPlugins?: BuilderPluginMixin[];
+  media?: BuilderPluginMixin[];
   
   /**
-   * Plugins that extend the MixinBuilder (returned by mixin())
+   * Mixins to extend ContainerQueryBuilder (returned by container())
    */
-  mixinPlugins?: BuilderPluginMixin[];
+  container?: BuilderPluginMixin[];
   
   /**
-   * Plugins that extend the Style class (returned by style())
+   * Mixins to extend MixinBuilder (returned by mixin())
    */
-  stylePlugins?: BuilderPluginMixin[];
+  mixin?: BuilderPluginMixin[];
+  
+  /**
+   * Mixins to extend Style class (returned by style())
+   */
+  style?: BuilderPluginMixin[];
   
   /**
    * Additional API methods to add to the createSurimi return value
    */
-  apis?: TApis;
+  apis?: Record<string, any>;
 }
 
 /**
- * Infer the extended SelectorBuilder type with plugins
+ * Plugin can be an object or a function that returns an object
  */
-type ExtendedSelectorBuilder<TPlugins extends BuilderPluginMixin[]> = 
-  TPlugins extends [] 
-    ? typeof SelectorBuilder 
-    : {
-        new <T extends string>(...args: ConstructorParameters<typeof SelectorBuilder>): 
-          SelectorBuilder<T> & UnionToIntersection<InstanceType<TPlugins[number]>>;
-      };
+export type SurimiPluginInput = SurimiPlugin | (() => SurimiPlugin);
 
 /**
- * Infer the extended MediaQueryBuilder type with plugins
+ * Helper to normalize plugin input to plugin object
  */
-type ExtendedMediaQueryBuilder<TPlugins extends BuilderPluginMixin[]> = 
-  TPlugins extends [] 
-    ? typeof MediaQueryBuilder 
-    : {
-        new <T extends string>(...args: ConstructorParameters<typeof MediaQueryBuilder>): 
-          MediaQueryBuilder<T> & UnionToIntersection<InstanceType<TPlugins[number]>>;
-      };
-
-/**
- * Helper type to convert union to intersection
- */
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+function normalizePlugin(plugin: SurimiPluginInput): SurimiPlugin {
+  return typeof plugin === 'function' ? plugin() : plugin;
+}
 
 /**
  * Creates a Surimi instance with optional plugins.
  * 
  * @example
  * ```typescript
- * // Extend SelectorBuilder
- * const { select } = createSurimi({ 
- *   selectorPlugins: [WithAnimations, WithSpacing] 
- * });
- * select('.modal').fadeIn('0.5s').padding('1rem');
- * 
- * // Extend MediaQueryBuilder
- * const { media } = createSurimi({ 
- *   mediaPlugins: [WithMediaHelpers] 
- * });
- * media().mobile().select('.card').style({ padding: '1rem' });
- * 
- * // Add new APIs
- * const { select, customApi } = createSurimi({
+ * // Define a plugin
+ * const animationPlugin = {
+ *   name: 'animations',
+ *   selector: [WithAnimations],
  *   apis: {
- *     customApi: () => { ... }
+ *     customMethod: () => 'value'
  *   }
- * });
+ * };
+ * 
+ * // Use the plugin
+ * const { select, customMethod } = createSurimi(animationPlugin);
+ * select('.modal').fadeIn('0.5s');
  * ```
  */
-export function createSurimi<TApis extends Record<string, any> = Record<string, never>>(
-  config?: SurimiPluginConfig<TApis>
-) {
-  const {
-    selectorPlugins = [],
-    mediaPlugins = [],
-    containerPlugins = [],
-    mixinPlugins = [],
-    stylePlugins = [],
-    apis = {} as TApis,
-  } = config ?? {};
+export function createSurimi(...plugins: SurimiPluginInput[]) {
+  // Normalize all plugins
+  const normalizedPlugins = plugins.map(normalizePlugin);
+  
+  // Collect all plugin mixins by builder type
+  const selectorPlugins: BuilderPluginMixin[] = [];
+  const mediaPlugins: BuilderPluginMixin[] = [];
+  const containerPlugins: BuilderPluginMixin[] = [];
+  const mixinPlugins: BuilderPluginMixin[] = [];
+  const stylePlugins: BuilderPluginMixin[] = [];
+  const customApis: Record<string, any> = {};
+  
+  for (const plugin of normalizedPlugins) {
+    if (plugin.selector) selectorPlugins.push(...plugin.selector);
+    if (plugin.media) mediaPlugins.push(...plugin.media);
+    if (plugin.container) containerPlugins.push(...plugin.container);
+    if (plugin.mixin) mixinPlugins.push(...plugin.mixin);
+    if (plugin.style) stylePlugins.push(...plugin.style);
+    if (plugin.apis) Object.assign(customApis, plugin.apis);
+  }
 
   // Create extended builders
   const ExtendedSelectorBuilder = selectorPlugins.length > 0
@@ -226,7 +216,7 @@ export function createSurimi<TApis extends Record<string, any> = Record<string, 
     container,
     mixin,
     style,
-    ...apis,
+    ...customApis,
   };
 }
 

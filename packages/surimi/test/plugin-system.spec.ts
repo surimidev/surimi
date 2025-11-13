@@ -32,9 +32,9 @@ describe('Plugin System', () => {
     });
 
     it('should extend builder with single plugin', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.modal').fadeIn('0.5s');
+      (select('.modal') as any).fadeIn('0.5s');
 
       expect(Surimi.build()).toBe(`\
 .modal {
@@ -45,10 +45,10 @@ describe('Plugin System', () => {
 
     it('should extend builder with multiple plugins', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithAnimations, WithSpacing],
+        selector: [WithAnimations, WithSpacing],
       });
 
-      select('.card').fadeIn('0.3s').padding('1rem');
+      (select('.card') as any).fadeIn('0.3s').padding('1rem');
 
       expect(Surimi.build()).toBe(`\
 .card {
@@ -61,9 +61,9 @@ describe('Plugin System', () => {
 
   describe('Animation Plugin', () => {
     it('should support fadeIn method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').fadeIn();
+      (select('.element') as any).fadeIn();
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -73,9 +73,9 @@ describe('Plugin System', () => {
     });
 
     it('should support fadeOut method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').fadeOut('0.5s');
+      (select('.element') as any).fadeOut('0.5s');
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -85,9 +85,9 @@ describe('Plugin System', () => {
     });
 
     it('should support slideIn method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').slideIn('left', '0.4s');
+      (select('.element') as any).slideIn('left', '0.4s');
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -96,9 +96,9 @@ describe('Plugin System', () => {
     });
 
     it('should support pulse method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').pulse('2s');
+      (select('.element') as any).pulse('2s');
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -107,9 +107,9 @@ describe('Plugin System', () => {
     });
 
     it('should support bounce method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').bounce();
+      (select('.element') as any).bounce();
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -118,9 +118,9 @@ describe('Plugin System', () => {
     });
 
     it('should support animate method with custom parameters', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithAnimations] });
+      const { select } = createSurimi({ selector: [WithAnimations] });
 
-      select('.element').animate('customAnimation', '1.5s', 'ease-in-out');
+      (select('.element') as any).animate('customAnimation', '1.5s', 'ease-in-out');
 
       expect(Surimi.build()).toBe(`\
 .element {
@@ -131,9 +131,9 @@ describe('Plugin System', () => {
 
   describe('Spacing Plugin', () => {
     it('should support gap method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.grid').gap('1rem');
+      (select('.grid') as any).gap('1rem');
 
       expect(Surimi.build()).toBe(`\
 .grid {
@@ -142,9 +142,9 @@ describe('Plugin System', () => {
     });
 
     it('should support padding method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.box').padding('2rem');
+      (select('.box') as any).padding('2rem');
 
       expect(Surimi.build()).toBe(`\
 .box {
@@ -153,9 +153,9 @@ describe('Plugin System', () => {
     });
 
     it('should support paddingX method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.box').paddingX('1.5rem');
+      (select('.box') as any).paddingX('1.5rem');
 
       expect(Surimi.build()).toBe(`\
 .box {
@@ -165,9 +165,9 @@ describe('Plugin System', () => {
     });
 
     it('should support paddingY method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.box').paddingY('1rem');
+      (select('.box') as any).paddingY('1rem');
 
       expect(Surimi.build()).toBe(`\
 .box {
@@ -177,9 +177,9 @@ describe('Plugin System', () => {
     });
 
     it('should support margin method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.box').margin('1rem');
+      (select('.box') as any).margin('1rem');
 
       expect(Surimi.build()).toBe(`\
 .box {
@@ -188,9 +188,9 @@ describe('Plugin System', () => {
     });
 
     it('should support centerX method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.container').centerX();
+      (select('.container') as any).centerX();
 
       expect(Surimi.build()).toBe(`\
 .container {
@@ -200,9 +200,9 @@ describe('Plugin System', () => {
     });
 
     it('should support rowGap and columnGap methods', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
-      select('.grid').rowGap('1rem').columnGap('2rem');
+      (select('.grid') as any).rowGap('1rem').columnGap('2rem');
 
       expect(Surimi.build()).toBe(`\
 .grid {
@@ -214,9 +214,9 @@ describe('Plugin System', () => {
 
   describe('Typography Plugin', () => {
     it('should support fontSize with preset values', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').fontSize('lg');
+      (select('.text') as any).fontSize('lg');
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -225,9 +225,9 @@ describe('Plugin System', () => {
     });
 
     it('should support fontSize with custom values', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').fontSize('24px');
+      (select('.text') as any).fontSize('24px');
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -236,9 +236,9 @@ describe('Plugin System', () => {
     });
 
     it('should support fontWeight with preset values', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').fontWeight('bold');
+      (select('.text') as any).fontWeight('bold');
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -247,9 +247,9 @@ describe('Plugin System', () => {
     });
 
     it('should support textAlign method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').textAlign('center');
+      (select('.text') as any).textAlign('center');
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -258,9 +258,9 @@ describe('Plugin System', () => {
     });
 
     it('should support uppercase method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').uppercase();
+      (select('.text') as any).uppercase();
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -269,9 +269,9 @@ describe('Plugin System', () => {
     });
 
     it('should support truncate method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').truncate();
+      (select('.text') as any).truncate();
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -282,9 +282,9 @@ describe('Plugin System', () => {
     });
 
     it('should support lineClamp method', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithTypography] });
+      const { select } = createSurimi({ selector: [WithTypography] });
 
-      select('.text').lineClamp(3);
+      (select('.text') as any).lineClamp(3);
 
       expect(Surimi.build()).toBe(`\
 .text {
@@ -299,7 +299,7 @@ describe('Plugin System', () => {
   describe('Plugin Composition', () => {
     it('should work with all three plugins together', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithAnimations, WithSpacing, WithTypography],
+        selector: [WithAnimations, WithSpacing, WithTypography],
       });
 
       select('.card')
@@ -320,11 +320,11 @@ describe('Plugin System', () => {
 
     it('should allow mixing plugin methods with built-in methods', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithAnimations, WithSpacing],
+        selector: [WithAnimations, WithSpacing],
       });
 
       // Apply padding first, then use standard methods
-      select('.button').padding('0.5rem 1rem');
+      (select('.button') as any).padding('0.5rem 1rem');
 
       // Apply animation on hover (plugin methods work on initial select)
       select('.button')
@@ -348,10 +348,10 @@ describe('Plugin System', () => {
 
     it('should work with navigation methods', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithSpacing, WithTypography],
+        selector: [WithSpacing, WithTypography],
       });
 
-      select('.menu').padding('1rem');
+      (select('.menu') as any).padding('1rem');
 
       select('.menu')
         .child('li')
@@ -374,7 +374,7 @@ describe('Plugin System', () => {
 
     it('should work with pseudo-elements', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithTypography],
+        selector: [WithTypography],
       });
 
       select('.quote')
@@ -397,7 +397,7 @@ describe('Plugin System', () => {
   describe('Plugin Chaining', () => {
     it('should support method chaining with plugin methods', () => {
       const { select } = createSurimi({
-        selectorPlugins: [WithAnimations, WithSpacing, WithTypography],
+        selector: [WithAnimations, WithSpacing, WithTypography],
       });
 
       select('.element')
@@ -419,7 +419,7 @@ describe('Plugin System', () => {
     });
 
     it('should allow multiple style() calls with plugin methods', () => {
-      const { select } = createSurimi({ selectorPlugins: [WithSpacing] });
+      const { select } = createSurimi({ selector: [WithSpacing] });
 
       select('.box')
         .padding('1rem')
