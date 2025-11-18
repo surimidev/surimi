@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.6.0...surimi@0.6.0
+
+### 🚀 Enhancements
+
+- Add keyframe builder and proper string-conversion of Surimi classes ([129f6a4](https://github.com/surimidev/surimi/commit/129f6a4))
+- Add fontFace builder and improved Base class for builders ([#67](https://github.com/surimidev/surimi/pull/67))
+
+### 🏡 Chore
+
+- Rename janis-me organization references to surimidev ([#65](https://github.com/surimidev/surimi/pull/65))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## v0.5.1...surimi@0.5.1
 
 ### 🩹 Fixes

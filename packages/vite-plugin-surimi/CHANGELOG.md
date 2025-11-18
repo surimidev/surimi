@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4.0...vite-plugin-surimi@0.4.0
+
+### 🚀 Enhancements
+
+- **compiler:** Migrate watch mode from chokidar to Rolldown native API ([#68](https://github.com/surimidev/surimi/pull/68))
+
+### 🏡 Chore
+
+- Rename janis-me organization references to surimidev ([#65](https://github.com/surimidev/surimi/pull/65))
+
+### ❤️ Contributors
+
+- Yannik Knops <yannik.knops@googlemail.com>
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
 ## v0.3.1...vite-plugin-surimi@0.3.1
 
 ### 🩹 Fixes
