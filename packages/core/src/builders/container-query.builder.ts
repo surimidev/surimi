@@ -35,7 +35,7 @@ type ContainerQueryBuilderOperatorFunctions<T extends string> = {
   [K in ContainerOperator]: () => ContainerQueryBuilder<`${T} ${K}`>;
 };
 
-export type MediaQueryBuilderFunctions<T extends string> = ContainerQueryBuilderBaseRangedFunctions<T> &
+export type ContainerQueryBuilderFunctions<T extends string> = ContainerQueryBuilderBaseRangedFunctions<T> &
   ContainerQueryBuilderMinRangedFunctions<T> &
   ContainerQueryBuilderMaxRangedFunctions<T> &
   ContainerQueryBuilderOperatorFunctions<T>;
@@ -52,7 +52,7 @@ export type MediaQueryBuilderFunctions<T extends string> = ContainerQueryBuilder
  */
 export class ContainerQueryBuilder<TQuery extends string>
   extends AtRuleBuilder<TQuery>
-  implements MediaQueryBuilderFunctions<TQuery>
+  implements ContainerQueryBuilderFunctions<TQuery>
 {
   private createContainerQueryBuilderWithParameter<TNewParam extends string>(
     parameter: TNewParam,

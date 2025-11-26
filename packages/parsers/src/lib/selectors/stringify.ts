@@ -1,4 +1,4 @@
-import type { StringifySelector, Token } from '#types';
+import type { StringifySelector, Token } from '#types/index';
 
 /**
  * Normalizes a single token's content for stringification.

@@ -1,7 +1,8 @@
 import type { BasePseudoElements, KebabCaseToCamelCase, StripColons } from '@surimi/common';
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder, SelectorBuilder } from '#builders';
+import { CoreBuilder } from '../builders/core.builder';
+import { SelectorBuilder } from '../builders/selector.builder';
 
 type WithPseudoElementMethods<_TContext extends string> = {
   [K in BasePseudoElements as KebabCaseToCamelCase<StripColons<K>>]: unknown;

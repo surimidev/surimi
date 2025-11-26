@@ -1,5 +1,7 @@
-import { MixinBuilder } from '#builders';
-import { WithStyling } from '#mixins';
+import { MixinBuilder } from '#builders/mixin.builder';
+import { StyleBuilder } from '#builders/style.builder';
+import { createSelectorBuilderFromContext } from '#helpers/select.helper';
+import { WithStyling } from '#mixins/index';
 
 /**
  * Mixin class for builders that support applying reusable styles and mixins.
@@ -28,9 +30,9 @@ export abstract class WithUsables<TContext extends string> extends WithStyling<T
    * select('.button').use(buttonStyle);
    * ```
    */
-  public use(...usables: Array<Style | MixinBuilder<string>>): this {
+  public use(...usables: Array<StyleBuilder | MixinBuilder<string>>): this {
     for (const usable of usables) {
-      if (usable instanceof Style) {
+      if (usable instanceof StyleBuilder) {
         const styles = usable.build();
 
         this.style(styles);
@@ -39,7 +41,11 @@ export abstract class WithUsables<TContext extends string> extends WithStyling<T
         const context = usable.context;
 
         if (styles) {
-          _selectByContext([...this._context, ...context], this._postcssContainer, this._postcssRoot).style(styles);
+          createSelectorBuilderFromContext(
+            [...this._context, ...context],
+            this._postcssContainer,
+            this._postcssRoot,
+          ).style(styles);
         }
       }
     }

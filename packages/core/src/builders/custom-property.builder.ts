@@ -2,7 +2,7 @@ import postcss from 'postcss';
 
 import { SurimiBase } from '@surimi/common';
 
-export class CustomProperty<TValue> extends SurimiBase {
+export class CustomPropertyBuilder<TValue> extends SurimiBase {
   public readonly name: string;
   public readonly syntax: string;
   public readonly inherits: boolean;

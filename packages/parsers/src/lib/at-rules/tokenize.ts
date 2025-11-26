@@ -9,7 +9,7 @@ import {
   readUntilCloseParen,
   skipWhitespace,
 } from '#lib/utils';
-import type { Token, TokenizeAtRule } from '#types';
+import type { Token, TokenizeAtRule } from '#types/index';
 
 /**
  * Tokenize a CSS at-rule prelude (everything before the {)

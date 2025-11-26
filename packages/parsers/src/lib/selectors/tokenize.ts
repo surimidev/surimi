@@ -10,7 +10,7 @@ import type {
   TokenizeSelector,
   TypeToken,
   UniversalToken,
-} from '#types';
+} from '#types/index';
 
 import {
   isIdentifierChar,

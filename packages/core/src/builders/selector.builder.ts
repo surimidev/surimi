@@ -1,18 +1,14 @@
 import { type Tokenize } from '@surimi/parsers';
 import { mix } from 'ts-mixer';
 
-import {
-  WithNavigation,
-  WithPseudoClasses,
-  WithPseudoElements,
-  WithSelecting,
-  WithStyling,
-  WithSelectorOperations,
-  WithUsables,
-} from '#mixins';
 import { CoreBuilder } from './core.builder';
-
-class SelectorBuilderImpl<T extends string> extends CoreBuilder<Tokenize<T>> {}
+import { WithNavigation } from '../mixins/navigation.mixin';
+import { WithStyling } from '../mixins/styling.mixin';
+import { WithPseudoClasses } from '../mixins/pseudo-classes.mixin';
+import { WithPseudoElements } from '../mixins/pseudo-elements.mixin';
+import { WithSelecting } from '../mixins/selecting.mixin';
+import { WithSelectorOperations } from '../mixins/selector-operations.mixin';
+import { WithUsables } from '../mixins/usables.mixin';
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -38,4 +34,4 @@ export interface SelectorBuilder<T extends string>
   WithSelectorOperations,
   WithUsables,
 )
-export class SelectorBuilder<T extends string> extends SelectorBuilderImpl<T> {}
+export class SelectorBuilder<T extends string> extends CoreBuilder<Tokenize<T>> {}

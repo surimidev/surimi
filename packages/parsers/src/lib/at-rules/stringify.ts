@@ -1,4 +1,4 @@
-import type { StringifyAtRule, Token } from '#types';
+import type { StringifyAtRule, Token } from '#types/index';
 
 /**
  * Stringify an array of at-rule tokens back into a string

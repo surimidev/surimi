@@ -1,8 +1,9 @@
 import type { CssProperties } from '@surimi/common';
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '#builders';
-import { createDeclarationsFromProperties } from '#utils';
+import { CoreBuilder } from '#builders/core.builder';
+import { StyleBuilder } from '#builders/style.builder';
+import { createDeclarationsFromProperties } from '#utils/postcss.utils';
 
 /**
  * Mixin class for builders that support styling with CSS properties.
@@ -15,8 +16,8 @@ export abstract class WithStyling<TContext extends string> extends CoreBuilder<T
    * Apply the given CSS properties to the current selector context.
    * Creates the necessary PostCSS rule and declarations, appending them to the root AST.
    */
-  public style(styles: CssProperties | Style) {
-    if (styles instanceof Style) {
+  public style(styles: CssProperties | StyleBuilder) {
+    if (styles instanceof StyleBuilder) {
       this.style(styles.build());
     } else {
       const rule = this.getOrCreateRule();

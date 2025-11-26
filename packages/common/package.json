@@ -1,16 +1,14 @@
 {
   "name": "@surimi/common",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "private": false,
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
     "#*": [
       "./src/*.ts",
       "./src/*.tsx",
-      "./src/*/index.ts",
-      "./src/*.js",
-      "./src/*/index.js"
+      "./src/*.js"
     ]
   },
   "exports": {
@@ -19,9 +17,9 @@
       "import": "./src/index.ts"
     }
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "format": "prettier . --write",
     "type-check": "tsc --noEmit"

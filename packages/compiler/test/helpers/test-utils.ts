@@ -1,7 +1,8 @@
 // Test utilities for compiler tests
 
 import path from 'node:path';
-import type { CompileOptions } from '../../src/compiler';
+
+import type { CompileOptions } from '../../src';
 
 // Creates default compile options for testing
 export function createDefaultOptions(inputPath: string): CompileOptions {
@@ -26,7 +27,7 @@ export function normalizeWhitespace(str: string): string {
 
 // Checks if a string contains all specified substrings
 export function containsAll(str: string, substrings: string[]): boolean {
-  return substrings.every((substring) => str.includes(substring));
+  return substrings.every(substring => str.includes(substring));
 }
 
 // Extracts all export statements from generated JS
@@ -36,7 +37,9 @@ export function extractExports(js: string): string[] {
   let match;
 
   while ((match = exportRegex.exec(js)) !== null) {
-    exports.push(match[1]);
+    if (match[1]) {
+      exports.push(match[1]);
+    }
   }
 
   return exports;

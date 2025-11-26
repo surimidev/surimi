@@ -14,11 +14,9 @@
   "type": "module",
   "imports": {
     "#*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts",
       "./src/*.js",
-      "./src/*/index.js"
+      "./src/*.ts",
+      "./src/*.tsx"
     ]
   },
   "exports": {
@@ -44,7 +42,8 @@
   "dependencies": {
     "@surimi/common": "workspace:*",
     "@surimi/core": "workspace:*",
-    "@surimi/parsers": "workspace:*"
+    "@surimi/parsers": "workspace:*",
+    "postcss": "catalog:prod"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

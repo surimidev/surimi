@@ -1,7 +1,8 @@
 import type { Tokenize } from '@surimi/parsers';
 import { tokenizeSelector } from '@surimi/parsers';
 
-import { CoreBuilder, SelectorBuilder } from '#builders';
+import { CoreBuilder } from '#builders/core.builder';
+import { SelectorBuilder } from '#builders/selector.builder';
 
 /**
  * Mixin mainly for the SelectorBuilder that provides navigation methods to traverse the DOM

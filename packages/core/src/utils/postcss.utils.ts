@@ -7,7 +7,7 @@ import postcss from 'postcss';
 
 import type { CamelCaseToKebabCase, CssProperties } from '@surimi/common';
 
-import { CustomProperty } from '#builders';
+import { CustomPropertyBuilder } from '#builders/custom-property.builder';
 
 /**
  * Formats a camelCase property name to kebab-case for CSS
@@ -39,7 +39,7 @@ export function createDeclarationsFromProperties(properties: CssProperties): pos
     if (value != null) {
       // Ensure the property key is formatted to kebab-case
       const formattedProperty = formatPropertyName(property);
-      const formattedValue = value instanceof CustomProperty ? value.build() : formatPropertyValue(value);
+      const formattedValue = value instanceof CustomPropertyBuilder ? value.build() : formatPropertyValue(value);
 
       const declaration = postcss.decl({
         prop: formattedProperty,

@@ -1,4 +1,4 @@
-import type { Token } from '#types';
+import type { Token } from '#types/index';
 
 /**
  * Type-level CSS selector tokenizer.

@@ -3,6 +3,6 @@
   "compilerOptions": {
     "experimentalDecorators": true
   },
-  "include": ["*.config.ts", "src", "test", "../common/src/utils"],
+  "include": ["*.config.ts", "src", "test"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,16 +1,14 @@
 {
   "name": "@surimi/core",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "private": false,
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
     "#*": [
       "./src/*.ts",
       "./src/*.tsx",
-      "./src/*/index.ts",
-      "./src/*.js",
-      "./src/*/index.js"
+      "./src/*.js"
     ]
   },
   "exports": {
@@ -19,12 +17,11 @@
       "import": "./src/index.ts"
     }
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "format": "prettier . --write",
-    "test": "pnpm -w test --project=surimi",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -36,6 +33,7 @@
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
+    "tsdown": "catalog:build",
     "typescript": "catalog:build"
   }
 }

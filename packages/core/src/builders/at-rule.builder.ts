@@ -1,7 +1,7 @@
 import { mix } from 'ts-mixer';
 
 import type { Tokenize } from '@surimi/parsers';
-import { WithSelecting } from '#mixins';
+import { WithSelecting } from '#mixins/index';
 
 import { CoreBuilder } from './core.builder';
 

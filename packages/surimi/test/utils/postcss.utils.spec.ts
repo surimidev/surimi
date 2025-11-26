@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import type { CssProperties } from '@surimi/common';
+import { createDeclarationsFromProperties, formatPropertyName, formatPropertyValue } from '@surimi/core';
+
 import { property } from '#index';
-import type { CssProperties } from '#types/css.types';
-import { createDeclarationsFromProperties, formatPropertyName, formatPropertyValue } from '#utils/postcss.utils';
 
 describe('postcss.utils', () => {
   describe('formatPropertyName', () => {
