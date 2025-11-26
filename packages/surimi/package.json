@@ -42,10 +42,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@surimi/parsers": "workspace:*",
-    "csstype": "catalog:prod",
-    "postcss": "catalog:prod",
-    "ts-mixer": "^6.0.4"
+    "@surimi/common": "workspace:*",
+    "@surimi/core": "workspace:*",
+    "@surimi/parsers": "workspace:*"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

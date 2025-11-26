@@ -1,0 +1,37 @@
+{
+  "name": "@surimi/common",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Janis jansen <oss@janis.me>",
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*.ts",
+      "./src/*.tsx",
+      "./src/*/index.ts",
+      "./src/*.js",
+      "./src/*/index.js"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "format": "prettier . --write",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "postcss": "catalog:prod"
+  },
+  "devDependencies": {
+    "@surimi/linter-config": "workspace:*",
+    "@surimi/typescript-config": "workspace:*",
+    "typescript": "catalog:build"
+  }
+}
