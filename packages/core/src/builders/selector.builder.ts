@@ -2,13 +2,15 @@ import { type Tokenize } from '@surimi/parsers';
 import { mix } from 'ts-mixer';
 
 import { CoreBuilder } from './core.builder';
-import { WithNavigation } from '../mixins/navigation.mixin';
-import { WithStyling } from '../mixins/styling.mixin';
-import { WithPseudoClasses } from '../mixins/pseudo-classes.mixin';
-import { WithPseudoElements } from '../mixins/pseudo-elements.mixin';
-import { WithSelecting } from '../mixins/selecting.mixin';
-import { WithSelectorOperations } from '../mixins/selector-operations.mixin';
-import { WithUsables } from '../mixins/usables.mixin';
+import {
+  WithNavigation,
+  WithStyling,
+  WithPseudoClasses,
+  WithPseudoElements,
+  WithSelecting,
+  WithSelectorOperations,
+  WithUsables,
+} from '#mixins';
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,

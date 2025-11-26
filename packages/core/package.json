@@ -5,28 +5,29 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*.js"
-    ]
+    "#*": "./src/*"
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
     "format": "prettier . --write",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@surimi/common": "workspace:*",
     "@surimi/parsers": "workspace:*",
+    "csstype": "catalog:prod",
     "postcss": "catalog:prod",
     "ts-mixer": "^6.0.4"
   },

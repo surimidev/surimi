@@ -1,7 +1,7 @@
 {
   "extends": "@surimi/typescript-config/base.json",
   "compilerOptions": {
-    "experimentalDecorators": true
+    "baseUrl": "."
   },
   "include": ["*.config.ts", "src", "test"],
   "exclude": ["node_modules", "dist"]

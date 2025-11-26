@@ -1,9 +1,8 @@
-import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '@surimi/common';
 import type { Token, Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '#builders/core.builder';
-import { SelectorBuilder } from '#builders/selector.builder';
+import { CoreBuilder, SelectorBuilder } from '#builders';
 import { createSelectorBuilderFromContext, createSelectorBuilderFromString } from '#helpers/select.helper';
+import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '#types';
 
 /**
  * Mixin mainly for selecting things in a nested way within an existing selector context

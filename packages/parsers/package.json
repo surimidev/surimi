@@ -12,11 +12,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*.js"
-    ]
+    "#*": "./src/*"
   },
   "exports": {
     ".": {

@@ -1,7 +1,7 @@
 import type postcss from 'postcss';
 
-import type { CssProperties } from '@surimi/common';
-import { SurimiBase } from '@surimi/common';
+import { SurimiBase } from '#base';
+import type { CssProperties } from '#types';
 
 /**
  * Builder class for defining reusable styles.

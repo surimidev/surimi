@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   target: 'es2020',
-  noExternal: ['@surimi/common', '@surimi/core'],
+  noExternal: ['@surimi/core'],
   sourcemap: true,
   clean: true,
   dts: true,

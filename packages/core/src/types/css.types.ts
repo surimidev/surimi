@@ -1,6 +1,6 @@
 import type csstype from 'csstype';
 
-import type { SurimiBase } from '@surimi/common';
+import type { SurimiBase } from '#base';
 
 import type { ExcludeByPattern, IncludeByPattern } from './util.types';
 

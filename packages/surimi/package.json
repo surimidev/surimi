@@ -13,11 +13,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*.js",
-      "./src/*.ts",
-      "./src/*.tsx"
-    ]
+    "#*": "./src/*"
   },
   "exports": {
     ".": {
@@ -40,7 +36,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@surimi/common": "workspace:*",
     "@surimi/core": "workspace:*",
     "@surimi/parsers": "workspace:*",
     "postcss": "catalog:prod"
@@ -48,7 +43,6 @@
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
-    "rolldown": "catalog:build",
     "tsdown": "catalog:build",
     "typescript": "catalog:build"
   }

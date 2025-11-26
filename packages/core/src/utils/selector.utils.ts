@@ -1,4 +1,4 @@
-import type { ArrayWithAtLeastOneItem, JoinSelectors } from '@surimi/common';
+import type { ArrayWithAtLeastOneItem, JoinSelectors } from '#types';
 
 export function joinSelectors<TSelectors extends ArrayWithAtLeastOneItem<string>>(
   selectors: TSelectors,

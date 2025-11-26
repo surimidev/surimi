@@ -1,8 +1,7 @@
-import type { CssProperties } from '@surimi/common';
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '#builders/core.builder';
-import { StyleBuilder } from '#builders/style.builder';
+import { CoreBuilder, StyleBuilder } from '#builders';
+import type { CssProperties } from '#types';
 import { createDeclarationsFromProperties } from '#utils/postcss.utils';
 
 /**

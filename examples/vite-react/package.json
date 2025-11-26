@@ -4,12 +4,7 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*",
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts"
-    ]
+    "#*": "./src/*"
   },
   "scripts": {
     "build": "vite build",

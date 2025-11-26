@@ -1,8 +1,7 @@
-import type { ValidSelector } from '@surimi/common';
 import { tokenizeSelector, type Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder } from '#builders/core.builder';
-import { SelectorBuilder } from '#builders/selector.builder';
+import { CoreBuilder, SelectorBuilder } from '#builders';
+import type { ValidSelector } from '#types';
 
 /**
  * Mixin mainly for selecting things in a nested way within an existing selector context

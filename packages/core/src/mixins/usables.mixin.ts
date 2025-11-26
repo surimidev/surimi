@@ -1,5 +1,4 @@
-import { MixinBuilder } from '#builders/mixin.builder';
-import { StyleBuilder } from '#builders/style.builder';
+import { MixinBuilder, StyleBuilder } from '#builders';
 import { createSelectorBuilderFromContext } from '#helpers/select.helper';
 import { WithStyling } from '#mixins/index';
 
