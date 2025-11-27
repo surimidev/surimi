@@ -7,6 +7,10 @@ export default defineConfig({
     ignorePackageNames: ['@surimi/docs'],
   },
 
+  publish: {
+    access: 'public',
+  },
+
   types: {
     feat: { title: '🚀 Enhancements', semver: 'minor' },
     perf: { title: '🔥 Performance', semver: 'patch' },
