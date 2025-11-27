@@ -6,6 +6,8 @@ import type { CompileOptions, CompileResult } from '.';
 export const SURIMI_CSS_EXPORT_NAME = '__SURIMI_GENERATED_CSS__';
 export const COMPILER_PLUGIN_NAME = 'surimi:compiler-transform';
 
+const DEV_SURIMI_PACKAGES = ['/packages/surimi', '/packages/common', '/packages/parsers', '/packages/core'];
+
 interface SurimiModule extends Record<string, unknown> {
   default?: unknown;
   [SURIMI_CSS_EXPORT_NAME]?: unknown;
@@ -192,5 +194,5 @@ function getModuleDependencies(imports: string[], dynamicImports: string[], modu
 // Checks if a module ID is from the development surimi or parsers packages
 // Development files are not tracked in watch mode as they're part of the library itself
 function isDevelopmentSurimiFile(id: string): boolean {
-  return id.includes('/packages');
+  return DEV_SURIMI_PACKAGES.some(pkgPath => id.includes(pkgPath));
 }
