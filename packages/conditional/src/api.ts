@@ -2,7 +2,7 @@ import type * as postcss from 'postcss';
 
 import type { CssProperties, ValidSelector } from '@surimi/common';
 import { CoreBuilder, createDeclarationsFromProperties, StyleBuilder, type SelectorBuilder } from '@surimi/core';
-import type { Token, Tokenize } from '@surimi/parsers';
+import type { Tokenize } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
 /**
@@ -45,6 +45,11 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
     selector: TSelector | SelectorBuilder<TSelector>,
   ): ConditionalSelectorBuilder<`:where(html):has(${TCondition}) ${TSelector}`> {
     const selectorString = typeof selector === 'string' ? selector : selector.build();
+    
+    if (!selectorString || selectorString.trim() === '') {
+      throw new Error('Target selector cannot be empty');
+    }
+    
     const conditionString = this.build();
 
     const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as const;
@@ -168,12 +173,19 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
 
   /**
    * Start a new OR group.
+   * Creates a new builder with cloned state to ensure independence.
    * @internal Called by ChainableConditionalBuilder.or
    */
-  public startOrGroup(): this {
-    this.currentGroupIndex++;
-    this.conditionGroups[this.currentGroupIndex] = { conditions: [] };
-    return this;
+  public startOrGroup(): ConditionalBuilder<TSelector> {
+    // Clone the current state
+    const { groups, index } = this.cloneConditionState();
+    
+    // Start new OR group
+    const newIndex = index + 1;
+    groups[newIndex] = { conditions: [] };
+    
+    // Create a new builder with the updated state
+    return this.cloneWithState(groups, newIndex);
   }
 
   /**
@@ -199,28 +211,6 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
         return `${baseSelector}${conditionStr}`;
       })
       .join(', ');
-  }
-
-  /**
-   * Legacy method - creates pseudo-class immediately for backward compatibility.
-   * Used by direct method calls without chaining.
-   */
-  protected createPseudoClass<TPseudoClass extends string>(
-    pseudoClass: TPseudoClass,
-  ): ConditionalSelectorBuilder<`${TSelector}:${TPseudoClass}`> {
-    const newToken = {
-      type: 'pseudo-class',
-      name: pseudoClass,
-      content: `:${pseudoClass}`,
-    } satisfies Token;
-
-    const newContext = [...this._context, newToken] as unknown as Tokenize<`${TSelector}:${TPseudoClass}`>;
-
-    return new ConditionalSelectorBuilder<`${TSelector}:${TPseudoClass}`>(
-      newContext,
-      this._postcssContainer,
-      this._postcssRoot,
-    );
   }
 
   // Common pseudo-class methods - named to read like conditions
@@ -286,11 +276,11 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
    *
    * @example
    * when('.button').not.active().select('.container').style({ opacity: '1' })
-   * // Generates: :where(.container):has(.button:not(:active))
+   * // Generates: :where(html):has(.button:not(:active)) .container
    *
    * @example
    * when('.item').is.not.firstChild().select('.list').style({ marginTop: '1rem' })
-   * // Generates: :where(.list):has(.item:not(:first-child))
+   * // Generates: :where(html):has(.item:not(:first-child)) .list
    */
   public get not(): NegatedConditionalBuilder<TSelector> {
     return new NegatedConditionalBuilder<TSelector>(this._context, this._postcssContainer, this._postcssRoot, this);
@@ -310,7 +300,7 @@ export class ChainableConditionalBuilder<TSelector extends string> {
    *
    * @example
    * when('.button').hovered().and.focused().select('.container')
-   * // Generates: :where(.container):has(.button:hover:focus)
+   * // Generates: :where(html):has(.button:hover:focus) .container
    */
   public get and(): ConditionalBuilder<TSelector> {
     return this.builder;
@@ -322,11 +312,10 @@ export class ChainableConditionalBuilder<TSelector extends string> {
    *
    * @example
    * when('.button').hovered().or.focused().select('.container')
-   * // Generates: :where(.container):has(.button:hover, .button:focus)
+   * // Generates: :where(html):has(.button:hover, .button:focus) .container
    */
   public get or(): ConditionalBuilder<TSelector> {
-    this.builder.startOrGroup();
-    return this.builder;
+    return this.builder.startOrGroup();
   }
 
   /**
@@ -334,7 +323,7 @@ export class ChainableConditionalBuilder<TSelector extends string> {
    *
    * @example
    * when('.button').hovered().and.not.disabled().select('.container')
-   * // Generates: :where(.container):has(.button:hover:not(:disabled))
+   * // Generates: :where(html):has(.button:hover:not(:disabled)) .container
    */
   public get not(): NegatedConditionalBuilder<TSelector> {
     return new NegatedConditionalBuilder<TSelector>(
@@ -357,11 +346,16 @@ export class ChainableConditionalBuilder<TSelector extends string> {
     selector: TTargetSelector | SelectorBuilder<TTargetSelector>,
   ): ConditionalSelectorBuilder<`:where(html):has(${string}) ${TTargetSelector}`> {
     const selectorString = typeof selector === 'string' ? selector : selector.build();
+    
+    if (!selectorString || selectorString.trim() === '') {
+      throw new Error('Target selector cannot be empty');
+    }
+    
     const conditionString = this.builder.buildConditionString();
 
     // Use html as the container and target selector as a descendant
-    const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as const;
-    const newContext = tokenize(newSelector) as unknown as Tokenize<`:where(html):has(${string}) ${TTargetSelector}`>;
+    const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as `:where(html):has(${string}) ${TTargetSelector}`;
+    const newContext = tokenize(newSelector);
 
     return new ConditionalSelectorBuilder(
       newContext,

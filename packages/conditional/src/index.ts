@@ -14,28 +14,38 @@ import { ConditionalBuilder } from '#api';
  * @example
  * // Style .container when .button is hovered
  * when('.button').hovered().select('.container').style({ color: 'red' })
- * // Generates: :where(.container):has(.button:hover) { color: red }
+ * // Generates: :where(html):has(.button:hover) .container { color: red }
  *
  * @example
- * // Style html when .container is focused
- * when('.container').focused().select('html').style({ backgroundColor: 'blue' })
- * // Generates: :where(html):has(.container:focus) { background-color: blue }
+ * // Style body when .container is focused
+ * when('.container').focused().select('body').style({ backgroundColor: 'blue' })
+ * // Generates: :where(html):has(.container:focus) body { background-color: blue }
  *
  * @example
  * // Using with existing SelectorBuilder
  * const button = select('.button');
  * when(button).checked().select('.icon').style({ display: 'block' })
- * // Generates: :where(.icon):has(.button:checked) { display: block }
+ * // Generates: :where(html):has(.button:checked) .icon { display: block }
  */
 export function when<TSelector extends ValidSelector>(
   selector: TSelector | SelectorBuilder<TSelector>,
 ): ConditionalBuilder<TSelector> {
   if (typeof selector === 'string') {
+    // Validate selector string
+    if (!selector || selector.trim() === '') {
+      throw new Error('Selector cannot be empty');
+    }
+    
     const context = tokenize(selector) as Tokenize<TSelector>;
     return new ConditionalBuilder<TSelector>(context, SurimiContext.root, SurimiContext.root);
   } else {
     // Access the protected _context property through build() and re-tokenize
     const selectorString = selector.build();
+    
+    if (!selectorString || selectorString.trim() === '') {
+      throw new Error('SelectorBuilder must produce a valid selector string');
+    }
+    
     const context = tokenize(selectorString) as Tokenize<TSelector>;
     return new ConditionalBuilder<TSelector>(context, SurimiContext.root, SurimiContext.root);
   }

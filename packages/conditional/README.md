@@ -13,13 +13,25 @@ pnpm add @surimi/conditional
 ```typescript
 import { when } from '@surimi/conditional';
 
-// Style a container when a button inside is hovered
+// Style a container when a button is hovered
 when('.button').hovered().select('.container').style({
   backgroundColor: 'blue',
 });
 
-// Generates: :where(.container):has(.button:hover) { background-color: blue; }
+// Generates: :where(html):has(.button:hover) .container { background-color: blue; }
 ```
+
+## How It Works
+
+Easy:
+
+```typescript
+when('.button').hovered().select('.container')
+// ↓ Generates:
+:where(html):has(.button:hover) .container
+```
+
+Then, you can make it more complex with methods like `.and()`, `.or()`, sub-selects, nesting...
 
 ## Features
 
@@ -35,6 +47,7 @@ when('.element').active(); // :active
 when('.link').visited(); // :visited
 when('.form').valid(); // :valid
 when('.field').invalid(); // :invalid
+when('.element').hovered(); // :hover
 // ... and many more!
 ```
 
@@ -53,11 +66,11 @@ when('.checkbox').is.checked();
 Negate conditions using the `.not` property:
 
 ```typescript
-when('.button').not.disabled();
-// :where(selector):has(.button:not(:disabled))
+when('.button').not.disabled().select('.form').style({ opacity: '1' });
+// :where(html):has(.button:not(:disabled)) .form
 
-when('.input').is.not.focused();
-// :where(selector):has(.input:not(:focus))
+when('.input').is.not.focused().select('.label').style({ color: 'gray' });
+// :where(html):has(.input:not(:focus)) .label
 ```
 
 ### Combining Conditions with `.and`
@@ -68,15 +81,15 @@ Chain multiple conditions together with AND logic (all conditions must be met):
 when('.button').hovered().and.focused().select('.container').style({
   borderColor: 'blue',
 });
-// :where(.container):has(.button:hover:focus)
+// :where(html):has(.button:hover:focus) .container
 
 when('.input').focused().and.valid().and.not.disabled().select('.form').style({
   borderColor: 'green',
 });
-// :where(.form):has(.input:focus:valid:not(:disabled))
+// :where(html):has(.input:focus:valid:not(:disabled)) .form
 ```
 
-The `.and` property returns the builder, allowing you to continue chaining conditions. All chained conditions are concatenated in the final selector.
+The `.and` property allows chaining. All conditions are concatenated in the final selector.
 
 ### Alternative Conditions with `.or`
 
@@ -86,15 +99,15 @@ Create alternatives using OR logic (any condition can be met):
 when('.button').hovered().or.focused().select('.container').style({
   backgroundColor: 'lightblue',
 });
-// :where(.container):has(.button:hover, .button:focus)
+// :where(html):has(.button:hover, .button:focus) .container
 
 when('.element').active().or.focused().or.hovered().select('.parent').style({
   opacity: '1',
 });
-// :where(.parent):has(.element:active, .element:focus, .element:hover)
+// :where(html):has(.element:active, .element:focus, .element:hover) .parent
 ```
 
-The `.or` property starts a new condition group. Groups are separated by commas in the final CSS, creating OR logic.
+The `.or` property starts a new condition group. Groups are separated by commas (CSS OR logic).
 
 ### Complex Combinations
 
@@ -104,7 +117,7 @@ Mix `.and` and `.or` to create sophisticated conditional logic:
 // Style form when input is (focused AND valid) OR (hovered AND enabled)
 when('.input').focused().and.valid().or.hovered().and.not.disabled().select('.form').style({ borderColor: 'green' });
 
-// Generates: :where(.form):has(.input:focus:valid, .input:hover:not(:disabled))
+// Generates: :where(html):has(.input:focus:valid, .input:hover:not(:disabled)) .form
 ```
 
 ## Real-World Examples
@@ -113,10 +126,14 @@ when('.input').focused().and.valid().or.hovered().and.not.disabled().select('.fo
 
 ```typescript
 // Green border when input is focused and valid
-when('.input').focused().and.valid().select('.form-group').style({ borderColor: 'green' });
+when('.input').focused().and.valid().select('.form-group').style({
+  borderColor: 'green',
+});
 
 // Red border when input is focused and invalid
-when('.input').focused().and.invalid().select('.form-group').style({ borderColor: 'red' });
+when('.input').focused().and.invalid().select('.form-group').style({
+  borderColor: 'red',
+});
 ```
 
 ### Interactive Card
@@ -132,43 +149,78 @@ when('.card-button').hovered().or.focused().select('.card').style({
 ### Accessible Toggle State
 
 ```typescript
-// Style label differently based on checkbox state
+// Style label when checkbox is checked and enabled
 when('.toggle-checkbox').checked().and.not.disabled().select('.toggle-label').style({
   backgroundColor: 'green',
   color: 'white',
 });
 
+// Style label when checkbox is unchecked and enabled
 when('.toggle-checkbox').not.checked().and.not.disabled().select('.toggle-label').style({
   backgroundColor: 'gray',
   color: 'black',
 });
 ```
 
+### Cross-Component Styling
+
+```typescript
+// Dim main content when sidebar menu is open
+when('.sidebar-toggle').checked().select('.main-content').style({
+  opacity: '0.5',
+  pointerEvents: 'none',
+});
+
+// This works even though .sidebar-toggle and .main-content
+// might be in completely different parts of your DOM tree!
+```
+
 ## API Reference
 
 ### Core Methods
 
-- `when(selector: string)` - Start a conditional selector chain
-- `.select(selector: string)` - Choose the element to style when condition is met
-- `.style(properties: CssProperties)` - Apply CSS styles
+- `when(selector: string | SelectorBuilder)` - Start a conditional selector chain
+- `.select(selector: string | SelectorBuilder)` - Choose the element to style when condition is met
+- `.style(properties: CssProperties | StyleBuilder)` - Apply CSS styles
 
 ### Pseudo-Class Methods
 
 All methods return a chainable builder:
 
+**Interaction States:**
+
 - `hovered()`, `focused()`, `active()`, `visited()`
-- `checked()`, `disabled()`, `enabled()`
 - `focusedWithin()`, `focusedVisible()`
+
+**Form States:**
+
+- `checked()`, `disabled()`, `enabled()`
 - `valid()`, `invalid()`
 - `required()`, `optional()`
 - `readOnly()`, `readWrite()`
 - `placeholderShown()`
 - `defaulted()`, `indeterminate()`
 - `blank()`, `empty()`
-- `targeted()`
+
+**Structural:**
+
 - `firstChild()`, `lastChild()`, `onlyChild()`
 - `firstOfType()`, `lastOfType()`, `onlyOfType()`
-- `nthChild(n)`, `nthLastChild(n)`, `nthOfType(n)`, `nthLastOfType(n)`
+- `nthChild(n)`, `nthLastChild(n)`
+- `nthOfType(n)`, `nthLastOfType(n)`
+
+**Other:**
+
+- `targeted()`
+
+**Selector Functions:**
+
+- `excluding(selector)` - Equivalent to `:not(selector)`
+- `matches(selector)` - Equivalent to `:is(selector)`
+- `where(selector)` - Equivalent to `:where(selector)`
+- `contains(selector)` - Equivalent to `:has(selector)`
+- `inLanguage(lang)` - Equivalent to `:lang(lang)`
+- `inDirection(dir)` - Equivalent to `:dir(ltr|rtl)`
 
 ### Chainable Properties
 
@@ -177,30 +229,33 @@ All methods return a chainable builder:
 - `.and` - Continues adding conditions to current group (AND logic)
 - `.or` - Starts a new condition group (OR logic)
 
-## How It Works
+## Architecture Details
 
-The conditional builder uses the CSS `:has()` pseudo-class combined with `:where()` for specificity control:
+### Why `:where()`?
 
-```typescript
-when('.button').hovered().select('.container')
-// ↓
-:where(.container):has(.button:hover)
+The `:where()` pseudo-class has **zero specificity**, preventing specificity conflicts:
+
+```css
+/* Traditional approach - high specificity */
+.container:has(.button:hover) {
+} /* specificity: (0, 2, 0) */
+
+/* Our approach - zero specificity */
+:where(html):has(.button:hover) .container {
+} /* specificity: (0, 1, 0) */
 ```
 
-- **`:where()`** - Keeps specificity at zero, preventing specificity conflicts
-- **`:has()`** - Selects elements that contain matching descendants
-- **`.and`** - Concatenates pseudo-classes: `.button:hover:focus`
-- **`.or`** - Creates comma-separated groups: `.button:hover, .button:focus`
+This makes conditional styles easier to override when needed.
 
 ## Browser Support
 
 This package relies on the `:has()` selector, which is supported in:
 
-- Chrome/Edge 105+
-- Safari 15.4+
-- Firefox 121+
+- Chrome/Edge 105+ (August 2022)
+- Safari 15.4+ (March 2022)
+- Firefox 121+ (December 2023)
 
-For older browsers, the styles simply won't apply (graceful degradation).
+**Coverage:** ~90% of global users (as of 2024)
 
 ## License
 
