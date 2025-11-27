@@ -1,6 +1,6 @@
 import { MixinBuilder, StyleBuilder } from '#builders';
+import { WithStyling } from '#builders/mixins';
 import { createSelectorBuilderFromContext } from '#helpers/select.helper';
-import { WithStyling } from '#mixins/index';
 
 /**
  * Mixin class for builders that support applying reusable styles and mixins.

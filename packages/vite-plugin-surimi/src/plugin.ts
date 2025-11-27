@@ -268,7 +268,6 @@ if (import.meta.hot) {
             },
           };
         } catch (error) {
-          console.log(error);
           const message = error instanceof Error ? error.message : String(error);
           this.error(`Failed to compile Surimi file ${id}: ${message}`);
         }
