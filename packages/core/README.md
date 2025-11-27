@@ -93,7 +93,7 @@ We made sure surimi helps you to write good, maintainable CSS. So, we want it to
 ## Yet another CSS-in-JS tool...
 
 I hear you! I was skeptical if I should build this as well, but I want to make an important distinction:
-Surimi is a `TS-in-CSS` tool! You should never put surimi code in your components/business logic. We embrace seperating consirns here.
+Surimi is a `TS-in-CSS` tool! You should never put surimi code in your components/business logic. We embrace seperating concerns here.
 But surimi also allows you to have a clear interface between CSS and TS. For example, you can define your theme once and use it in both places.
 
 But most importantly, surimi is not just a wrapper around an object like `{color: "red"}`. It actually _understands_ CSS and helps you write it!
