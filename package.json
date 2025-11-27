@@ -1,5 +1,6 @@
 {
   "name": "@surimi/repo-starter",
+  "private": true,
   "description": "A starter template for pnpm-based web repositories",
   "keywords": [
     "janis.me"
