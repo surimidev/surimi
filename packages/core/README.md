@@ -20,7 +20,7 @@
 
 # 🍣 `surimi` - the next generation of writing CSS
 
-The zero-runtime, zero learning curve, type-save CSS. Use typescript to elevate your CSS game.
+The zero-runtime, zero learning curve, type-safe CSS. Use typescript to elevate your CSS game.
 
 - 🔒 Bulletproof compile-time checks! No more typos or wrong variable names.
 - 🚀 No runtime! All code you write is compiled to pure CSS.
