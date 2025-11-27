@@ -1,6 +1,6 @@
 import postcss from 'postcss';
 
-import { SurimiBase } from '#base';
+import { SurimiBase } from '@surimi/common';
 
 export class CustomPropertyBuilder<TValue> extends SurimiBase {
   public readonly name: string;

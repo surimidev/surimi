@@ -2,7 +2,7 @@ import postcss from 'postcss';
 
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
-import type { CssProperties } from '#types';
+import type { CssProperties } from '@surimi/common';
 import { createDeclarationsFromProperties } from '#utils/postcss.utils';
 
 import { CoreBuilder } from './core.builder';

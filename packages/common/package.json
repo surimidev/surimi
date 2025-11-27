@@ -1,5 +1,5 @@
 {
-  "name": "@surimi/core",
+  "name": "@surimi/common",
   "version": "0.1.0",
   "private": false,
   "author": "Janis jansen <oss@janis.me>",
@@ -26,11 +26,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@surimi/common": "workspace:*",
-    "@surimi/parsers": "workspace:*",
     "csstype": "catalog:prod",
-    "postcss": "catalog:prod",
-    "ts-mixer": "^6.0.4"
+    "postcss": "catalog:prod"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

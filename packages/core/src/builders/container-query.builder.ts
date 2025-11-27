@@ -6,7 +6,7 @@ import type {
   ContainerOperator,
   ContainerRangeOperator,
   KebabCaseToCamelCase,
-} from '#types';
+} from '@surimi/common';
 
 import { AtRuleBuilder } from './at-rule.builder';
 

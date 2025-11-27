@@ -1,7 +1,7 @@
 import type { Tokenize } from '@surimi/parsers';
 
 import { CoreBuilder, SelectorBuilder } from '#builders';
-import type { BasePseudoClasses, KebabCaseToCamelCase, StripColons } from '#types';
+import type { BasePseudoClasses, KebabCaseToCamelCase, StripColons } from '@surimi/common';
 
 type WithPseudoClassMethods<_TContext extends string> = {
   // Should be typed as `a function taking none or some arguments and returning some SelectorBuilder`?

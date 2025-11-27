@@ -4,7 +4,7 @@ import type { Stringify, Token } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
 import { SelectorBuilder } from '#builders/selector.builder';
-import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '#types';
+import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '@surimi/common';
 import { joinSelectors } from '#utils/selector.utils';
 
 /**

@@ -2,8 +2,8 @@ import postcss from 'postcss';
 
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
-import { SurimiBase } from '#base';
-import type { FontFaceProperties } from '#types';
+import { SurimiBase } from '@surimi/common';
+import type { FontFaceProperties } from '@surimi/common';
 import { createDeclarationsFromProperties } from '#utils/postcss.utils';
 
 import { CoreBuilder } from './core.builder';

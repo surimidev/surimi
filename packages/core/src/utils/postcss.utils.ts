@@ -6,7 +6,7 @@
 import postcss from 'postcss';
 
 import { CustomPropertyBuilder } from '#builders/custom-property.builder';
-import type { CamelCaseToKebabCase, CssProperties } from '#types';
+import type { CamelCaseToKebabCase, CssProperties } from '@surimi/common';
 
 /**
  * Formats a camelCase property name to kebab-case for CSS

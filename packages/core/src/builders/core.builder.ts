@@ -1,8 +1,7 @@
 import postcss from 'postcss';
 
+import { SurimiBase } from '@surimi/common';
 import { stringify, type Token } from '@surimi/parsers';
-
-import { SurimiBase } from '#base';
 
 /**
  * Core builder class that provides access to the PostCSS root and builder context.

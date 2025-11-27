@@ -8,7 +8,7 @@ import type {
   MediaOperator,
   MediaRangeOperator,
   MediaType,
-} from '#types';
+} from '@surimi/common';
 
 import { AtRuleBuilder } from './at-rule.builder';
 

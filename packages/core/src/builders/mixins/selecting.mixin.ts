@@ -2,7 +2,7 @@ import type { Token, Tokenize } from '@surimi/parsers';
 
 import { CoreBuilder, SelectorBuilder } from '#builders';
 import { createSelectorBuilderFromContext, createSelectorBuilderFromString } from '#helpers/select.helper';
-import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '#types';
+import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '@surimi/common';
 
 /**
  * Mixin mainly for selecting things in a nested way within an existing selector context
