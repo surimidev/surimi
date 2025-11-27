@@ -221,6 +221,24 @@ importers:
         specifier: workspace:*
         version: link:../../packages/surimi
 
+  examples/vite-conditional-simple:
+    devDependencies:
+      '@surimi/linter-config':
+        specifier: workspace:*
+        version: link:../../config/linter-config
+      '@surimi/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      surimi:
+        specifier: workspace:*
+        version: link:../../packages/surimi
+      vite:
+        specifier: ^7.2.4
+        version: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.1)
+      vite-plugin-surimi:
+        specifier: workspace:*
+        version: link:../../packages/vite-plugin-surimi
+
   examples/vite-react:
     dependencies:
       clsx:
@@ -325,6 +343,31 @@ importers:
       '@types/node':
         specifier: catalog:types
         version: 24.10.1
+      tsdown:
+        specifier: catalog:build
+        version: 0.15.12(typescript@5.9.3)(unrun@0.2.1)
+      typescript:
+        specifier: catalog:build
+        version: 5.9.3
+
+  packages/conditional:
+    dependencies:
+      '@surimi/common':
+        specifier: workspace:*
+        version: link:../common
+      '@surimi/core':
+        specifier: workspace:*
+        version: link:../core
+      '@surimi/parsers':
+        specifier: workspace:*
+        version: link:../parsers
+    devDependencies:
+      '@surimi/linter-config':
+        specifier: workspace:*
+        version: link:../../config/linter-config
+      '@surimi/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
       tsdown:
         specifier: catalog:build
         version: 0.15.12(typescript@5.9.3)(unrun@0.2.1)
@@ -486,6 +529,12 @@ importers:
 
   packages/surimi:
     dependencies:
+      '@surimi/common':
+        specifier: workspace:*
+        version: link:../common
+      '@surimi/conditional':
+        specifier: workspace:*
+        version: link:../conditional
       '@surimi/core':
         specifier: workspace:*
         version: link:../core

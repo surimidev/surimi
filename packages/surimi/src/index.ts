@@ -1,4 +1,4 @@
-import { SurimiContext } from '#context';
+import { SurimiContext } from '@surimi/common';
 
 export * from './api';
 

@@ -12,6 +12,12 @@ export default defineConfig({
       },
       {
         test: {
+          name: 'conditional',
+          include: ['./packages/conditional/test/**/*.spec.ts'],
+        },
+      },
+      {
+        test: {
           name: 'surimi',
           include: ['./packages/surimi/test/**/*.spec.ts'],
         },

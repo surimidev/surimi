@@ -1,10 +1,5 @@
-import type {
-  ArrayWithAtLeastOneItem,
-  CssProperties,
-  FontFaceProperties,
-  KeyframeStepConfig,
-  ValidSelector,
-} from '@surimi/core';
+import { SurimiContext } from '@surimi/common';
+import type { ArrayWithAtLeastOneItem, CssProperties, FontFaceProperties, ValidSelector } from '@surimi/common';
 import {
   ContainerQueryBuilder,
   createSelectorBuilderFromString,
@@ -12,13 +7,12 @@ import {
   FontFaceBuilder,
   joinSelectors,
   KeyframesBuilder,
+  KeyframeStepConfig,
   MediaQueryBuilder,
   MixinBuilder,
   StyleBuilder,
 } from '@surimi/core';
 import { tokenize } from '@surimi/parsers';
-
-import { SurimiContext } from '#context';
 
 /**
  * The main way to select things in Surimi.
