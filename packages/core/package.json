@@ -1,6 +1,6 @@
 {
   "name": "@surimi/core",
-  "version": "0.1.0",
+  "version": "0.7.0",
   "private": false,
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
