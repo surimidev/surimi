@@ -1,5 +1,5 @@
 {
-  "name": "surimi",
+  "name": "@surimi/root",
   "version": "0.6.0",
   "private": true,
   "description": "A starter template for pnpm-based web repositories",
