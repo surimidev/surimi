@@ -4,13 +4,13 @@ const INDEX_TS = `\
 // If you have any issues, questions or feedback, visit the docs at https://surimi.dev/docs
 // or open an issue on GitHub at https://github.com/surimidev/surimi
 
-import { color, mixin, select } from 'surimi';
+import { select, mixin, property } from 'surimi';
 
 const theme = {
-  primary: color('primary', '#3498db'),
-  primaryHover: color('primaryHover', '#2980b9'),
-  background: color('background', '#f5f5f5'),
-  text: color('text', '#333'),
+  primary: property('primary', '#3498db', '<color>'),
+  primaryHover: property('primaryHover', '#2980b9', '<color>'),
+  background: property('background', '#f5f5f5', '<color>'),
+  text: property('text', '#333', '<color>'),
 } as const;
 
 const hoverable = mixin(':hover').style({
