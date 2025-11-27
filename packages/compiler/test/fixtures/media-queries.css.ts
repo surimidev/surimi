@@ -1,5 +1,5 @@
 // Test fixture with media queries
-import { select, media } from 'surimi';
+import { media, select } from 'surimi';
 
 select('.responsive-grid').style({
   display: 'grid',

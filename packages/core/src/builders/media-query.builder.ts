@@ -1,6 +1,3 @@
-import type { TokenizeAtRule } from '@surimi/parsers';
-import { stringifyAtRule, tokenizeAtRule } from '@surimi/parsers';
-
 import type {
   BaseRangedMediaDescriptor,
   DiscreteMediaDescriptor,
@@ -9,6 +6,8 @@ import type {
   MediaRangeOperator,
   MediaType,
 } from '@surimi/common';
+import type { TokenizeAtRule } from '@surimi/parsers';
+import { stringifyAtRule, tokenizeAtRule } from '@surimi/parsers';
 
 import { AtRuleBuilder } from './at-rule.builder';
 

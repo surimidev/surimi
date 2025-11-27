@@ -12,7 +12,7 @@ import {
   WithUsables,
 } from './mixins';
 
-export abstract class SelectorBuilderImp<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {}
+export abstract class SelectorBuilderImpl<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {}
 
 export interface SelectorBuilder<T extends string>
   extends WithNavigation<T>,
@@ -38,4 +38,4 @@ export interface SelectorBuilder<T extends string>
   WithSelectorOperations,
   WithUsables,
 )
-export class SelectorBuilder<T extends string> extends SelectorBuilderImp<T> {}
+export class SelectorBuilder<T extends string> extends SelectorBuilderImpl<T> {}

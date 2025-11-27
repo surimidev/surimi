@@ -6,7 +6,13 @@ import type { CompileOptions, CompileResult } from '.';
 export const SURIMI_CSS_EXPORT_NAME = '__SURIMI_GENERATED_CSS__';
 export const COMPILER_PLUGIN_NAME = 'surimi:compiler-transform';
 
-const DEV_SURIMI_PACKAGES = ['/packages/surimi', '/packages/common', '/packages/parsers', '/packages/core', '/packages/conditional'];
+const DEV_SURIMI_PACKAGES = [
+  '/packages/surimi',
+  '/packages/common',
+  '/packages/parsers',
+  '/packages/core',
+  '/packages/conditional',
+];
 
 interface SurimiModule extends Record<string, unknown> {
   default?: unknown;

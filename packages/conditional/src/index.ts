@@ -35,17 +35,17 @@ export function when<TSelector extends ValidSelector>(
     if (!selector || selector.trim() === '') {
       throw new Error('Selector cannot be empty');
     }
-    
+
     const context = tokenize(selector) as Tokenize<TSelector>;
     return new ConditionalBuilder<TSelector>(context, SurimiContext.root, SurimiContext.root);
   } else {
     // Access the protected _context property through build() and re-tokenize
     const selectorString = selector.build();
-    
+
     if (!selectorString || selectorString.trim() === '') {
       throw new Error('SelectorBuilder must produce a valid selector string');
     }
-    
+
     const context = tokenize(selectorString) as Tokenize<TSelector>;
     return new ConditionalBuilder<TSelector>(context, SurimiContext.root, SurimiContext.root);
   }

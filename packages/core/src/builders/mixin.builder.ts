@@ -1,6 +1,5 @@
-import type { Token, Tokenize } from '@surimi/parsers';
-
 import type { CssProperties } from '@surimi/common';
+import type { Token, Tokenize } from '@surimi/parsers';
 
 import { CoreBuilder } from './core.builder';
 

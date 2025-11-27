@@ -45,11 +45,11 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
     selector: TSelector | SelectorBuilder<TSelector>,
   ): ConditionalSelectorBuilder<`:where(html):has(${TCondition}) ${TSelector}`> {
     const selectorString = typeof selector === 'string' ? selector : selector.build();
-    
+
     if (!selectorString || selectorString.trim() === '') {
       throw new Error('Target selector cannot be empty');
     }
-    
+
     const conditionString = this.build();
 
     const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as const;
@@ -179,11 +179,11 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
   public startOrGroup(): ConditionalBuilder<TSelector> {
     // Clone the current state
     const { groups, index } = this.cloneConditionState();
-    
+
     // Start new OR group
     const newIndex = index + 1;
     groups[newIndex] = { conditions: [] };
-    
+
     // Create a new builder with the updated state
     return this.cloneWithState(groups, newIndex);
   }
@@ -346,15 +346,16 @@ export class ChainableConditionalBuilder<TSelector extends string> {
     selector: TTargetSelector | SelectorBuilder<TTargetSelector>,
   ): ConditionalSelectorBuilder<`:where(html):has(${string}) ${TTargetSelector}`> {
     const selectorString = typeof selector === 'string' ? selector : selector.build();
-    
+
     if (!selectorString || selectorString.trim() === '') {
       throw new Error('Target selector cannot be empty');
     }
-    
+
     const conditionString = this.builder.buildConditionString();
 
     // Use html as the container and target selector as a descendant
-    const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as `:where(html):has(${string}) ${TTargetSelector}`;
+    const newSelector =
+      `:where(html):has(${conditionString}) ${selectorString}` as `:where(html):has(${string}) ${TTargetSelector}`;
     const newContext = tokenize(newSelector);
 
     return new ConditionalSelectorBuilder(
