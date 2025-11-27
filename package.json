@@ -1,5 +1,6 @@
 {
-  "name": "@surimi/repo-starter",
+  "name": "surimi",
+  "version": "0.0.0",
   "private": true,
   "description": "A starter template for pnpm-based web repositories",
   "keywords": [
