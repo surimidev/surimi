@@ -1,18 +1,5 @@
-export { media, container, select, mixin, style, keyframes, fontFace } from '#lib/api/index';
-export {
-  property,
-  angle,
-  color,
-  image,
-  integer,
-  length,
-  number,
-  percentage,
-  resolution,
-  string,
-  time,
-  url,
-} from '#lib/api/custom-property';
-export { SurimiContext as Surimi } from './surimi';
+import { SurimiContext } from '@surimi/common';
 
-export type { CssProperties } from '#types/css.types';
+export * from './api';
+
+export { SurimiContext as Surimi };

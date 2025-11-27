@@ -5,7 +5,7 @@
  */
 
 // Placeholder - will be implemented similarly to selector tokenizer
-import type { Token } from '#types';
+import type { Token } from '#types/index';
 
 /**
  * Type-level CSS at-rule tokenizer.

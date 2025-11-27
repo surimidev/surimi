@@ -1,4 +1,4 @@
-import type { CombinatorToken, CommaToken, Token } from '#types';
+import type { CombinatorToken, CommaToken, Token } from '#types/index';
 
 /**
  * Helper to extract the trimmed content from a combinator string.

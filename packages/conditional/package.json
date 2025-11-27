@@ -1,0 +1,39 @@
+{
+  "name": "@surimi/conditional",
+  "version": "0.1.0",
+  "private": false,
+  "author": "Janis jansen <oss@janis.me>",
+  "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "format": "prettier . --write",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@surimi/common": "workspace:*",
+    "@surimi/core": "workspace:*",
+    "@surimi/parsers": "workspace:*"
+  },
+  "devDependencies": {
+    "@surimi/linter-config": "workspace:*",
+    "@surimi/typescript-config": "workspace:*",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build"
+  }
+}

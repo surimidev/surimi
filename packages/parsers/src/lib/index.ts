@@ -1,4 +1,4 @@
-import type { Stringify, Token, Tokenize } from '#types';
+import type { Stringify, Token, Tokenize } from '#types/index';
 
 import { stringifyAtRule } from './at-rules/stringify';
 import { tokenizeAtRule } from './at-rules/tokenize';

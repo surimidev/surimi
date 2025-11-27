@@ -13,18 +13,16 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts",
-      "./src/*.js",
-      "./src/*/index.js"
-    ]
+    "#*": "./src/*"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./conditional": {
+      "types": "./dist/conditional.d.ts",
+      "import": "./dist/conditional.js"
     }
   },
   "main": "dist/index.js",
@@ -42,15 +40,15 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@surimi/common": "workspace:*",
+    "@surimi/conditional": "workspace:*",
+    "@surimi/core": "workspace:*",
     "@surimi/parsers": "workspace:*",
-    "csstype": "catalog:prod",
-    "postcss": "catalog:prod",
-    "ts-mixer": "^6.0.4"
+    "postcss": "catalog:prod"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
-    "rolldown": "catalog:build",
     "tsdown": "catalog:build",
     "typescript": "catalog:build"
   }

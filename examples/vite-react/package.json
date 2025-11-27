@@ -4,12 +4,7 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": [
-      "./src/*",
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts"
-    ]
+    "#*": "./src/*"
   },
   "scripts": {
     "build": "vite build",
@@ -24,8 +19,8 @@
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "surimi": "workspace:*",
     "vite": "catalog:build",
     "vite-bundle-analyzer": "catalog:utils",
