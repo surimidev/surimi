@@ -111,8 +111,8 @@ catalogs:
       version: 24.10.1
   utils:
     relizy:
-      specifier: ^0.2.5
-      version: 0.2.5
+      specifier: ^0.2.6-beta.1
+      version: 0.2.6-beta.1
     vite-bundle-analyzer:
       specifier: ^1.2.3
       version: 1.2.3
@@ -166,7 +166,7 @@ importers:
         version: 2.5.19(prettier@3.6.2)
       relizy:
         specifier: catalog:utils
-        version: 0.2.5(@types/node@24.10.1)(magicast@0.5.1)
+        version: 0.2.6-beta.1(@types/node@24.10.1)(magicast@0.5.1)
       taze:
         specifier: catalog:script
         version: 19.9.0
@@ -411,39 +411,27 @@ importers:
 
   packages/docs:
     dependencies:
-      '@monaco-editor/react':
-        specifier: ^4.7.0
-        version: 4.7.0(monaco-editor@0.54.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@containerkit/core':
+        specifier: ^0.2.0
+        version: 0.2.0
+      '@containerkit/react':
+        specifier: ^0.3.0
+        version: 0.3.0
       '@surimi/compiler':
         specifier: workspace:*
         version: link:../compiler
-      '@webcontainer/api':
-        specifier: ^1.6.1
-        version: 1.6.1
-      '@xterm/addon-fit':
-        specifier: ^0.10.0
-        version: 0.10.0(@xterm/xterm@5.5.0)
-      '@xterm/addon-web-links':
-        specifier: ^0.11.0
-        version: 0.11.0(@xterm/xterm@5.5.0)
-      '@xterm/xterm':
-        specifier: ^5.5.0
-        version: 5.5.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      comlink:
-        specifier: ^4.4.2
-        version: 4.4.2
-      re-resizable:
-        specifier: ^6.11.2
-        version: 6.11.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
+      react-resizable-panels:
+        specifier: ^3.0.6
+        version: 3.0.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
       '@astrojs/mdx':
         specifier: ^4.3.12
@@ -732,6 +720,12 @@ packages:
 
   '@clack/prompts@0.11.0':
     resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
+
+  '@containerkit/core@0.2.0':
+    resolution: {integrity: sha512-vc+pzZ5+wKYpAZs9wrCqCmodu2jdhNd7rrjP45Xa4+GAo2bGTiJfHU0+HoKWa9pcErGsSttv7W6Fm17m6TBYtw==}
+
+  '@containerkit/react@0.3.0':
+    resolution: {integrity: sha512-2H5OlH0IjnMBOo9h951yoF7zTjyPhlGnI7OkqonSrSRnENRz/kBeDbSmVULC9vtLbL6kzSoc014PwjIimZojZA==}
 
   '@emnapi/core@1.7.1':
     resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
@@ -1297,13 +1291,6 @@ packages:
 
   '@monaco-editor/loader@1.7.0':
     resolution: {integrity: sha512-gIwR1HrJrrx+vfyOhYmCZ0/JcWqG5kbfG7+d3f/C1LXk2EvzAbHSg3MQ5lO2sMlo9izoAZ04shohfKLVT6crVA==}
-
-  '@monaco-editor/react@4.7.0':
-    resolution: {integrity: sha512-cyzXQCtO47ydzxpQtCGSQGOC8Gk3ZUeBXFAxD+CWXYFo5OqZyZUonFl0DwUlTyAfRHntBfw2p3w4s9R6oe1eCA==}
-    peerDependencies:
-      monaco-editor: '>= 0.25.0 < 1'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@napi-rs/wasm-runtime@1.0.7':
     resolution: {integrity: sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw==}
@@ -2188,9 +2175,6 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
-
-  comlink@4.4.2:
-    resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
@@ -3877,12 +3861,6 @@ packages:
   rc9@2.1.2:
     resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
 
-  re-resizable@6.11.2:
-    resolution: {integrity: sha512-2xI2P3OHs5qw7K0Ud1aLILK6MQxW50TcO+DetD9eIV58j84TqYeHoZcL9H4GXFXXIh7afhH8mv5iUCXII7OW7A==}
-    peerDependencies:
-      react: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   react-dom@19.2.0:
     resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
     peerDependencies:
@@ -3897,6 +3875,12 @@ packages:
   react-refresh@0.17.0:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
+
+  react-resizable-panels@3.0.6:
+    resolution: {integrity: sha512-b3qKHQ3MLqOgSS+FRYKapNkJZf5EQzuf6+RLiq1/IlTHw99YrZ2NJZLk4hQIzTnnIkRg2LUqyVinu6YWWpUYew==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   react@19.2.0:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
@@ -3952,8 +3936,8 @@ packages:
   rehype@13.0.2:
     resolution: {integrity: sha512-j31mdaRFrwFRUIlxGeuPXXKWQxet52RBQRvCmzl5eCefn/KGbomK5GMHNMsOJf55fgo3qw5tST5neDuarDYR2A==}
 
-  relizy@0.2.5:
-    resolution: {integrity: sha512-VeyIyw2D3KtA51xz25wGnDnSS0y+jJ+/bdyMLVakdf/8H74yhtWZgSGw3dMLrprUdJHHEy/lz2NQ/Us0KW3anQ==}
+  relizy@0.2.6-beta.1:
+    resolution: {integrity: sha512-8sswL/BNS4Yuxfkw5xeiG9x03p3zKEMNpalCCnybyoShcokqPY7KtztXGikCht8B+ipCS9WclCFJzTaRXGPoSA==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -5029,6 +5013,21 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
+  '@containerkit/core@0.2.0':
+    dependencies:
+      '@monaco-editor/loader': 1.7.0
+      '@webcontainer/api': 1.6.1
+      '@xterm/addon-fit': 0.10.0(@xterm/xterm@5.5.0)
+      '@xterm/addon-web-links': 0.11.0(@xterm/xterm@5.5.0)
+      '@xterm/xterm': 5.5.0
+      monaco-editor: 0.54.0
+
+  '@containerkit/react@0.3.0':
+    dependencies:
+      '@containerkit/core': 0.2.0
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+
   '@emnapi/core@1.7.1':
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
@@ -5493,13 +5492,6 @@ snapshots:
   '@monaco-editor/loader@1.7.0':
     dependencies:
       state-local: 1.0.7
-
-  '@monaco-editor/react@4.7.0(monaco-editor@0.54.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@monaco-editor/loader': 1.7.0
-      monaco-editor: 0.54.0
-      react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
 
   '@napi-rs/wasm-runtime@1.0.7':
     dependencies:
@@ -6475,8 +6467,6 @@ snapshots:
   colord@2.9.3: {}
 
   colorette@2.0.20: {}
-
-  comlink@4.4.2: {}
 
   comma-separated-tokens@2.0.3: {}
 
@@ -8611,11 +8601,6 @@ snapshots:
       defu: 6.1.4
       destr: 2.0.5
 
-  re-resizable@6.11.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
-    dependencies:
-      react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
-
   react-dom@19.2.0(react@19.2.0):
     dependencies:
       react: 19.2.0
@@ -8626,6 +8611,11 @@ snapshots:
   react-is@17.0.2: {}
 
   react-refresh@0.17.0: {}
+
+  react-resizable-panels@3.0.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   react@19.2.0: {}
 
@@ -8723,7 +8713,7 @@ snapshots:
       rehype-stringify: 10.0.1
       unified: 11.0.5
 
-  relizy@0.2.5(@types/node@24.10.1)(magicast@0.5.1):
+  relizy@0.2.6-beta.1(@types/node@24.10.1)(magicast@0.5.1):
     dependencies:
       '@inquirer/prompts': 8.0.1(@types/node@24.10.1)
       '@maz-ui/node': 4.3.2-beta.1

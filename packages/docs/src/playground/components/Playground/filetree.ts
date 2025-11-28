@@ -1,4 +1,4 @@
-import type { FileSystemTree } from '#playground/types';
+import type { FileSystemTree } from '@containerkit/react/webcontainer';
 
 const INDEX_TS = `\
 // If you have any issues, questions or feedback, visit the docs at https://surimi.dev/docs
