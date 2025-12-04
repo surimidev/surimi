@@ -1,43 +1,60 @@
 import type { RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
 import { watch } from 'rolldown';
 
+import { BuildCache } from '#cache';
 import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
+import { BuildError, ExecutionError } from '#errors';
+import type { CompilerError } from '#errors';
+import { ModuleBuildCache } from '#module-cache';
 
 export interface CompileOptions {
-  /** Absolute path to the input file to compile */
   inputPath: string;
-  /** Working directory for resolving modules */
   cwd: string;
-  /** Glob patterns for files to include in compilation */
   include: string[];
-  /** Glob patterns for files to exclude from compilation */
   exclude: string[];
+  cache?: CacheOptions;
+}
+
+export interface CacheOptions {
+  enabled?: boolean;
+  maxSize?: number;
+  /**
+   * Enable module-level caching for shared dependencies
+   * This caches transformed code for individual modules to avoid
+   * redundant SurimiContext.build() calls across different bundles
+   * @default true
+   */
+  moduleCache?: boolean;
+  /**
+   * Maximum number of modules to cache
+   * @default 500
+   */
+  moduleCacheSize?: number;
 }
 
 export interface WatchOptions {
-  /**
-   * Callback invoked when a file changes
-   * Receives the changed file ID, the type of event, and the latest compile result
-   * The compileResult can be undefined if the compilation failed, or if there is no output (file was deleted etc.)
-   */
-  onChange: (compileResult: CompileResult | undefined, event: RolldownWatcherEvent) => void;
+  onChange: (result: CompileResult, event: RolldownWatcherEvent) => void;
+  onError?: (error: CompilerError, event: RolldownWatcherEvent) => void;
 }
 
 export interface CompileResult {
-  /** The generated CSS output */
+  /* The generated CSS output */
   css: string;
-  /** The transformed JavaScript with preserved, JSON-serialized exports (Surimi runtime removed) */
+  /* The transformed JavaScript with preserved exports */
   js: string;
-  /** List of file dependencies. Can be used for HMR, watch mode etc. */
   dependencies: string[];
-  /** Duration of the compilation in milliseconds */
   duration: number;
+  errors?: CompilerError[];
 }
 
 export async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const startTime = Date.now();
-  const rolldownInput = getRolldownInput(options);
-  // Rolldown nicely provides an `asyncDispose` symbol.
+
+  // Initialize module cache if enabled
+  const moduleCacheEnabled = options.cache?.moduleCache !== false;
+  const moduleCache = moduleCacheEnabled ? new ModuleBuildCache(options.cache?.moduleCacheSize) : undefined;
+
+  const rolldownInput = getRolldownInput(options, moduleCache);
   await using rolldownCompiler = await getRolldownInstance(rolldownInput);
   const rolldownOutput = await rolldownCompiler.generate();
   const chunk = rolldownOutput.output[0];
@@ -49,14 +66,21 @@ export async function compile(options: CompileOptions): Promise<CompileResult | 
 }
 
 /**
- * Performs the compilation and sets up a file watcher to recompile on changes.
+ * Compiles and watches for file changes with incremental caching
  *
- * `watchOptions.onChange` is called whenever a file changes, with the new compilation result.
- *
- * @returns The Rolldown watcher instance for further handling.
+ * Caching is enabled by default and uses SHA-256 hashing to detect file changes.
+ * This trades initial compilation speed for significantly faster incremental builds.
+ * The cache validates both the main file and all dependencies on each rebuild.
  */
 export function compileWatch(options: CompileOptions, watchOptions: WatchOptions): RolldownWatcher {
-  const rolldownInput = getRolldownInput(options);
+  // Initialize module cache if enabled
+  const moduleCacheEnabled = options.cache?.moduleCache !== false;
+  const moduleCache = moduleCacheEnabled ? new ModuleBuildCache(options.cache?.moduleCacheSize) : undefined;
+
+  const rolldownInput = getRolldownInput(options, moduleCache);
+  const cacheEnabled = options.cache?.enabled !== false;
+  const buildCache = cacheEnabled ? new BuildCache(options.cache?.maxSize) : undefined;
+
   const watcher = watch({
     ...rolldownInput,
     watch: {
@@ -72,27 +96,59 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
       const output = await event.result.generate();
 
       if ('errors' in output) {
-        watchOptions.onChange(undefined, event);
+        watchOptions.onError?.(
+          new BuildError('Build failed with errors', options.inputPath),
+          event,
+        );
         return;
       }
 
       const chunk = output.chunks[0];
 
       if (!chunk) {
-        watchOptions.onChange(undefined, event);
+        watchOptions.onError?.(
+          new BuildError('No output chunk generated', options.inputPath),
+          event,
+        );
         return;
       }
 
-      const result = await getCompileResult(
-        chunk.getCode(),
-        chunk.getImports(),
-        chunk.getDynamicImports(),
-        chunk.getModuleIds(),
-      );
+      const code = chunk.getCode();
+      const moduleIds = chunk.getModuleIds();
+      const imports = chunk.getImports();
+      const dynamicImports = chunk.getDynamicImports();
+
+      if (buildCache) {
+        const cachedResult = await buildCache.get(options.inputPath);
+
+        if (cachedResult) {
+          const duration = Date.now() - startTime;
+
+          void event.result.close();
+
+          watchOptions.onChange(
+            {
+              ...cachedResult,
+              duration: duration + event.duration,
+            },
+            event,
+          );
+          return;
+        }
+      }
+
+      const result = await getCompileResult(code, imports, dynamicImports, moduleIds);
 
       if (!result) {
-        watchOptions.onChange(undefined, event);
+        watchOptions.onError?.(
+          new ExecutionError('Failed to execute compiled code', options.inputPath),
+          event,
+        );
         return;
+      }
+
+      if (buildCache) {
+        await buildCache.set(options.inputPath, result);
       }
 
       const duration = Date.now() - startTime;
