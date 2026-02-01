@@ -1,11 +1,12 @@
 {
-  "name": "vite-simple-example",
+  "name": "compiler-manual-caching-example",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "surimi compile ./src/index.ts --out-dir ./dist --no-js",
-    "build:watch": "pnpm build --watch"
+    "build": "surimi compile ./src/index.css.ts --out-dir ./dist",
+    "build:watch": "surimi compile ./src/index.css.ts --out-dir ./dist --watch",
+    "dev": "pnpm build:watch"
   },
   "devDependencies": {
     "@surimi/compiler": "workspace:*",

@@ -1,3 +1,3 @@
 import { baseConfig, defineConfig, globalIgnores } from '@surimi/linter-config';
 
-export default defineConfig(...baseConfig, globalIgnores(['**/.astro']));
+export default defineConfig(...baseConfig, globalIgnores(['**/.astro', '**/postcss.config.cjs']));

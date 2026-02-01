@@ -157,19 +157,17 @@ async function runWatchMode(
       onChange: result => {
         (async () => {
           try {
-            if (!result) {
-              s.message(`❌ Build failed - Watching...`);
-              return;
-            }
-
             await writeCompilationOutput(result, outputPaths, options);
-
             s.message(`✅ Compiled in ${result.duration}ms. Watching...`);
           } catch (error) {
             log.error(`${error instanceof Error ? error.message : String(error)}\n`);
             s.message(`❌ Error writing files - Watching...`);
           }
         })().catch(console.error);
+      },
+      onError: (error, _event) => {
+        log.error(`${error.message}\n`);
+        s.message(`❌ Build failed - Watching...`);
       },
     });
 

@@ -2,6 +2,7 @@ import type { InputOptions } from 'rolldown';
 import { rolldown } from 'rolldown';
 
 import type { CompileOptions, CompileResult } from '.';
+import type { ModuleBuildCache } from '#module-cache';
 
 export const SURIMI_CSS_EXPORT_NAME = '__SURIMI_GENERATED_CSS__';
 export const COMPILER_PLUGIN_NAME = 'surimi:compiler-transform';
@@ -19,7 +20,7 @@ interface SurimiModule extends Record<string, unknown> {
   [SURIMI_CSS_EXPORT_NAME]?: unknown;
 }
 
-export function getRolldownInput(options: CompileOptions) {
+export function getRolldownInput(options: CompileOptions, moduleCache?: ModuleBuildCache) {
   validateCompileOptions(options);
 
   const { inputPath, cwd, include, exclude } = options;
@@ -37,13 +38,28 @@ export function getRolldownInput(options: CompileOptions) {
               exclude,
             },
           },
-          handler(code) {
+          handler(code, id) {
+            // Check module cache if enabled
+            if (moduleCache) {
+              const cached = moduleCache.get(id, code);
+              if (cached) {
+                return cached;
+              }
+            }
+
+            // Transform the code
             const finalCode = `\
 import { Surimi as __surimi__instance__ } from 'surimi';
 __surimi__instance__.clear();
 ${code}
 export const ${SURIMI_CSS_EXPORT_NAME} = __surimi__instance__.build();
 `;
+
+            // Cache the transformed code
+            if (moduleCache) {
+              moduleCache.set(id, code, finalCode);
+            }
+
             return finalCode;
           },
         },
@@ -56,11 +72,6 @@ export async function getRolldownInstance(input: InputOptions) {
   return rolldown(input);
 }
 
-/**
- * Execute the compiled Surimi code and extract the CSS and preserved exports.
- *
- * Code, imports etc. are passed individually to support `BindingOutput` chunks from Rolldown watch mode
- */
 export async function getCompileResult(
   code: string,
   imports: string[],
@@ -68,8 +79,6 @@ export async function getCompileResult(
   moduleIds: string[],
 ): Promise<CompileResult | undefined> {
   const { css, js } = await execute(code);
-
-  // Extract all imported modules as watch files
   const watchFiles = getModuleDependencies(imports, dynamicImports, moduleIds);
 
   return {
@@ -80,10 +89,6 @@ export async function getCompileResult(
   };
 }
 
-/**
- * Executes the compiled Surimi code in a data URL module context
- * and extracts the generated CSS and preserved exports.
- */
 export async function execute(code: string) {
   try {
     const dataUrl = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`;
@@ -96,29 +101,11 @@ export async function execute(code: string) {
     // Collect all exports except the special CSS export and default
     const exports: string[] = [];
     for (const [key, value] of Object.entries(module)) {
-      if (key !== 'default' && key !== SURIMI_CSS_EXPORT_NAME) {
-        if (!isSerializable(value)) {
-          // Skip non-serializable values (functions, symbols, etc.)
-          continue;
-        }
-
-        if (typeof value === 'string') {
-          // Regular string export
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
-          // Primitive types
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else if (typeof value === 'object') {
-          // Other object exports (like theme objects, arrays)
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else {
-          // Fallback for other types (should not reach here due to isSerializable check)
-          exports.push(`export const ${key} = ${JSON.stringify(String(value))};`);
-        }
+      if (key !== 'default' && key !== SURIMI_CSS_EXPORT_NAME && isSerializable(value)) {
+        exports.push(`export const ${key} = ${JSON.stringify(value)};`);
       }
     }
 
-    // Generate the transformed JS
     const js = exports.length > 0 ? exports.join('\n') : '';
 
     return { css, js };
@@ -136,13 +123,11 @@ export async function execute(code: string) {
   }
 }
 
-// Type guard to check if a value is serializable to JSON
 function isSerializable(value: unknown): value is string | number | boolean | null | object {
   const type = typeof value;
   return type === 'string' || type === 'number' || type === 'boolean' || value === null || type === 'object';
 }
 
-// Validates compilation options - throws Error if options are invalid
 function validateCompileOptions(options: CompileOptions): void {
   if (!options.inputPath || typeof options.inputPath !== 'string') {
     throw new Error('inputPath must be a non-empty string');
@@ -165,12 +150,6 @@ function validateCompileOptions(options: CompileOptions): void {
   }
 }
 
-/**
- * Extracts module dependencies from the Rolldown output chunk.
- *
- * Will exclude dependencies from `node_modules`, rolldown runtime modules
- * and development Surimi packages (only relevant in development).
- */
 function getModuleDependencies(imports: string[], dynamicImports: string[], moduleIds: string[]): string[] {
   const watchFiles: string[] = [];
 
@@ -197,8 +176,6 @@ function getModuleDependencies(imports: string[], dynamicImports: string[], modu
   return watchFiles;
 }
 
-// Checks if a module ID is from the development surimi or parsers packages
-// Development files are not tracked in watch mode as they're part of the library itself
 function isDevelopmentSurimiFile(id: string): boolean {
   return DEV_SURIMI_PACKAGES.some(pkgPath => id.includes(pkgPath));
 }
