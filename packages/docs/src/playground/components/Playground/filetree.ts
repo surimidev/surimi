@@ -1,16 +1,16 @@
-import type { FileSystemTree } from '@containerkit/react/webcontainer';
+import type { FileSystemTree } from "@containerkit/react/webcontainer";
 
 const INDEX_TS = `\
 // If you have any issues, questions or feedback, visit the docs at https://surimi.dev/docs
 // or open an issue on GitHub at https://github.com/surimidev/surimi
 
-import { select, mixin, property } from 'surimi';
+import { property, mixin, select } from 'surimi';
 
 const theme = {
-  primary: property('primary', '#3498db', '<color>'),
-  primaryHover: property('primaryHover', '#2980b9', '<color>'),
-  background: property('background', '#f5f5f5', '<color>'),
-  text: property('text', '#333', '<color>'),
+  primary: property('primary', '#3498db', "<color>"),
+  primaryHover: property('primaryHover', '#2980b9', "<color>"),
+  background: property('background', '#f5f5f5', "<color>"),
+  text: property('text', '#333', "<color>"),
 } as const;
 
 const hoverable = mixin(':hover').style({
@@ -72,57 +72,58 @@ export default defineConfig({
 `;
 
 const PACKAGE_JSON = JSON.stringify(
-  {
-    name: 'surimi-playground-app',
-    type: 'module',
-    dependencies: {
-      surimi: 'latest',
-      vite: 'latest',
-      'vite-plugin-surimi': 'latest',
-      '@surimi/compiler': 'latest',
-      '@rolldown/binding-wasm32-wasi': 'latest',
-    },
-    scripts: {
-      dev: 'pnpm vite',
-      build: 'pnpm surimi compile ./src/index.css.ts --out-dir=./build --no-js --watch',
-    },
-  },
-  null,
-  2,
+	{
+		name: "surimi-playground-app",
+		type: "module",
+		dependencies: {
+			surimi: "latest",
+			vite: "latest",
+			"vite-plugin-surimi": "latest",
+			"@surimi/compiler": "latest",
+			"@rolldown/binding-wasm32-wasi": "latest",
+		},
+		scripts: {
+			dev: "pnpm vite",
+			build:
+				"pnpm surimi compile ./src/index.css.ts --out-dir=./build --no-js --watch",
+		},
+	},
+	null,
+	2,
 );
 
 export const files = {
-  'package.json': {
-    file: {
-      contents: PACKAGE_JSON,
-    },
-  },
-  'index.html': {
-    file: {
-      contents: INDEX_HTML,
-    },
-  },
-  'vite.config.ts': {
-    file: {
-      contents: VITE_CONFIG_TS,
-    },
-  },
-  src: {
-    directory: {
-      'index.css.ts': {
-        file: {
-          contents: INDEX_TS,
-        },
-      },
-    },
-  },
-  build: {
-    directory: {
-      'index.css.css': {
-        file: {
-          contents: '// The output will appear here',
-        },
-      },
-    },
-  },
+	"package.json": {
+		file: {
+			contents: PACKAGE_JSON,
+		},
+	},
+	"index.html": {
+		file: {
+			contents: INDEX_HTML,
+		},
+	},
+	"vite.config.ts": {
+		file: {
+			contents: VITE_CONFIG_TS,
+		},
+	},
+	src: {
+		directory: {
+			"index.css.ts": {
+				file: {
+					contents: INDEX_TS,
+				},
+			},
+		},
+	},
+	build: {
+		directory: {
+			"index.css.css": {
+				file: {
+					contents: "// The output will appear here",
+				},
+			},
+		},
+	},
 } satisfies FileSystemTree;
