@@ -6,10 +6,9 @@ import {
   useContainerkit,
   type TerminalHandle,
 } from '@containerkit/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
-import FileExplorer from '#playground/components/FileExplorer/FileExplorer';
 import Header from '#playground/components/Header/Header';
 import LectureContent from '#playground/components/LectureContent/LectureContent';
 import OutputViewer from '#playground/components/OutputViewer/OutputViewer';
@@ -27,7 +26,6 @@ function PlaygroundContent() {
   const [selectedFile, setSelectedFile] = useState<string | undefined>();
   const [outputFilePath] = useState<string>('build/index.css.css');
   const [serverUrl, setServerUrl] = useState<string | undefined>();
-  const [showTerminal, setShowTerminal] = useState(true);
 
   const terminalRef = useRef<TerminalHandle>(null);
 
@@ -39,27 +37,29 @@ function PlaygroundContent() {
 
   const initializePlayground = useCallback(async () => {
     console.log('ON MOUNT CALLED');
+    console.log(containerkit, terminalRef.current);
     if (!containerkit || !terminalRef.current) return;
     const instance = terminalRef.current.getInstance();
+    console.log('INSTANCE', instance);
     if (!instance) return;
 
     try {
       setStatus('Mounting files...');
-      await containerkit.mount(currentLecture.files);
+      // await containerkit.mount(currentLecture.files);
 
       setStatus('Installing dependencies...');
-      await instance.write('pnpm install --prefer-offline\n');
+      // await instance.write('pnpm install --prefer-offline\n');
 
-      // setSelectedFile(currentLecture.initialFile);
+      setSelectedFile(currentLecture.initialFile);
 
       // setStatus('Starting development server...');
-      await instance.write('export NODE_NO_WARNINGS=1\n');
+      // await instance.write('export NODE_NO_WARNINGS=1\n');
 
       // Start build watch process in background
       // void containerkit.spawn('pnpm', ['run', 'build']);
 
       // Start dev server
-      await instance.write('pnpm run dev\n');
+      // await instance.write('pnpm run dev\n');
 
       // Listen for server ready event
       // containerkit.webContainer?.on('server-ready', (_port, url) => {
@@ -72,7 +72,7 @@ function PlaygroundContent() {
       console.error('Failed to initialize playground:', error);
       setStatus('Error initializing playground');
     }
-  }, []);
+  }, [containerkit]);
 
   const handleLectureChange = async (newIndex: number) => {
     if (newIndex < 0 || newIndex >= lectures.length) return;
@@ -147,61 +147,41 @@ function PlaygroundContent() {
           {/* Middle Panel - File Explorer and Editor */}
           <Panel defaultSize={40} minSize={30} maxSize={60}>
             <div className="surimi-playground__editor-section">
-              <div className="surimi-playground__editor-row">
-                <FileExplorer onFileClick={setSelectedFile} selectedFile={selectedFile} />
-
-                <div className="surimi-playground__editor-container">
-                  <div className="surimi-playground__editor">
-                    {selectedFile && <Editor path={selectedFile} monacoOptions={{ theme: 'vs-light' }} />}
-                    {!isReady && (
-                      <div className="surimi-playground__overlay">
-                        <div className="surimi-playground__status">{status}</div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Terminal Toggle Button */}
-                  <div className="surimi-playground__terminal-toggle">
-                    <button
-                      className={`surimi-playground__tab ${showTerminal ? 'surimi-playground__tab--active' : ''}`}
-                      onClick={() => {
-                        setShowTerminal(!showTerminal);
-                      }}
-                      type="button"
-                    >
-                      Terminal {showTerminal ? '▼' : '▶'}
-                    </button>
-                  </div>
+              <div className="surimi-playground__editor-container">
+                <div className="surimi-playground__editor">
+                  {selectedFile && <Editor path={selectedFile} monacoOptions={{ theme: 'vs-light' }} />}
+                  {!isReady && (
+                    <div className="surimi-playground__overlay">
+                      <div className="surimi-playground__status">{status}</div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Terminal at bottom - full width */}
-              {showTerminal && (
-                <div className="surimi-playground__terminal">
-                  <ReactTerminal
-                    onMount={() => {
-                      void initializePlayground();
-                    }}
-                    ref={terminalRef}
-                    xtermOptions={{
-                      theme: {
-                        foreground: '#383a42',
-                        background: '#ffffff',
-                        cursor: '#bfceff',
-                        black: '#383a42',
-                        red: '#e45649',
-                        green: '#50a14f',
-                        yellow: '#c18401',
-                        blue: '#4078f2',
-                        magenta: '#a626a4',
-                        cyan: '#0184bc',
-                        white: '#a0a1a7',
-                        brightBlack: '#696c77',
-                      },
-                    }}
-                  />
-                </div>
-              )}
+              <div className="surimi-playground__terminal">
+                <ReactTerminal
+                  onMount={() => {
+                    void initializePlayground();
+                  }}
+                  ref={terminalRef}
+                  xtermOptions={{
+                    theme: {
+                      foreground: '#383a42',
+                      background: '#ffffff',
+                      cursor: '#bfceff',
+                      black: '#383a42',
+                      red: '#e45649',
+                      green: '#50a14f',
+                      yellow: '#c18401',
+                      blue: '#4078f2',
+                      magenta: '#a626a4',
+                      cyan: '#0184bc',
+                      white: '#a0a1a7',
+                      brightBlack: '#696c77',
+                    },
+                  }}
+                />
+              </div>
             </div>
           </Panel>
 
@@ -220,11 +200,11 @@ function PlaygroundContent() {
   );
 }
 
-export default function Playground() {
-  const [containerkit] = useState(() => new Containerkit());
+const instance = new Containerkit();
 
+export default function Playground() {
   return (
-    <ContainerkitProvider instance={containerkit} name="surimi">
+    <ContainerkitProvider instance={instance} name="surimi">
       <PlaygroundContent />
     </ContainerkitProvider>
   );

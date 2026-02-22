@@ -9,7 +9,8 @@ export interface HeaderProps {
 export default function Header({ disabled, onRestartCompiler, onDownloadProject }: HeaderProps) {
   return (
     <div className="surimi-playground__header">
-      <h1>Surimi Playground</h1>
+      <h1>🍣 Surimi Playground</h1>
+      <a href="/">home</a>
       <div className="surimi-playground__header-actions">
         <button disabled={disabled} onClick={onRestartCompiler} type="button">
           Restart Server
