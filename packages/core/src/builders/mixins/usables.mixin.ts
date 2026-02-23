@@ -40,11 +40,9 @@ export abstract class WithUsables<TContext extends string> extends WithStyling<T
         const context = usable.context;
 
         if (styles) {
-          createSelectorBuilderFromContext(
-            [...this._context, ...context],
-            this._container,
-            this._cssRoot,
-          ).style(styles);
+          createSelectorBuilderFromContext([...this._context, ...context], this._container, this._cssRoot).style(
+            styles,
+          );
         }
       }
     }

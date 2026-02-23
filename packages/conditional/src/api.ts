@@ -357,11 +357,7 @@ export class ChainableConditionalBuilder<TSelector extends string> {
       `:where(html):has(${conditionString}) ${selectorString}` as `:where(html):has(${string}) ${TTargetSelector}`;
     const newContext = tokenize(newSelector);
 
-    return new ConditionalSelectorBuilder(
-      newContext,
-      this.builder.getContainer(),
-      this.builder.getRoot(),
-    );
+    return new ConditionalSelectorBuilder(newContext, this.builder.getContainer(), this.builder.getRoot());
   }
 }
 

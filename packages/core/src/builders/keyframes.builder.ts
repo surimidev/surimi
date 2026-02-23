@@ -25,8 +25,7 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
 
   public register() {
     const existingRule = this._cssRoot.nodes.find(
-      (node): node is CssAtRule =>
-        node.type === 'atrule' && node.name === 'keyframes' && node.params === this._name,
+      (node): node is CssAtRule => node.type === 'atrule' && node.name === 'keyframes' && node.params === this._name,
     );
 
     const atRuleNode =

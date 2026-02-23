@@ -26,8 +26,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "csstype": "catalog:prod",
-    "@surimi/ast": "workspace:*"
+    "@surimi/ast": "workspace:*",
+    "csstype": "catalog:prod"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

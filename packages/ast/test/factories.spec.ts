@@ -26,9 +26,7 @@ describe('factories', () => {
 
     it('preserves selector string as given', () => {
       expect(rule({ selector: 'div > span' }).selector).toBe('div > span');
-      expect(rule({ selector: ':where(html):has(.x) .y' }).selector).toBe(
-        ':where(html):has(.x) .y',
-      );
+      expect(rule({ selector: ':where(html):has(.x) .y' }).selector).toBe(':where(html):has(.x) .y');
     });
   });
 

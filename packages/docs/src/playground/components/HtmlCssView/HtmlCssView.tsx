@@ -1,3 +1,5 @@
+import './HtmlCssView.css';
+
 /** Injects compiled CSS into the HTML document and returns full document for iframe srcdoc. */
 function injectCssIntoHtml(html: string, css: string): string {
   const styleTag = `<style>${css}</style>`;
@@ -13,8 +15,6 @@ export interface HtmlCssViewProps {
   css: string;
 }
 
-import './HtmlCssView.css';
-
 export default function HtmlCssView({ html, css }: HtmlCssViewProps) {
   const doc = injectCssIntoHtml(html, css);
   return (
@@ -23,12 +23,7 @@ export default function HtmlCssView({ html, css }: HtmlCssViewProps) {
         <h3>Preview</h3>
       </div>
       <div className="surimi-playground__view-content">
-        <iframe
-          className="surimi-playground__view-iframe"
-          title="Preview"
-          srcDoc={doc}
-          sandbox="allow-same-origin"
-        />
+        <iframe className="surimi-playground__view-iframe" title="Preview" srcDoc={doc} sandbox="allow-same-origin" />
       </div>
     </div>
   );

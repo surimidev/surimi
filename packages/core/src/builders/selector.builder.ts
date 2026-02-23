@@ -15,7 +15,8 @@ import {
 export abstract class SelectorBuilderImpl<TContext extends string> extends CoreBuilder<Tokenize<TContext>> {}
 
 export interface SelectorBuilder<T extends string>
-  extends WithNavigation<T>,
+  extends
+    WithNavigation<T>,
     WithStyling<T>,
     WithPseudoClasses<T>,
     WithPseudoElements<T>,
