@@ -7,7 +7,7 @@ import Header from '../../components/Header/Header.astro';
 import './Main.css';
 import '../../styles/index.css';
 
-const { title, description, class: className } = Astro.props;
+const { title, description, class: className, hideDefaultHeader = false } = Astro.props;
 
 const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
 ---
@@ -29,7 +29,7 @@ const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
 
   <body>
     <div id="app">
-      <Header />
+      {!hideDefaultHeader ? <Header /> : null}
       <div class={className} id="container">
         <slot />
       </div>

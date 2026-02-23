@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { RolldownWatcher } from 'rolldown';
+import type { RolldownWatcher } from '@rolldown/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { compileWatch } from '../../src';
@@ -18,7 +18,7 @@ describe('Compiler Watch Mode', () => {
   });
 
   const createOptions = (fixture: string) => ({
-    inputPath: path.join(fixturesDir, fixture),
+    input: path.join(fixturesDir, fixture),
     cwd: process.cwd(),
     include: ['**/*.css.ts'],
     exclude: ['**/node_modules/**'],
@@ -59,21 +59,21 @@ describe('Compiler Watch Mode', () => {
       expect(() =>
         compileWatch(
           {
-            inputPath: '',
+            input: '',
             cwd: process.cwd(),
             include: ['**/*.css.ts'],
             exclude: [],
           },
           createWatchOptions(),
         ),
-      ).toThrow('inputPath must be a non-empty string');
+      ).toThrow('input must be a non-empty string');
     });
 
     it('should require valid cwd', () => {
       expect(() =>
         compileWatch(
           {
-            inputPath: path.join(fixturesDir, 'simple.css.ts'),
+            input: path.join(fixturesDir, 'simple.css.ts'),
             cwd: '',
             include: ['**/*.css.ts'],
             exclude: [],
@@ -87,7 +87,7 @@ describe('Compiler Watch Mode', () => {
       expect(() =>
         compileWatch(
           {
-            inputPath: path.join(fixturesDir, 'simple.css.ts'),
+            input: path.join(fixturesDir, 'simple.css.ts'),
             cwd: process.cwd(),
             include: [],
             exclude: [],

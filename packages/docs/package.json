@@ -25,9 +25,10 @@
     "clsx": "^2.1.1",
     "comlink": "^4.4.2",
     "memfs": "^4.56.10",
-    "re-resizable": "^6.11.2",
+    "monaco-editor-auto-typings": "^0.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-resizable-panels": "^3.0.0",
     "vite": "catalog:build"
   },
   "devDependencies": {
@@ -60,10 +61,5 @@
     "typescript": "catalog:build",
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-surimi": "workspace:*"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite": "catalog:build"
-    }
   }
 }

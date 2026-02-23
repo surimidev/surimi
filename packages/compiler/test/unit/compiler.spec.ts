@@ -7,7 +7,7 @@ const fixturesDir = path.resolve(__dirname, '../fixtures');
 
 describe('Compiler', () => {
   const createOptions = (fixture: string) => ({
-    inputPath: path.join(fixturesDir, fixture),
+    input: path.join(fixturesDir, fixture),
     cwd: process.cwd(),
     include: ['**/*.css.ts'],
     exclude: ['**/node_modules/**'],
@@ -212,12 +212,12 @@ describe('Compiler', () => {
     it('should validate options before compilation', async () => {
       await expect(
         compile({
-          inputPath: '',
+          input: '',
           cwd: process.cwd(),
           include: ['**/*.css.ts'],
           exclude: [],
         }),
-      ).rejects.toThrow('inputPath must be a non-empty string');
+      ).rejects.toThrow('input must be a non-empty string');
     });
   });
 });

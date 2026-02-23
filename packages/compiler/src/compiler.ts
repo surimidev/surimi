@@ -164,6 +164,9 @@ function validateCompileOptions(options: CompileOptions): void {
   if (!Array.isArray(options.include)) {
     throw new Error('include must be an array');
   }
+  if (options.include.length === 0) {
+    throw new Error('include array cannot be empty');
+  }
   if (!Array.isArray(options.exclude)) {
     throw new Error('exclude must be an array');
   }
