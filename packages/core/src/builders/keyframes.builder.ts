@@ -1,5 +1,4 @@
-import postcss from 'postcss';
-
+import { atRule, rule, type CssAtRule, type CssContainer, type CssRoot } from '@surimi/ast';
 import type { CssProperties } from '@surimi/common';
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
@@ -10,14 +9,11 @@ import { CoreBuilder } from './core.builder';
 export type KeyframeStep = 'from' | 'to' | `${number}%`;
 export type KeyframeStepConfig = Partial<Record<KeyframeStep, CssProperties>>;
 
-/**
- * Used for building @keyframes at-rules.
- */
 export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRule<`@keyframes ${T}`>> {
   protected _steps: KeyframeStepConfig;
   protected _name: T;
 
-  constructor(name: T, steps: KeyframeStepConfig, container: postcss.Container, root: postcss.Root) {
+  constructor(name: T, steps: KeyframeStepConfig, container: CssContainer, root: CssRoot) {
     const context = tokenizeAtRule(`@keyframes ${name}`);
     super(context, container, root);
 
@@ -28,44 +24,36 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
   }
 
   public register() {
-    const existingRule = this._postcssRoot.nodes.find(
-      (node): node is postcss.AtRule =>
+    const existingRule = this._cssRoot.nodes.find(
+      (node): node is CssAtRule =>
         node.type === 'atrule' && node.name === 'keyframes' && node.params === this._name,
     );
 
-    const rule =
+    const atRuleNode =
       existingRule ??
-      postcss.atRule({
+      atRule({
         name: 'keyframes',
         params: this._name,
       });
 
-    const declarations = Object.entries(this._steps)
+    const stepRules = Object.entries(this._steps)
       .map(([step, styles]) => {
-        if (!styles) {
-          return null;
-        }
-
-        const stepRule = postcss.rule({ selector: step });
+        if (!styles) return null;
+        const stepRule = rule({ selector: step });
         const declarations = createDeclarationsFromProperties(styles);
-        declarations.forEach(decl => stepRule.append(decl));
+        declarations.forEach(d => stepRule.append(d));
         return stepRule;
       })
-      .filter((stepRule): stepRule is postcss.Rule => stepRule !== null);
+      .filter((r): r is NonNullable<typeof r> => r !== null);
 
-    rule.nodes = [];
-    declarations.forEach(decl => rule.append(decl));
+    atRuleNode.nodes.length = 0;
+    stepRules.forEach(r => atRuleNode.append(r));
 
     if (!existingRule) {
-      this._postcssRoot.append(rule);
+      this._cssRoot.append(atRuleNode);
     }
   }
 
-  /**
-   * Add or merge styles for a specific keyframe step.
-   *
-   * If the step already exists, the new styles will be merged with the existing ones.
-   */
   public at(step: KeyframeStep, styles: CssProperties): KeyframesBuilder<T> {
     const newSteps = {
       ...this._steps,
@@ -74,13 +62,9 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
         ...styles,
       },
     };
-
-    return new KeyframesBuilder(this._name, newSteps, this._postcssContainer, this._postcssRoot);
+    return new KeyframesBuilder(this._name, newSteps, this._container, this._cssRoot);
   }
 
-  /**
-   * Alias for `at` method.
-   */
   public step(step: KeyframeStep, styles: CssProperties): KeyframesBuilder<T> {
     return this.at(step, styles);
   }

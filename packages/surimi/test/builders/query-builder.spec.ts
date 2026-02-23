@@ -16,7 +16,7 @@ describe('Container Queries', () => {
       expect(Surimi.build()).toBe(`\
 @container my-container {
     h2 {
-        font-size: 1.5rem
+        font-size: 1.5rem;
     }
 }`);
     });
@@ -29,7 +29,7 @@ describe('Container Queries', () => {
       expect(Surimi.build()).toBe(`\
 @container ( min-width : 600px ) {
     .card {
-        padding: 16px
+        padding: 16px;
     }
 }`);
     });
@@ -42,7 +42,7 @@ describe('Container Queries', () => {
       expect(Surimi.build()).toBe(`\
 @container ( min-width : 600px ) and ( max-width : 900px ) {
     .sidebar {
-        display: block
+        display: block;
     }
 }`);
     });
@@ -55,7 +55,7 @@ describe('Container Queries', () => {
       expect(Surimi.build()).toBe(`\
 @container content-container ( min-width : 500px ) and ( max-width : 1200px ) {
     .content {
-        margin: 0 auto
+        margin: 0 auto;
     }
 }`);
     });
@@ -68,7 +68,7 @@ describe('Container Queries', () => {
       expect(Surimi.build()).toBe(`\
 @container style(--responsive: true) {
     .grid {
-        gap: 10px
+        gap: 10px;
     }
 }`);
     });
@@ -88,10 +88,10 @@ describe('Container Queries', () => {
     expect(Surimi.build()).toBe(`\
 @container card-container ( min-width : 400px ) and ( max-width : 800px ) {
     .card-header {
-        font-size: 1.25rem
+        font-size: 1.25rem;
     }
     .card-body {
-        font-size: 1rem
+        font-size: 1rem;
     }
 }`);
   });
@@ -117,14 +117,14 @@ describe('Container Queries', () => {
 .button {
     padding: 10px 20px;
     border: none;
-    border-radius: 4px
+    border-radius: 4px;
 }
 .button:focus {
-    outline: 2px solid blue
+    outline: 2px solid blue;
 }
 @container ( min-width : 500px ) {
     .button {
-        font-size: 1rem
+        font-size: 1rem;
     }
 }`);
   });

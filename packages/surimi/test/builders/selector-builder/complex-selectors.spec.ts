@@ -13,7 +13,7 @@ describe('Complex Selector Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .btn.primary {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -22,7 +22,7 @@ describe('Complex Selector Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .btn.primary.large {
-    padding: 1rem
+    padding: 1rem;
 }`);
     });
 
@@ -31,7 +31,7 @@ describe('Complex Selector Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 button.disabled {
-    opacity: 0.5
+    opacity: 0.5;
 }`);
     });
 
@@ -40,7 +40,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 #header.sticky {
-    position: fixed
+    position: fixed;
 }`);
     });
   });
@@ -51,7 +51,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 .card:is(.active) {
-    border-color: blue
+    border-color: blue;
 }`);
     });
 
@@ -60,7 +60,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 .btn:is(.primary, .secondary) {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
 
@@ -69,7 +69,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 .form:is(input[type="text"], textarea) {
-    border: 1px solid gray
+    border: 1px solid gray;
 }`);
     });
   });
@@ -80,7 +80,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 .card:where(.highlighted) {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1)
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }`);
     });
 
@@ -89,7 +89,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 .btn:where(.primary, .danger) {
-    color: white
+    color: white;
 }`);
     });
 
@@ -98,7 +98,7 @@ button.disabled {
 
       expect(Surimi.build()).toBe(`\
 input:where([required], [aria-required="true"]) {
-    border-color: red
+    border-color: red;
 }`);
     });
   });
@@ -109,7 +109,7 @@ input:where([required], [aria-required="true"]) {
 
       expect(Surimi.build()).toBe(`\
 .btn:not(.disabled) {
-    cursor: pointer
+    cursor: pointer;
 }`);
     });
 
@@ -118,7 +118,7 @@ input:where([required], [aria-required="true"]) {
 
       expect(Surimi.build()).toBe(`\
 input:not(input[type="hidden"]) {
-    display: block
+    display: block;
 }`);
     });
 
@@ -127,7 +127,7 @@ input:not(input[type="hidden"]) {
 
       expect(Surimi.build()).toBe(`\
 button:not([disabled]) {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -136,7 +136,7 @@ button:not([disabled]) {
 
       expect(Surimi.build()).toBe(`\
 .btn:not(.disabled):hover {
-    background-color: darkblue
+    background-color: darkblue;
 }`);
     });
   });
@@ -147,7 +147,7 @@ button:not([disabled]) {
 
       expect(Surimi.build()).toBe(`\
 .label + input {
-    margin-top: 0.5rem
+    margin-top: 0.5rem;
 }`);
     });
 
@@ -156,7 +156,7 @@ button:not([disabled]) {
 
       expect(Surimi.build()).toBe(`\
 .btn + .btn {
-    margin-left: 0.5rem
+    margin-left: 0.5rem;
 }`);
     });
 
@@ -165,7 +165,7 @@ button:not([disabled]) {
 
       expect(Surimi.build()).toBe(`\
 input:checked + .label {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
   });
@@ -176,7 +176,7 @@ input:checked + .label {
 
       expect(Surimi.build()).toBe(`\
 .header ~ .content {
-    margin-top: 2rem
+    margin-top: 2rem;
 }`);
     });
 
@@ -185,7 +185,7 @@ input:checked + .label {
 
       expect(Surimi.build()).toBe(`\
 h1 ~ p {
-    font-size: 1.2rem
+    font-size: 1.2rem;
 }`);
     });
 
@@ -194,7 +194,7 @@ h1 ~ p {
 
       expect(Surimi.build()).toBe(`\
 input[type="checkbox"]:checked ~ .checkbox-label {
-    color: green
+    color: green;
 }`);
     });
   });
@@ -210,7 +210,7 @@ input[type="checkbox"]:checked ~ .checkbox-label {
 
       expect(Surimi.build()).toBe(`\
 .form > .field.required:not(.disabled) input {
-    border-color: red
+    border-color: red;
 }`);
     });
 
@@ -219,7 +219,7 @@ input[type="checkbox"]:checked ~ .checkbox-label {
 
       expect(Surimi.build()).toBe(`\
 .btn.primary:hover + .tooltip {
-    display: block
+    display: block;
 }`);
     });
   });

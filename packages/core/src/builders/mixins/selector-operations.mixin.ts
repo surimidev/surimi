@@ -23,8 +23,8 @@ export abstract class WithSelectorOperations<TContext extends string> extends Co
 
     return new SelectorBuilder<`${TContext}, ${TSelector}`>(
       [...this._context, { type: 'comma', content: ',' }, ...selectorTokens] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 
@@ -47,8 +47,8 @@ export abstract class WithSelectorOperations<TContext extends string> extends Co
 
     return new SelectorBuilder<`${TContext} ${TSelector}`>(
       [...this._context, ...selectorTokens] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 }

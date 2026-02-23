@@ -13,7 +13,7 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .card > .title {
-    font-size: 1.2em
+    font-size: 1.2em;
 }`);
     });
 
@@ -22,7 +22,7 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .nav a {
-    text-decoration: none
+    text-decoration: none;
 }`);
     });
 
@@ -33,7 +33,7 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .sidebar > .menu > .item {
-    padding: 0.5rem
+    padding: 0.5rem;
 }`);
     });
 
@@ -44,7 +44,7 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .main .section > .header {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
   });
@@ -55,7 +55,7 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .nav > .item:hover > a {
-    color: white
+    color: white;
 }`);
     });
 
@@ -66,14 +66,14 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .multi-style {
-    display: flex
+    display: flex;
 }
 .multi-style:hover {
-    background-color: gray
+    background-color: gray;
 }
 @media ( max-width : 768px ) {
     .multi-style {
-        flex-direction: column
+        flex-direction: column;
     }
 }`);
     });
@@ -84,7 +84,7 @@ describe('Nesting and Complex Combinations', () => {
       expect(Surimi.build()).toBe(`\
 .complex {
     color: red;
-    border: 1px solid black
+    border: 1px solid black;
 }`);
     });
 
@@ -93,10 +93,10 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .complex {
-    color: red
+    color: red;
 }
 .complex:hover {
-    color: blue
+    color: blue;
 }`);
     });
 
@@ -107,14 +107,14 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .complex {
-    color: red
+    color: red;
 }
 .complex:hover {
-    color: blue
+    color: blue;
 }
 @media ( max-width : 600px ) {
     .complex {
-        color: green
+        color: green;
     }
 }`);
     });
@@ -126,14 +126,14 @@ describe('Nesting and Complex Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .parent > a {
-    color: black
+    color: black;
 }
 .parent > a:hover {
-    color: blue
+    color: blue;
 }
 @media ( max-width : 600px ) {
     .parent > a {
-        color: red
+        color: red;
     }
 }`);
     });
@@ -146,7 +146,7 @@ describe('Nesting and Complex Combinations', () => {
       expect(Surimi.build()).toBe(`\
 .container {
     .item {
-        margin: 10px
+        margin: 10px;
     }
 }`);
     });
@@ -158,7 +158,7 @@ describe('Nesting and Complex Combinations', () => {
 .wrapper {
     .content {
         .text {
-            line-height: 1.5
+            line-height: 1.5;
         }
     }
 }`);
@@ -170,7 +170,7 @@ describe('Nesting and Complex Combinations', () => {
       expect(Surimi.build()).toBe(`\
 .list > .item {
     .link {
-        text-decoration: underline
+        text-decoration: underline;
     }
 }`);
     });
@@ -181,7 +181,7 @@ describe('Nesting and Complex Combinations', () => {
       expect(Surimi.build()).toBe(`\
 .menu {
     .item:hover {
-        background-color: lightgray
+        background-color: lightgray;
     }
 }`);
     });

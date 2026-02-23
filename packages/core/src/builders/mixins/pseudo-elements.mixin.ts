@@ -26,21 +26,29 @@ export abstract class WithPseudoElements<TContext extends string>
 
     return new SelectorBuilder<`${TContext}:${TPseudoElement}`>(
       [...this._context, newToken] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
   public after = () => this.createPseudoElement('after');
   public backdrop = () => this.createPseudoElement('backdrop');
   public before = () => this.createPseudoElement('before');
+  public checkmark = () => this.createPseudoElement('checkmark');
   public cue = () => this.createPseudoElement('cue');
   public cueRegion = () => this.createPseudoElement('cue-region');
+  public detailsContent = () => this.createPseudoElement('details-content');
+  public fileSelectorButton = () => this.createPseudoElement('file-selector-button');
   public firstLetter = () => this.createPseudoElement('first-letter');
   public firstLine = () => this.createPseudoElement('first-line');
   public grammarError = () => this.createPseudoElement('grammar-error');
+  public highlight = () => this.createPseudoElement('highlight');
   public marker = () => this.createPseudoElement('marker');
   public part = () => this.createPseudoElement('part');
+  public picker = () => this.createPseudoElement('picker');
+  public pickerIcon = () => this.createPseudoElement('picker-icon');
   public placeholder = () => this.createPseudoElement('placeholder');
+  public scrollMarker = () => this.createPseudoElement('scroll-marker');
+  public scrollMarkerGroup = () => this.createPseudoElement('scroll-marker-group');
   public selection = () => this.createPseudoElement('selection');
   public slotted = () => this.createPseudoElement('slotted');
   public spellingError = () => this.createPseudoElement('spelling-error');

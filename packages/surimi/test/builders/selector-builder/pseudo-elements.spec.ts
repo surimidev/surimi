@@ -13,7 +13,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .button:hover {
-    background-color: lightgray
+    background-color: lightgray;
 }`);
     });
 
@@ -22,7 +22,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .input:focus {
-    outline: 2px solid blue
+    outline: 2px solid blue;
 }`);
     });
 
@@ -31,7 +31,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .link:active {
-    color: red
+    color: red;
 }`);
     });
 
@@ -40,7 +40,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .button:disabled {
-    opacity: 0.5
+    opacity: 0.5;
 }`);
     });
 
@@ -53,7 +53,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
       expect(Surimi.build()).toBe(`\
 .button:hover:focus {
     background-color: blue;
-    outline: none
+    outline: none;
 }`);
     });
   });
@@ -64,10 +64,10 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .card {
-    font-weight: bold
+    font-weight: bold;
 }
 .card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }`);
     });
   });
@@ -78,7 +78,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
 
       expect(Surimi.build()).toBe(`\
 .text::before {
-    content: "→"
+    content: "→";
 }`);
     });
 
@@ -91,7 +91,7 @@ describe('Pseudo-classes and Pseudo-elements', () => {
       expect(Surimi.build()).toBe(`\
 .text::after {
     content: "";
-    display: block
+    display: block;
 }`);
     });
   });

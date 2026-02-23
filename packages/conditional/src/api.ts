@@ -1,5 +1,4 @@
-import type * as postcss from 'postcss';
-
+import type { CssContainer, CssRoot } from '@surimi/ast';
 import type { CssProperties, ValidSelector } from '@surimi/common';
 import { CoreBuilder, createDeclarationsFromProperties, StyleBuilder, type SelectorBuilder } from '@surimi/core';
 import type { Tokenize } from '@surimi/parsers';
@@ -55,7 +54,7 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
     const newSelector = `:where(html):has(${conditionString}) ${selectorString}` as const;
     const newContext = tokenize(newSelector);
 
-    return new ConditionalSelectorBuilder<typeof newSelector>(newContext, this._postcssContainer, this._postcssRoot);
+    return new ConditionalSelectorBuilder<typeof newSelector>(newContext, this._container, this._cssRoot);
   }
 
   /**
@@ -105,7 +104,7 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
    * @internal
    */
   protected cloneWithState(groups: ConditionGroup[], index: number): ConditionalBuilder<TSelector> {
-    const newBuilder = new ConditionalBuilder<TSelector>(this._context, this._postcssContainer, this._postcssRoot);
+    const newBuilder = new ConditionalBuilder<TSelector>(this._context, this._container, this._cssRoot);
     newBuilder.conditionGroups = groups;
     newBuilder.currentGroupIndex = index;
     return newBuilder;
@@ -120,19 +119,19 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
   }
 
   /**
-   * Get the internal PostCSS container (for ChainableConditionalBuilder).
+   * Get the internal CSS container (for ChainableConditionalBuilder).
    * @internal
    */
-  public getPostcssContainer(): postcss.Container {
-    return this._postcssContainer;
+  public getContainer(): CssContainer {
+    return this._container;
   }
 
   /**
-   * Get the internal PostCSS root (for ChainableConditionalBuilder).
+   * Get the internal CSS root (for ChainableConditionalBuilder).
    * @internal
    */
-  public getPostcssRoot(): postcss.Root {
-    return this._postcssRoot;
+  public getRoot(): CssRoot {
+    return this._cssRoot;
   }
 
   /**
@@ -283,7 +282,7 @@ export class ConditionalBuilder<TSelector extends string> extends CoreBuilder<To
    * // Generates: :where(html):has(.item:not(:first-child)) .list
    */
   public get not(): NegatedConditionalBuilder<TSelector> {
-    return new NegatedConditionalBuilder<TSelector>(this._context, this._postcssContainer, this._postcssRoot, this);
+    return new NegatedConditionalBuilder<TSelector>(this._context, this._container, this._cssRoot, this);
   }
 }
 
@@ -328,8 +327,8 @@ export class ChainableConditionalBuilder<TSelector extends string> {
   public get not(): NegatedConditionalBuilder<TSelector> {
     return new NegatedConditionalBuilder<TSelector>(
       this.builder.getContext(),
-      this.builder.getPostcssContainer(),
-      this.builder.getPostcssRoot(),
+      this.builder.getContainer(),
+      this.builder.getRoot(),
       this.builder,
     );
   }
@@ -360,8 +359,8 @@ export class ChainableConditionalBuilder<TSelector extends string> {
 
     return new ConditionalSelectorBuilder(
       newContext,
-      this.builder.getPostcssContainer(),
-      this.builder.getPostcssRoot(),
+      this.builder.getContainer(),
+      this.builder.getRoot(),
     );
   }
 }
@@ -373,11 +372,11 @@ export class ChainableConditionalBuilder<TSelector extends string> {
 class NegatedConditionalBuilder<TSelector extends string> extends ConditionalBuilder<TSelector> {
   constructor(
     context: Tokenize<TSelector>,
-    postcssContainer: postcss.Container,
-    postcssRoot: postcss.Root,
+    container: CssContainer,
+    root: CssRoot,
     private parentBuilder: ConditionalBuilder<TSelector>,
   ) {
-    super(context, postcssContainer, postcssRoot);
+    super(context, container, root);
     // Share the same condition tracking state with parent
     this.conditionGroups = parentBuilder.getConditionGroups();
     this.currentGroupIndex = parentBuilder.getCurrentGroupIndex();
