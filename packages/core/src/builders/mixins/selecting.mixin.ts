@@ -16,10 +16,10 @@ export abstract class WithSelecting<TContext extends string> extends CoreBuilder
   public select<T extends ArrayWithAtLeastOneItem<ValidSelector>>(...selectors: T | [SelectorBuilder<string>]) {
     if (selectors.length === 1 && selectors[0] instanceof SelectorBuilder) {
       const selectorBuilder = selectors[0];
-      return createSelectorBuilderFromString([selectorBuilder.build()], this.getOrCreateRule(), this._postcssRoot);
+      return createSelectorBuilderFromString([selectorBuilder.build()], this.getOrCreateRule(), this._cssRoot);
     }
 
-    return createSelectorBuilderFromString(selectors as T, this.getOrCreateRule(), this._postcssRoot);
+    return createSelectorBuilderFromString(selectors as T, this.getOrCreateRule(), this._cssRoot);
   }
 
   /**
@@ -28,6 +28,6 @@ export abstract class WithSelecting<TContext extends string> extends CoreBuilder
    * You probably won't need to use this directly.
    */
   public selectByContext<TContext extends Token[]>(context: TContext) {
-    return createSelectorBuilderFromContext(context, this.getOrCreateRule(), this._postcssRoot);
+    return createSelectorBuilderFromContext(context, this.getOrCreateRule(), this._cssRoot);
   }
 }

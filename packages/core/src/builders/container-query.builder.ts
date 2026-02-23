@@ -62,7 +62,7 @@ export class ContainerQueryBuilder<TQuery extends string>
       `${currentContextString} ${parameter}`,
     ) as TokenizeAtRule<`${TQuery} ${TNewParam}`>;
 
-    return new ContainerQueryBuilder(newContext as never, this._postcssContainer, this._postcssRoot);
+    return new ContainerQueryBuilder(newContext as never, this._container, this._cssRoot);
   }
 
   // ------------

@@ -19,7 +19,8 @@
     "format": "prettier --write .",
     "lint": "eslint --flag v10_config_lookup_from_file .",
     "release": "pnpm relizy release",
-    "test": "vitest"
+    "test": "vitest",
+    "type-check": "pnpm -r type-check"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:format",

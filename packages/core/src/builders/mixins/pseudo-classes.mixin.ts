@@ -27,22 +27,40 @@ export abstract class WithPseudoClasses<TContext extends string>
 
     return new SelectorBuilder<`${TContext}:${TPseudoClass}`>(
       [...this._context, newToken] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 
   public dir = (dir: 'rtl' | 'ltr') => this.createPseudoClass(`dir(${dir})`);
   public fullscreen = () => this.createPseudoClass('fullscreen');
   public has = (selector: string) => this.createPseudoClass(`has(${selector})`);
+  public hasSlotted = (selector?: string) =>
+    this.createPseudoClass(selector ? `has-slotted(${selector})` : 'has-slotted');
   public host = (selector: string) => this.createPseudoClass(`host(${selector})`);
   public is = (selector: string) => this.createPseudoClass(`is(${selector})`);
   public lang = (lang: string) => this.createPseudoClass(`lang(${lang})`);
   public matches = () => this.createPseudoClass('matches');
+  public modal = () => this.createPseudoClass('modal');
+  public muted = () => this.createPseudoClass('muted');
   public not = (selector: string) => this.createPseudoClass(`not(${selector})`);
+  public open = () => this.createPseudoClass('open');
+  public popoverOpen = () => this.createPseudoClass('popover-open');
+  public seeking = () => this.createPseudoClass('seeking');
+  public stalled = () => this.createPseudoClass('stalled');
+  public state = (name?: string) =>
+    this.createPseudoClass(name ? `state(${name})` : 'state');
+  public targetCurrent = () => this.createPseudoClass('target-current');
+  public volumeLocked = () => this.createPseudoClass('volume-locked');
   public where = (selector: string) => this.createPseudoClass(`where(${selector})`);
+  public xrOverlay = () => this.createPseudoClass('xr-overlay');
   public active = () => this.createPseudoClass('active');
+  public activeViewTransition = () => this.createPseudoClass('active-view-transition');
+  public activeViewTransitionType = (type?: string) =>
+    this.createPseudoClass(type ? `active-view-transition-type(${type})` : 'active-view-transition-type');
+  public autofill = () => this.createPseudoClass('autofill');
   public blank = () => this.createPseudoClass('blank');
+  public buffering = () => this.createPseudoClass('buffering');
   public checked = () => this.createPseudoClass('checked');
   public current = () => this.createPseudoClass('current');
   public default = () => this.createPseudoClass('default');

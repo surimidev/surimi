@@ -1,5 +1,4 @@
-import postcss from 'postcss';
-
+import { atRule, decl, type CssRoot } from '@surimi/ast';
 import { SurimiBase } from '@surimi/common';
 
 export class CustomPropertyBuilder<TValue> extends SurimiBase {
@@ -8,7 +7,7 @@ export class CustomPropertyBuilder<TValue> extends SurimiBase {
   public readonly inherits: boolean;
   public readonly initialValue: TValue;
 
-  constructor(root: postcss.Root, name: string, syntax: string, inherits: boolean, initialValue: TValue) {
+  constructor(root: CssRoot, name: string, syntax: string, inherits: boolean, initialValue: TValue) {
     super(root);
 
     const angleWrappedSyntax = syntax.startsWith('<') && syntax.endsWith('>') ? syntax : `<${syntax}>`;
@@ -22,19 +21,13 @@ export class CustomPropertyBuilder<TValue> extends SurimiBase {
   }
 
   protected register() {
-    const rule = postcss.atRule({
-      name: 'property',
-      params: this.name,
-    });
-
-    const declarations = [
-      postcss.decl({ prop: 'syntax', value: `'${this.syntax}'` }),
-      postcss.decl({ prop: 'inherits', value: String(this.inherits) }),
-      postcss.decl({ prop: 'initial-value', value: String(this.initialValue) }),
-    ];
-
-    rule.append(declarations);
-    this._postcssRoot.append(rule);
+    const atRuleNode = atRule({ name: 'property', params: this.name });
+    atRuleNode.append(
+      decl({ prop: 'syntax', value: `'${this.syntax}'` }),
+      decl({ prop: 'inherits', value: String(this.inherits) }),
+      decl({ prop: 'initial-value', value: String(this.initialValue) }),
+    );
+    this._cssRoot.append(atRuleNode);
   }
 
   public toString() {

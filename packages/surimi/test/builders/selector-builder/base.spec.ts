@@ -13,7 +13,7 @@ describe('Basic Selector & Style Application', () => {
 
       expect(Surimi.build()).toBe(`\
 .container {
-    display: flex
+    display: flex;
 }`);
     });
 
@@ -22,7 +22,7 @@ describe('Basic Selector & Style Application', () => {
 
       expect(Surimi.build()).toBe(`\
 #header {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -31,7 +31,7 @@ describe('Basic Selector & Style Application', () => {
 
       expect(Surimi.build()).toBe(`\
 button {
-    border: none
+    border: none;
 }`);
     });
 
@@ -40,7 +40,7 @@ button {
 
       expect(Surimi.build()).toBe(`\
 .container, .wrapper {
-    padding: 1rem
+    padding: 1rem;
 }`);
     });
 
@@ -49,7 +49,7 @@ button {
 
       expect(Surimi.build()).toBe(`\
 html, .container, .outer {
-    box-sizing: border-box
+    box-sizing: border-box;
 }`);
     });
   });
@@ -66,7 +66,7 @@ html, .container, .outer {
 .box {
     width: 100px;
     height: 100px;
-    margin: 0 auto
+    margin: 0 auto;
 }`);
     });
 
@@ -83,7 +83,7 @@ html, .container, .outer {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: stretch
+    align-items: stretch;
 }`);
     });
 
@@ -98,7 +98,7 @@ html, .container, .outer {
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem
+    gap: 1rem;
 }`);
     });
 
@@ -113,7 +113,7 @@ html, .container, .outer {
 .colorful {
     color: #333;
     background-color: rgba(255, 0, 0, 0.5);
-    border-color: hsl(120, 50%, 50%)
+    border-color: hsl(120, 50%, 50%);
 }`);
     });
   });
@@ -122,8 +122,8 @@ html, .container, .outer {
     it('should handle empty styles gracefully', () => {
       select('.empty').style({});
 
-      expect(Surimi.build()).toBe(`\
-.empty {}`);
+      expect(Surimi.build()).toBe(`.empty {
+}`);
     });
 
     it('should preserve CSS property order', () => {
@@ -139,7 +139,7 @@ html, .container, .outer {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1000
+    z-index: 1000;
 }`);
     });
 
@@ -156,7 +156,7 @@ html, .container, .outer {
     width: 100px;
     height: 200px;
     z-index: 999;
-    opacity: 0.5
+    opacity: 0.5;
 }`);
     });
 
@@ -171,7 +171,7 @@ html, .container, .outer {
 .prefixed {
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
-    transform: rotate(45deg)
+    transform: rotate(45deg);
 }`);
     });
   });

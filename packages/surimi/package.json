@@ -43,8 +43,7 @@
     "@surimi/common": "workspace:*",
     "@surimi/conditional": "workspace:*",
     "@surimi/core": "workspace:*",
-    "@surimi/parsers": "workspace:*",
-    "postcss": "catalog:prod"
+    "@surimi/parsers": "workspace:*"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

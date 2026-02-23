@@ -1,6 +1,6 @@
 {
-  "name": "@surimi/common",
-  "version": "0.7.0",
+  "name": "@surimi/ast",
+  "version": "0.1.0",
   "private": false,
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
@@ -23,16 +23,14 @@
     "build": "tsdown",
     "build:watch": "tsdown --watch",
     "format": "prettier . --write",
+    "test": "pnpm -w test --project=ast",
     "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "csstype": "catalog:prod",
-    "@surimi/ast": "workspace:*"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "tsdown": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
   }
 }

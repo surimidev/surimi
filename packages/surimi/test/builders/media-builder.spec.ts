@@ -16,7 +16,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( min-width : 768px ) {
     .container {
-        flex-direction: row
+        flex-direction: row;
     }
 }`);
     });
@@ -29,7 +29,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( max-width : 768px ) {
     .mobile-nav {
-        display: block
+        display: block;
     }
 }`);
     });
@@ -42,7 +42,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( min-width : 768px ) and ( max-width : 1024px ) {
     .tablet-layout {
-        columns: 2
+        columns: 2;
     }
 }`);
     });
@@ -55,7 +55,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media print {
     .no-print {
-        display: none
+        display: none;
     }
 }`);
     });
@@ -68,7 +68,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( min-width : 768px ) {
     .button:hover {
-        background-color: blue
+        background-color: blue;
     }
 }`);
     });
@@ -83,7 +83,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( min-width : 600px ) and ( max-width : 1200px ) {
     .responsive {
-        font-size: 18px
+        font-size: 18px;
     }
 }`);
     });
@@ -96,7 +96,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( orientation : landscape ) {
     .landscape-only {
-        display: block
+        display: block;
     }
 }`);
     });
@@ -109,7 +109,7 @@ describe('Media Queries', () => {
       expect(Surimi.build()).toBe(`\
 @media ( min-resolution : 2dppx ) {
     .high-res {
-        border: 1px solid black
+        border: 1px solid black;
     }
 }`);
     });
