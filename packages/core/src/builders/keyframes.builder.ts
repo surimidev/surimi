@@ -2,7 +2,7 @@ import { atRule, rule, type CssAtRule, type CssContainer, type CssRoot } from '@
 import type { CssProperties } from '@surimi/common';
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
-import { createDeclarationsFromProperties } from '#utils/postcss.utils';
+import { createDeclarationsFromProperties } from '#utils/css.utils';
 
 import { CoreBuilder } from './core.builder';
 

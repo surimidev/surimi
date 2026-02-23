@@ -59,7 +59,7 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
 
   /**
    * Apply CSS properties to the conditional selector.
-   * Creates the necessary PostCSS rule and declarations.
+   * Creates the necessary CSS rule and declarations.
    */
   public style(styles: CssProperties | StyleBuilder): this {
     if (styles instanceof StyleBuilder) {

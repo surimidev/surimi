@@ -1,7 +1,13 @@
-import type { RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
+import type { RolldownOutput, RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
 import { watch } from 'rolldown';
 
 import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
+
+/** Watch BUNDLE_END result: has generate() and close() per rolldown docs; BindingWatcherBundler .d.mts only declares close(). */
+interface WatchBundleResult {
+  generate(): Promise<RolldownOutput>;
+  close(): Promise<void>;
+}
 
 export interface CompileOptions {
   /** Absolute path to the input file to compile */
@@ -67,46 +73,35 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
   });
 
   watcher.on('event', async event => {
-    if (event.code === 'BUNDLE_END') {
-      const startTime = Date.now();
-      const output = await event.result.generate();
+    if (event.code !== 'BUNDLE_END') return;
 
-      if ('errors' in output) {
-        watchOptions.onChange(undefined, event);
-        return;
-      }
+    const startTime = Date.now();
+    const bundle = event.result as unknown as WatchBundleResult;
+    const output = await bundle.generate();
 
-      const chunk = output.chunks[0];
+    const chunk = output.output[0];
 
-      if (!chunk) {
-        watchOptions.onChange(undefined, event);
-        return;
-      }
+    const result = await getCompileResult(
+      chunk.code,
+      chunk.imports,
+      chunk.dynamicImports,
+      chunk.moduleIds,
+    );
 
-      const result = await getCompileResult(
-        chunk.getCode(),
-        chunk.getImports(),
-        chunk.getDynamicImports(),
-        chunk.getModuleIds(),
-      );
+    await bundle.close();
 
-      if (!result) {
-        watchOptions.onChange(undefined, event);
-        return;
-      }
-
-      const duration = Date.now() - startTime;
-
-      void event.result.close();
-
-      watchOptions.onChange(
-        {
-          ...result,
-          duration: duration + event.duration,
-        },
-        event,
-      );
+    if (!result) {
+      watchOptions.onChange(undefined, event);
+      return;
     }
+
+    watchOptions.onChange(
+      {
+        ...result,
+        duration: Date.now() - startTime + event.duration,
+      },
+      event,
+    );
   });
 
   return watcher;

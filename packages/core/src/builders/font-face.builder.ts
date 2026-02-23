@@ -3,7 +3,7 @@ import { SurimiBase } from '@surimi/common';
 import type { FontFaceProperties } from '@surimi/common';
 import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
 
-import { createDeclarationsFromProperties } from '#utils/postcss.utils';
+import { createDeclarationsFromProperties } from '#utils/css.utils';
 
 import { CoreBuilder } from './core.builder';
 

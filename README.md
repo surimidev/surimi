@@ -46,7 +46,7 @@ select(darkButton).has('.icon > svg').style({
 })
 ```
 
-It has **ZERO** runtime! Everything you write will be compiled into optimized, pure CSS. We use [rolldown](https://rolldown.rs) to power `@surimi/compiler`, which will take your code, generate a CSS AST using PostCSS and compile it into pure CSS.
+It has **ZERO** runtime! Everything you write will be compiled into optimized, pure CSS. We use [rolldown](https://rolldown.rs) to power `@surimi/compiler`, which will take your code, generate a CSS AST using @surimi/ast and compile it into pure CSS.
 
 And remember, you are writing typescript. You can export things, import tokens into other files, use loops, variables, external libraries... everything!
 

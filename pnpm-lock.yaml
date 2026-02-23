@@ -37,6 +37,9 @@ catalogs:
     include-media:
       specifier: ^2.0.0
       version: 2.0.0
+    postcss:
+      specifier: ^8.5.6
+      version: 8.5.6
     sanitize.css:
       specifier: ^13.0.0
       version: 13.0.0
@@ -76,9 +79,6 @@ catalogs:
     csstype:
       specifier: ^3.2.3
       version: 3.2.3
-    postcss:
-      specifier: ^8.5.6
-      version: 8.5.6
   script:
     concurrently:
       specifier: ^9.2.1
@@ -508,6 +508,9 @@ importers:
       include-media:
         specifier: catalog:docs
         version: 2.0.0
+      postcss:
+        specifier: catalog:docs
+        version: 8.5.6
       remark-emoji:
         specifier: ^5.0.2
         version: 5.0.2
@@ -565,9 +568,6 @@ importers:
       '@surimi/parsers':
         specifier: workspace:*
         version: link:../parsers
-      postcss:
-        specifier: catalog:prod
-        version: 8.5.6
     devDependencies:
       '@surimi/linter-config':
         specifier: workspace:*

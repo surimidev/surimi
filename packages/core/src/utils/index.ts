@@ -1,2 +1,2 @@
-export * from './postcss.utils';
+export * from './css.utils';
 export * from './selector.utils';

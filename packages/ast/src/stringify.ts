@@ -1,4 +1,4 @@
-import type { CssAtRule, CssChild, CssDeclaration, CssRoot, CssRule } from './types.js';
+import type { CssAtRule, CssDeclaration, CssRoot, CssRule } from './types.js';
 
 const DEFAULT_INDENT = '    ';
 

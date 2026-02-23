@@ -7,11 +7,11 @@ import {
   FontFaceBuilder,
   joinSelectors,
   KeyframesBuilder,
-  KeyframeStepConfig,
   MediaQueryBuilder,
   MixinBuilder,
   StyleBuilder,
 } from '@surimi/core';
+import type { KeyframeStepConfig } from '@surimi/core';
 import { tokenize } from '@surimi/parsers';
 
 /**
