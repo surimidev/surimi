@@ -116,7 +116,7 @@ describe('Usables - style() and use()', () => {
       expect(Surimi.build()).toBe(`\
 .button {
     background-color: blue;
-    color: white
+    color: white;
 }`);
     });
 
@@ -131,10 +131,10 @@ describe('Usables - style() and use()', () => {
       expect(Surimi.build()).toBe(`\
 .btn {
     padding: 1rem;
-    border-radius: 4px
+    border-radius: 4px;
 }
 .btn:hover {
-    opacity: 0.8
+    opacity: 0.8;
 }`);
     });
   });
@@ -149,7 +149,7 @@ describe('Usables - style() and use()', () => {
 
       expect(Surimi.build()).toBe(`\
 .link:hover {
-    text-decoration: underline
+    text-decoration: underline;
 }`);
     });
 
@@ -162,10 +162,10 @@ describe('Usables - style() and use()', () => {
 
       expect(Surimi.build()).toBe(`\
 .nav-link {
-    color: blue
+    color: blue;
 }
 .nav-link:hover {
-    text-decoration: underline
+    text-decoration: underline;
 }`);
     });
   });

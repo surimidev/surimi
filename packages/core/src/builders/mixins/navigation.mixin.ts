@@ -10,32 +10,32 @@ export abstract class WithNavigation<TContext extends string> extends CoreBuilde
   public child<TChild extends string>(selector: TChild): SelectorBuilder<`${TContext} > ${TChild}`> {
     return new SelectorBuilder(
       [...this._context, ...tokenizeSelector(`> ${selector}`)] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 
   public descendant<TDescendant extends string>(selector: TDescendant): SelectorBuilder<`${TContext} ${TDescendant}`> {
     return new SelectorBuilder(
       [...this._context, ...tokenizeSelector(` ${selector}`)] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 
   public adjacent<TAdjacent extends string>(selector: TAdjacent): SelectorBuilder<`${TContext} + ${TAdjacent}`> {
     return new SelectorBuilder(
       [...this._context, ...tokenizeSelector(`+ ${selector}`)] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 
   public sibling<TSibling extends string>(selector: TSibling): SelectorBuilder<`${TContext} ~ ${TSibling}`> {
     return new SelectorBuilder(
       [...this._context, ...tokenizeSelector(`~ ${selector}`)] as never,
-      this._postcssContainer,
-      this._postcssRoot,
+      this._container,
+      this._cssRoot,
     );
   }
 }

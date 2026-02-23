@@ -6,6 +6,12 @@ export default defineConfig({
     projects: [
       {
         test: {
+          name: 'ast',
+          include: ['./packages/ast/test/**/*.spec.ts'],
+        },
+      },
+      {
+        test: {
           name: 'compiler',
           include: ['./packages/compiler/test/**/*.spec.ts'],
         },

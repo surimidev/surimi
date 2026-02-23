@@ -75,7 +75,7 @@ export class MediaQueryBuilder<TQuery extends string>
       `${currentContextString} ${parameter}`,
     ) as TokenizeAtRule<`${TQuery} ${TNewParam}`>;
 
-    return new MediaQueryBuilder(newContext as never, this._postcssContainer, this._postcssRoot);
+    return new MediaQueryBuilder(newContext as never, this._container, this._cssRoot);
   }
 
   // ------------

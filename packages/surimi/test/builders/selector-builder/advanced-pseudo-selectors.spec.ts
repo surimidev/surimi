@@ -13,7 +13,7 @@ describe('Advanced Pseudo-selectors', () => {
 
       expect(Surimi.build()).toBe(`\
 .item:nth-child(3) {
-    background-color: yellow
+    background-color: yellow;
 }`);
     });
 
@@ -22,7 +22,7 @@ describe('Advanced Pseudo-selectors', () => {
 
       expect(Surimi.build()).toBe(`\
 tr:nth-child(odd) {
-    background-color: #f0f0f0
+    background-color: #f0f0f0;
 }`);
     });
 
@@ -31,7 +31,7 @@ tr:nth-child(odd) {
 
       expect(Surimi.build()).toBe(`\
 tr:nth-child(even) {
-    background-color: white
+    background-color: white;
 }`);
     });
 
@@ -40,7 +40,7 @@ tr:nth-child(even) {
 
       expect(Surimi.build()).toBe(`\
 .card:nth-child(2n+1) {
-    margin-right: 0
+    margin-right: 0;
 }`);
     });
 
@@ -49,7 +49,7 @@ tr:nth-child(even) {
 
       expect(Surimi.build()).toBe(`\
 .btn:nth-child(2):hover {
-    transform: scale(1.05)
+    transform: scale(1.05);
 }`);
     });
   });
@@ -60,7 +60,7 @@ tr:nth-child(even) {
 
       expect(Surimi.build()).toBe(`\
 .nav-item:first-child {
-    margin-left: 0
+    margin-left: 0;
 }`);
     });
 
@@ -69,7 +69,7 @@ tr:nth-child(even) {
 
       expect(Surimi.build()).toBe(`\
 p:first-child {
-    margin-top: 0
+    margin-top: 0;
 }`);
     });
 
@@ -78,7 +78,7 @@ p:first-child {
 
       expect(Surimi.build()).toBe(`\
 .container > div:first-child {
-    border-top: none
+    border-top: none;
 }`);
     });
   });
@@ -89,7 +89,7 @@ p:first-child {
 
       expect(Surimi.build()).toBe(`\
 .nav-item:last-child {
-    margin-right: 0
+    margin-right: 0;
 }`);
     });
 
@@ -98,7 +98,7 @@ p:first-child {
 
       expect(Surimi.build()).toBe(`\
 p:last-child {
-    margin-bottom: 0
+    margin-bottom: 0;
 }`);
     });
 
@@ -107,7 +107,7 @@ p:last-child {
 
       expect(Surimi.build()).toBe(`\
 .sidebar ul > li:last-child {
-    border-bottom: none
+    border-bottom: none;
 }`);
     });
   });
@@ -118,7 +118,7 @@ p:last-child {
 
       expect(Surimi.build()).toBe(`\
 h2:nth-of-type(1) {
-    font-size: 2rem
+    font-size: 2rem;
 }`);
     });
 
@@ -127,7 +127,7 @@ h2:nth-of-type(1) {
 
       expect(Surimi.build()).toBe(`\
 article:nth-of-type(odd) {
-    background-color: #f9f9f9
+    background-color: #f9f9f9;
 }`);
     });
 
@@ -136,7 +136,7 @@ article:nth-of-type(odd) {
 
       expect(Surimi.build()).toBe(`\
 section:nth-of-type(even) {
-    padding: 2rem
+    padding: 2rem;
 }`);
     });
 
@@ -145,7 +145,7 @@ section:nth-of-type(even) {
 
       expect(Surimi.build()).toBe(`\
 img:nth-of-type(3n) {
-    border: 2px solid blue
+    border: 2px solid blue;
 }`);
     });
 
@@ -154,7 +154,7 @@ img:nth-of-type(3n) {
 
       expect(Surimi.build()).toBe(`\
 .image:nth-of-type(2) {
-    float: right
+    float: right;
 }`);
     });
   });
@@ -165,7 +165,7 @@ img:nth-of-type(3n) {
 
       expect(Surimi.build()).toBe(`\
 .grid-item:nth-child(odd):nth-of-type(even) {
-    opacity: 0.8
+    opacity: 0.8;
 }`);
     });
 
@@ -178,7 +178,7 @@ img:nth-of-type(3n) {
       expect(Surimi.build()).toBe(`\
 .btn:first-child:hover:focus {
     outline: 2px solid blue;
-    transform: translateY(-2px)
+    transform: translateY(-2px);
 }`);
     });
 
@@ -187,7 +187,7 @@ img:nth-of-type(3n) {
 
       expect(Surimi.build()).toBe(`\
 .form > input:first-child + .label {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
   });
@@ -198,7 +198,7 @@ img:nth-of-type(3n) {
 
       expect(Surimi.build()).toBe(`\
 .item:nth-child(-1) {
-    display: none
+    display: none;
 }`);
     });
 
@@ -207,7 +207,7 @@ img:nth-of-type(3n) {
 
       expect(Surimi.build()).toBe(`\
 p:nth-of-type(0) {
-    color: gray
+    color: gray;
 }`);
     });
 
@@ -216,7 +216,7 @@ p:nth-of-type(0) {
 
       expect(Surimi.build()).toBe(`\
 .tile:nth-child(-2n+3) {
-    background: linear-gradient(45deg, #f0f, #0ff)
+    background: linear-gradient(45deg, #f0f, #0ff);
 }`);
     });
   });

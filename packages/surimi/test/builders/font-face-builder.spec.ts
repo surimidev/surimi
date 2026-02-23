@@ -22,7 +22,7 @@ describe('FontFace Builder', () => {
     src: url(/fonts/myfont.woff2);
     font-weight: normal;
     font-style: normal;
-    unicode-range: U+000-5FF
+    unicode-range: U+000-5FF;
 }`);
   });
 
@@ -39,10 +39,10 @@ describe('FontFace Builder', () => {
     expect(Surimi.build()).toBe(`\
 @font-face {
     font-family: MyFont;
-    src: url(/fonts/myfont.woff2)
+    src: url(/fonts/myfont.woff2);
 }
 body {
-    font-family: MyFont
+    font-family: MyFont;
 }`);
   });
 });

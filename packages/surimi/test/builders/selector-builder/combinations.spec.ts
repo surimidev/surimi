@@ -16,12 +16,12 @@ describe('Selector Builder - Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .button {
-    padding: 1rem
+    padding: 1rem;
 }
 .container {
     margin: 2rem;
     .button {
-        color: red
+        color: red;
     }
 }`);
     });
@@ -36,18 +36,18 @@ describe('Selector Builder - Combinations', () => {
 
       expect(Surimi.build()).toBe(`\
 .icon {
-    width: 16px
+    width: 16px;
 }
 .button {
     padding: 1rem;
     .icon {
-        height: 16px
+        height: 16px;
     }
 }
 .container {
     margin: 2rem;
     .button {
-        color: red
+        color: red;
     }
 }`);
     });
@@ -63,13 +63,13 @@ describe('Selector Builder - Combinations', () => {
       expect(Surimi.build()).toBe(`\
 .container {
     .button {
-        color: red
+        color: red;
     }
     .button:hover {
-        color: blue
+        color: blue;
     }
     .button:hover:active {
-        color: green
+        color: green;
     }
 }`);
     });
@@ -90,14 +90,14 @@ describe('Selector Builder - Combinations', () => {
 .container {
     margin: 2rem;
     .button {
-        color: red
+        color: red;
     }
 }
 .button {
-    padding: 1rem
+    padding: 1rem;
 }
 .button.primary {
-    background-color: blue
+    background-color: blue;
 }`);
     });
   });

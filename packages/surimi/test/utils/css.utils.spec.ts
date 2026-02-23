@@ -1,15 +1,14 @@
-import { describe, expect, it } from 'vitest';
-
+import type { CssProperties } from '@surimi/common';
 import {
   createDeclarationsFromProperties,
   formatPropertyName,
   formatPropertyValue,
-  type CssProperties,
 } from '@surimi/core';
+import { describe, expect, it } from 'vitest';
 
 import { property } from '#index';
 
-describe('postcss.utils', () => {
+describe('css.utils', () => {
   describe('formatPropertyName', () => {
     it('should convert camelCase to kebab-case', () => {
       expect(formatPropertyName('backgroundColor')).toBe('background-color');

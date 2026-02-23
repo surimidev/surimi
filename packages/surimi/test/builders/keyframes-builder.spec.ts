@@ -14,10 +14,10 @@ describe('Keyframes Builder', () => {
       expect(Surimi.build()).toBe(`\
 @keyframes fade-in {
     from {
-        opacity: 0
+        opacity: 0;
     }
     to {
-        opacity: 1
+        opacity: 1;
     }
 }`);
     });
@@ -32,15 +32,15 @@ describe('Keyframes Builder', () => {
 @keyframes slide-and-fade {
     0% {
         transform: translateX(-100%);
-        opacity: 0
+        opacity: 0;
     }
     50% {
         transform: translateX(0);
-        opacity: 0.5
+        opacity: 0.5;
     }
     100% {
         transform: translateX(0);
-        opacity: 1
+        opacity: 1;
     }
 }`);
     });
@@ -55,15 +55,15 @@ describe('Keyframes Builder', () => {
       expect(Surimi.build()).toBe(`\
 @keyframes bounce {
     0% {
-        transform: translateY(0)
+        transform: translateY(0);
     }
     50% {
         transform: translateY(-50px);
-        opacity: 0.5
+        opacity: 0.5;
     }
     100% {
         transform: translateY(0);
-        opacity: 1
+        opacity: 1;
     }
 }`);
     });
@@ -79,10 +79,10 @@ describe('Keyframes Builder', () => {
       expect(Surimi.build()).toBe(`\
 @keyframes fade-in {
     from {
-        opacity: 0
+        opacity: 0;
     }
     to {
-        opacity: 1
+        opacity: 1;
     }
 }`);
     });
@@ -97,15 +97,15 @@ describe('Keyframes Builder', () => {
 @keyframes slide-and-fade {
     0% {
         transform: translateX(-100%);
-        opacity: 0
+        opacity: 0;
     }
     100% {
         transform: translateX(0);
-        opacity: 1
+        opacity: 1;
     }
     50% {
         transform: translateX(0);
-        opacity: 0.5
+        opacity: 0.5;
     }
 }`);
     });
@@ -120,11 +120,12 @@ describe('Keyframes Builder', () => {
       expect(Surimi.build()).toBe(`\
 @keyframes fade-in {
     from {
-        opacity: 0
+        opacity: 0;
     }
-    50% {}
+    50% {
+}
     to {
-        opacity: 1
+        opacity: 1;
     }
 }`);
     });

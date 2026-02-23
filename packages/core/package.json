@@ -29,7 +29,7 @@
     "@surimi/common": "workspace:*",
     "@surimi/parsers": "workspace:*",
     "csstype": "catalog:prod",
-    "postcss": "catalog:prod",
+    "@surimi/ast": "workspace:*",
     "ts-mixer": "^6.0.4"
   },
   "devDependencies": {

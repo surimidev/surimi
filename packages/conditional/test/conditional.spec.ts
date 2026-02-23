@@ -15,7 +15,7 @@ describe('ConditionalBuilder', () => {
       when('.button').hovered().select('.container').style({ color: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
-    color: red
+    color: red;
 }`);
     });
 
@@ -23,7 +23,7 @@ describe('ConditionalBuilder', () => {
       when('.input').focused().select('html').style({ backgroundColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:focus) html {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -31,7 +31,7 @@ describe('ConditionalBuilder', () => {
       when('.checkbox').checked().select('.icon').style({ display: 'block' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.checkbox:checked) .icon {
-    display: block
+    display: block;
 }`);
     });
 
@@ -39,7 +39,7 @@ describe('ConditionalBuilder', () => {
       when('.button').disabled().select('.form').style({ opacity: '0.5' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:disabled) .form {
-    opacity: 0.5
+    opacity: 0.5;
 }`);
     });
   });
@@ -49,7 +49,7 @@ describe('ConditionalBuilder', () => {
       when('button').hovered().select('html > .container').style({ color: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(button:hover) html > .container {
-    color: red
+    color: red;
 }`);
     });
 
@@ -57,7 +57,7 @@ describe('ConditionalBuilder', () => {
       when('#submit-button').active().select('.modal').style({ zIndex: '1000' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(#submit-button:active) .modal {
-    z-index: 1000
+    z-index: 1000;
 }`);
     });
 
@@ -65,7 +65,7 @@ describe('ConditionalBuilder', () => {
       when('[data-state="active"]').hovered().select('.tooltip').style({ visibility: 'visible' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has([data-state="active"]:hover) .tooltip {
-    visibility: visible
+    visibility: visible;
 }`);
     });
   });
@@ -76,10 +76,10 @@ describe('ConditionalBuilder', () => {
       when('.button').focused().select('.container').style({ borderColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
-    color: red
+    color: red;
 }
 :where(html):has(.button:focus) .container {
-    border-color: blue
+    border-color: blue;
 }`);
     });
 
@@ -88,10 +88,10 @@ describe('ConditionalBuilder', () => {
       when('.link').hovered().select('.sidebar').style({ backgroundColor: 'gray' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
-    color: red
+    color: red;
 }
 :where(html):has(.link:hover) .sidebar {
-    background-color: gray
+    background-color: gray;
 }`);
     });
 
@@ -102,7 +102,7 @@ describe('ConditionalBuilder', () => {
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
     color: red;
-    background-color: yellow
+    background-color: yellow;
 }`);
     });
   });
@@ -112,7 +112,7 @@ describe('ConditionalBuilder', () => {
       when('.form').focusedWithin().select('body').style({ backgroundColor: '#f0f0f0' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.form:focus-within) body {
-    background-color: #f0f0f0
+    background-color: #f0f0f0;
 }`);
     });
 
@@ -120,7 +120,7 @@ describe('ConditionalBuilder', () => {
       when('.button').focusedVisible().select('.overlay').style({ display: 'block' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:focus-visible) .overlay {
-    display: block
+    display: block;
 }`);
     });
 
@@ -129,10 +129,10 @@ describe('ConditionalBuilder', () => {
       when('.input').invalid().select('.error-icon').style({ display: 'inline' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:valid) .success-icon {
-    display: inline
+    display: inline;
 }
 :where(html):has(.input:invalid) .error-icon {
-    display: inline
+    display: inline;
 }`);
     });
 
@@ -140,7 +140,7 @@ describe('ConditionalBuilder', () => {
       when('.item').nthChild(2).select('.list').style({ backgroundColor: 'lightgray' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.item:nth-child(2)) .list {
-    background-color: lightgray
+    background-color: lightgray;
 }`);
     });
 
@@ -148,7 +148,7 @@ describe('ConditionalBuilder', () => {
       when('.button').excluding('.disabled').select('.form').style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:not(.disabled)) .form {
-    opacity: 1
+    opacity: 1;
 }`);
     });
   });
@@ -169,11 +169,11 @@ describe('ConditionalBuilder', () => {
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.email-input:invalid) .error-message {
     display: block;
-    color: red
+    color: red;
 }
 :where(html):has(.email-input:valid) .success-icon {
     display: inline;
-    color: green
+    color: green;
 }`);
     });
 
@@ -191,10 +191,10 @@ describe('ConditionalBuilder', () => {
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.card:hover) .card-overlay {
     opacity: 1;
-    visibility: visible
+    visibility: visible;
 }
 :where(html):has(.card-button:focus) .card {
-    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.3)
+    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.3);
 }`);
     });
 
@@ -216,12 +216,12 @@ describe('ConditionalBuilder', () => {
       expect(SurimiContext.build()).toBe(`:where(html):has(#show-details:checked) .details-panel {
     max-height: 500px;
     opacity: 1;
-    transition: all 0.3s ease
+    transition: all 0.3s ease;
 }
 :where(html):has(#show-details:not(:checked)) .details-panel {
     max-height: 0;
     opacity: 0;
-    overflow: hidden
+    overflow: hidden;
 }`);
     });
   });
@@ -231,7 +231,7 @@ describe('ConditionalBuilder', () => {
       when('.button').is.hovered().select('.container').style({ color: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
-    color: blue
+    color: blue;
 }`);
     });
 
@@ -239,7 +239,7 @@ describe('ConditionalBuilder', () => {
       when('.item').is.firstChild().select('.list').style({ fontWeight: 'bold' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.item:first-child) .list {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
 
@@ -247,7 +247,7 @@ describe('ConditionalBuilder', () => {
       when('.row').is.nthChild('2n').select('.table').style({ backgroundColor: '#f0f0f0' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.row:nth-child(2n)) .table {
-    background-color: #f0f0f0
+    background-color: #f0f0f0;
 }`);
     });
 
@@ -255,7 +255,7 @@ describe('ConditionalBuilder', () => {
       when('.toggle').is.checked().select('.panel').style({ display: 'block' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.toggle:checked) .panel {
-    display: block
+    display: block;
 }`);
     });
 
@@ -263,7 +263,7 @@ describe('ConditionalBuilder', () => {
       when('.element').is.excluding('.hidden').select('.parent').style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.element:not(.hidden)) .parent {
-    opacity: 1
+    opacity: 1;
 }`);
     });
   });
@@ -273,7 +273,7 @@ describe('ConditionalBuilder', () => {
       when('.button').not.active().select('.container').style({ opacity: '0.5' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:not(:active)) .container {
-    opacity: 0.5
+    opacity: 0.5;
 }`);
     });
 
@@ -281,7 +281,7 @@ describe('ConditionalBuilder', () => {
       when('.link').is.not.hovered().select('.menu').style({ backgroundColor: 'white' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.link:not(:hover)) .menu {
-    background-color: white
+    background-color: white;
 }`);
     });
 
@@ -289,7 +289,7 @@ describe('ConditionalBuilder', () => {
       when('.checkbox').not.checked().select('.label').style({ color: 'gray' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.checkbox:not(:checked)) .label {
-    color: gray
+    color: gray;
 }`);
     });
 
@@ -297,7 +297,7 @@ describe('ConditionalBuilder', () => {
       when('.item').not.firstChild().select('.list').style({ marginTop: '1rem' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.item:not(:first-child)) .list {
-    margin-top: 1rem
+    margin-top: 1rem;
 }`);
     });
 
@@ -305,7 +305,7 @@ describe('ConditionalBuilder', () => {
       when('.input').not.disabled().select('.form').style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:not(:disabled)) .form {
-    opacity: 1
+    opacity: 1;
 }`);
     });
   });
@@ -315,7 +315,7 @@ describe('ConditionalBuilder', () => {
       when('.button').hovered().and.focused().select('.container').style({ color: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover:focus) .container {
-    color: red
+    color: red;
 }`);
     });
 
@@ -323,7 +323,7 @@ describe('ConditionalBuilder', () => {
       when('.input').focused().and.valid().and.required().select('.form').style({ borderColor: 'green' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:focus:valid:required) .form {
-    border-color: green
+    border-color: green;
 }`);
     });
 
@@ -331,7 +331,7 @@ describe('ConditionalBuilder', () => {
       when('.button').hovered().and.not.disabled().select('.container').style({ cursor: 'pointer' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover:not(:disabled)) .container {
-    cursor: pointer
+    cursor: pointer;
 }`);
     });
 
@@ -339,7 +339,7 @@ describe('ConditionalBuilder', () => {
       when('.input').is.focused().and.valid().select('.form').style({ borderColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:focus:valid) .form {
-    border-color: blue
+    border-color: blue;
 }`);
     });
   });
@@ -349,7 +349,7 @@ describe('ConditionalBuilder', () => {
       when('.button').hovered().or.focused().select('.container').style({ backgroundColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover, .button:focus) .container {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -357,7 +357,7 @@ describe('ConditionalBuilder', () => {
       when('.element').active().or.focused().or.hovered().select('.parent').style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.element:active, .element:focus, .element:hover) .parent {
-    opacity: 1
+    opacity: 1;
 }`);
     });
 
@@ -365,7 +365,7 @@ describe('ConditionalBuilder', () => {
       when('.checkbox').checked().or.not.disabled().select('.form').style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.checkbox:checked, .checkbox:not(:disabled)) .form {
-    opacity: 1
+    opacity: 1;
 }`);
     });
 
@@ -373,7 +373,7 @@ describe('ConditionalBuilder', () => {
       when('.button').is.hovered().or.focused().select('.container').style({ color: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover, .button:focus) .container {
-    color: red
+    color: red;
 }`);
     });
   });
@@ -383,7 +383,7 @@ describe('ConditionalBuilder', () => {
       when('.button').hovered().and.focused().or.active().select('.container').style({ color: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover:focus, .button:active) .container {
-    color: red
+    color: red;
 }`);
     });
 
@@ -397,7 +397,7 @@ describe('ConditionalBuilder', () => {
         .style({ borderColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:focus:not(:disabled), .input:hover:valid) .form {
-    border-color: blue
+    border-color: blue;
 }`);
     });
 
@@ -408,7 +408,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:focus:valid, .input:not(:blank):not(:invalid)) .form {
-    background-color: lightgreen
+    background-color: lightgreen;
 }`);
     });
   });
@@ -423,13 +423,13 @@ describe('ConditionalBuilder', () => {
       buttonCondition.active().select('.container-3').style({ backgroundColor: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container-1 {
-    background-color: blue
+    background-color: blue;
 }
 :where(html):has(.button:focus) .container-2 {
-    background-color: green
+    background-color: green;
 }
 :where(html):has(.button:active) .container-3 {
-    background-color: red
+    background-color: red;
 }`);
     });
 
@@ -441,10 +441,10 @@ describe('ConditionalBuilder', () => {
       enabledButton.and.focused().select('.tooltip-2').style({ display: 'block' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:not(:disabled):hover) .tooltip-1 {
-    display: block
+    display: block;
 }
 :where(html):has(.button:not(:disabled):focus) .tooltip-2 {
-    display: block
+    display: block;
 }`);
     });
 
@@ -459,13 +459,13 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.interactive-btn:hover) .state-indicator-0 {
-    opacity: 1
+    opacity: 1;
 }
 :where(html):has(.interactive-btn:focus) .state-indicator-1 {
-    opacity: 1
+    opacity: 1;
 }
 :where(html):has(.interactive-btn:active) .state-indicator-2 {
-    opacity: 1
+    opacity: 1;
 }`);
     });
 
@@ -480,10 +480,10 @@ describe('ConditionalBuilder', () => {
       invalidInput.or.focused().select('.form-2').style({ borderColor: 'red' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:valid, .input:focus) .form-1 {
-    border-color: green
+    border-color: green;
 }
 :where(html):has(.input:invalid, .input:focus) .form-2 {
-    border-color: red
+    border-color: red;
 }`);
     });
   });
@@ -493,7 +493,7 @@ describe('ConditionalBuilder', () => {
       when('.container > .button').hovered().select('.header').style({ color: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.container > .button:hover) .header {
-    color: blue
+    color: blue;
 }`);
     });
 
@@ -501,7 +501,7 @@ describe('ConditionalBuilder', () => {
       when('.button').focused().select('.header > .title').style({ fontWeight: 'bold' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:focus) .header > .title {
-    font-weight: bold
+    font-weight: bold;
 }`);
     });
 
@@ -511,7 +511,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.sidebar > .nav-item:active) .main-content > .section {
-    border-left: 3px solid blue
+    border-left: 3px solid blue;
 }`);
     });
 
@@ -521,7 +521,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.card .button:hover) .card .header {
-    background-color: lightgray
+    background-color: lightgray;
 }`);
     });
 
@@ -531,7 +531,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.checkbox + .label:hover) .form-group {
-    background-color: lightyellow
+    background-color: lightyellow;
 }`);
     });
 
@@ -541,7 +541,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.heading ~ .paragraph:hover) .article {
-    outline: 1px solid gray
+    outline: 1px solid gray;
 }`);
     });
 
@@ -551,7 +551,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(button[type="submit"]:hover) form {
-    border-color: green
+    border-color: green;
 }`);
     });
 
@@ -561,7 +561,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.sidebar > nav > ul > li > a:active) body > main {
-    margin-left: 250px
+    margin-left: 250px;
 }`);
     });
 
@@ -571,7 +571,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.item:first-child:hover) .list {
-    padding-top: 1rem
+    padding-top: 1rem;
 }`);
     });
 
@@ -581,7 +581,7 @@ describe('ConditionalBuilder', () => {
       });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.form > .input:focus:valid) .form > .submit-button {
-    opacity: 1
+    opacity: 1;
 }`);
     });
 
@@ -592,7 +592,7 @@ describe('ConditionalBuilder', () => {
 
       expect(SurimiContext.build())
         .toBe(`:where(html):has(.modal .close-button:hover, .modal .close-button:focus) .modal .overlay {
-    opacity: 0.9
+    opacity: 0.9;
 }`);
     });
   });
@@ -604,7 +604,7 @@ describe('ConditionalBuilder', () => {
       when(buttonSelector).hovered().select('.container').style({ backgroundColor: 'blue' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
-    background-color: blue
+    background-color: blue;
 }`);
     });
 
@@ -614,7 +614,7 @@ describe('ConditionalBuilder', () => {
       when('.button').focused().select(containerSelector).style({ borderColor: 'green' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:focus) .container {
-    border-color: green
+    border-color: green;
 }`);
     });
 
@@ -625,7 +625,7 @@ describe('ConditionalBuilder', () => {
       when(inputSelector).valid().select(formSelector).style({ opacity: '1' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.input:valid) .form {
-    opacity: 1
+    opacity: 1;
 }`);
     });
 
@@ -640,7 +640,7 @@ describe('ConditionalBuilder', () => {
       when(nestedSelector).active().select(targetSelector).style({ marginLeft: '250px' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.sidebar > .nav > .item:active) .main-content {
-    margin-left: 250px
+    margin-left: 250px;
 }`);
     });
 
@@ -650,7 +650,7 @@ describe('ConditionalBuilder', () => {
       when(buttonSelector).hovered().and.not.disabled().select('.form').style({ cursor: 'pointer' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.submit-btn:hover:not(:disabled)) .form {
-    cursor: pointer
+    cursor: pointer;
 }`);
     });
 
@@ -661,7 +661,7 @@ describe('ConditionalBuilder', () => {
       when(linkSelector).hovered().or.focused().select(navSelector).style({ backgroundColor: 'lightgray' });
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.link:hover, .link:focus) .nav {
-    background-color: lightgray
+    background-color: lightgray;
 }`);
     });
   });
