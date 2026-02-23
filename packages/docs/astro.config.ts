@@ -6,7 +6,6 @@ import remarkEmoji from 'remark-emoji';
 import remarkGithub from 'remark-github';
 import blockquoteAlert from 'remark-github-blockquote-alert';
 import { build, type Plugin } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import surimiPlugin from 'vite-plugin-surimi';
 
 function vitePluginBundleSurimi() {
@@ -73,7 +72,10 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [nodePolyfills(), surimiPlugin(), vitePluginBundleSurimi()],
+    plugins: [surimiPlugin(), vitePluginBundleSurimi()],
+    optimizeDeps: {
+      exclude: ['@surimi/compiler', '@rolldown/browser'],
+    },
   },
 
   integrations: [mdx(), react()],

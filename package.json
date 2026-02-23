@@ -48,8 +48,7 @@
   },
   "pnpm": {
     "overrides": {
-      "unconfig": "v7.4.1",
-      "vite": "catalog:build"
+      "vite": "npm:rolldown-vite@latest"
     }
   }
 }

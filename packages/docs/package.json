@@ -19,26 +19,23 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
-    "@rolldown/binding-wasm32-wasi": "1.0.0-rc.5",
     "@rolldown/browser": "1.0.0-rc.5",
     "@surimi/compiler": "workspace:*",
     "clsx": "^2.1.1",
-    "comlink": "^4.4.2",
     "memfs": "^4.56.10",
     "monaco-editor-auto-typings": "^0.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-resizable-panels": "^3.0.0",
+    "react-resizable-panels": "^3.0.6",
     "vite": "catalog:build"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/react": "^4.4.2",
+    "@astrojs/mdx": "catalog:docs",
+    "@astrojs/react": "catalog:docs",
     "@fontsource/ibm-plex-mono": "catalog:docs",
     "@fortawesome/fontawesome-svg-core": "catalog:docs",
     "@fortawesome/free-brands-svg-icons": "catalog:docs",
     "@fortawesome/free-solid-svg-icons": "catalog:docs",
-    "@rolldown/plugin-node-polyfills": "^1.0.3",
     "@surimi/common": "workspace:*",
     "@surimi/conditional": "workspace:*",
     "@surimi/core": "workspace:*",
@@ -46,7 +43,7 @@
     "@surimi/parsers": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
-    "@types/react": "^19.2.10",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "catalog:docs",
     "cssnano": "catalog:docs",
@@ -59,7 +56,6 @@
     "sharp": "catalog:docs",
     "surimi": "workspace:*",
     "typescript": "catalog:build",
-    "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-surimi": "workspace:*"
   }
 }
