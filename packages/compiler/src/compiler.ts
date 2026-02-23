@@ -1,7 +1,20 @@
-import type { InputOptions } from 'rolldown';
-import { rolldown } from 'rolldown';
+import type { InputOptions } from '@rolldown/browser';
+import { rolldown } from '@rolldown/browser';
 
 import type { CompileOptions, CompileResult } from '.';
+
+/** Base64-encode UTF-8 string; works in Node (Buffer) and browser (TextEncoder + btoa). */
+function toBase64Utf8(str: string): string {
+  if (typeof Buffer !== 'undefined' && typeof Buffer.from === 'function') {
+    return Buffer.from(str, 'utf8').toString('base64');
+  }
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
 
 export const SURIMI_CSS_EXPORT_NAME = '__SURIMI_GENERATED_CSS__';
 export const COMPILER_PLUGIN_NAME = 'surimi:compiler-transform';
@@ -19,36 +32,32 @@ interface SurimiModule extends Record<string, unknown> {
   [SURIMI_CSS_EXPORT_NAME]?: unknown;
 }
 
-export function getRolldownInput(options: CompileOptions) {
-  validateCompileOptions(options);
-
-  const { inputPath, cwd, include, exclude } = options;
-
+function createSurimiTransformPlugin(options: CompileOptions) {
   return {
-    input: inputPath,
-    cwd,
-    plugins: [
-      {
-        name: COMPILER_PLUGIN_NAME,
-        transform: {
-          filter: {
-            id: {
-              include,
-              exclude,
-            },
-          },
-          handler(code) {
-            const finalCode = `\
+    name: COMPILER_PLUGIN_NAME,
+    transform: {
+      filter: { id: { include: options.include, exclude: options.exclude } },
+      handler(code: string) {
+        return `\
 import { Surimi as __surimi__instance__ } from 'surimi';
 __surimi__instance__.clear();
 ${code}
 export const ${SURIMI_CSS_EXPORT_NAME} = __surimi__instance__.build();
 `;
-            return finalCode;
-          },
-        },
       },
-    ],
+    },
+  };
+}
+
+export function getRolldownInput(options: CompileOptions) {
+  validateCompileOptions(options);
+
+  const { input, cwd } = options;
+
+  return {
+    input,
+    cwd,
+    plugins: [createSurimiTransformPlugin(options)],
   } satisfies InputOptions;
 }
 
@@ -86,8 +95,9 @@ export async function getCompileResult(
  */
 export async function execute(code: string) {
   try {
-    const dataUrl = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`;
-    const module = (await import(dataUrl)) as SurimiModule;
+    const module = (await /* @vite-ignore */ import(
+      `data:text/javascript;base64,${toBase64Utf8(code)}`
+    )) as SurimiModule;
 
     // Get the generated CSS
     const cssValue = module[SURIMI_CSS_EXPORT_NAME] ?? '';
@@ -144,10 +154,9 @@ function isSerializable(value: unknown): value is string | number | boolean | nu
 
 // Validates compilation options - throws Error if options are invalid
 function validateCompileOptions(options: CompileOptions): void {
-  if (!options.inputPath || typeof options.inputPath !== 'string') {
-    throw new Error('inputPath must be a non-empty string');
+  if (!options.input || typeof options.input !== 'string') {
+    throw new Error('input must be a non-empty string');
   }
-
   if (!options.cwd || typeof options.cwd !== 'string') {
     throw new Error('cwd must be a non-empty string');
   }
@@ -155,13 +164,8 @@ function validateCompileOptions(options: CompileOptions): void {
   if (!Array.isArray(options.include)) {
     throw new Error('include must be an array');
   }
-
   if (!Array.isArray(options.exclude)) {
     throw new Error('exclude must be an array');
-  }
-
-  if (options.include.length === 0) {
-    throw new Error('include array cannot be empty');
   }
 }
 

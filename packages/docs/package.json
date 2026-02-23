@@ -19,16 +19,16 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@rolldown/binding-wasm32-wasi": "1.0.0-rc.5",
+    "@rolldown/browser": "1.0.0-rc.5",
     "@surimi/compiler": "workspace:*",
-    "@webcontainer/api": "^1.6.1",
-    "@xterm/addon-fit": "^0.11.0",
-    "@xterm/addon-web-links": "^0.12.0",
-    "@xterm/xterm": "^5.5.0",
     "clsx": "^2.1.1",
     "comlink": "^4.4.2",
+    "memfs": "^4.56.10",
     "re-resizable": "^6.11.2",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "vite": "catalog:build"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -37,7 +37,12 @@
     "@fortawesome/fontawesome-svg-core": "catalog:docs",
     "@fortawesome/free-brands-svg-icons": "catalog:docs",
     "@fortawesome/free-solid-svg-icons": "catalog:docs",
+    "@rolldown/plugin-node-polyfills": "^1.0.3",
+    "@surimi/common": "workspace:*",
+    "@surimi/conditional": "workspace:*",
+    "@surimi/core": "workspace:*",
     "@surimi/linter-config": "workspace:*",
+    "@surimi/parsers": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
     "@types/react": "^19.2.10",
@@ -45,6 +50,7 @@
     "astro": "catalog:docs",
     "cssnano": "catalog:docs",
     "include-media": "catalog:docs",
+    "postcss": "catalog:prod",
     "remark-emoji": "^5.0.2",
     "remark-github": "^12.0.0",
     "remark-github-blockquote-alert": "^2.0.1",
@@ -52,6 +58,12 @@
     "sharp": "catalog:docs",
     "surimi": "workspace:*",
     "typescript": "catalog:build",
+    "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-surimi": "workspace:*"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "catalog:build"
+    }
   }
 }

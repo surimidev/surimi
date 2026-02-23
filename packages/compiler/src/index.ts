@@ -1,12 +1,12 @@
-import type { RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
-import { watch } from 'rolldown';
+import type { RolldownWatcher, RolldownWatcherEvent } from '@rolldown/browser';
+import { watch } from '@rolldown/browser';
 
 import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
 
 export interface CompileOptions {
-  /** Absolute path to the input file to compile */
-  inputPath: string;
-  /** Working directory for resolving modules */
+  /** Absolute path to the input file. */
+  input: string;
+  /** Working directory for resolving modules. */
   cwd: string;
   /** Glob patterns for files to include in compilation */
   include: string[];

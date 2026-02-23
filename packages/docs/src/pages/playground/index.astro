@@ -1,8 +1,9 @@
 ---
 import Main from '#layouts/Main/Main.astro';
-import { Playground } from '#playground';
+
+import Test from '../../components/playground/Test';
 ---
 
 <Main title="Playground">
-  <Playground client:only />
+  <Test client:only />
 </Main>

@@ -46,7 +46,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
   const getCompilationResult = async (id: string): Promise<CompileResult> => {
     if (!compilationCache.has(id)) {
       const compileResult = await compile({
-        inputPath: normalizePath(id),
+        input: normalizePath(id),
         cwd: resolvedConfig?.root ?? process.cwd(),
         include,
         exclude,
