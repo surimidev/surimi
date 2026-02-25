@@ -1,5 +1,5 @@
-import type { RolldownOutput, RolldownWatcher, RolldownWatcherEvent } from 'rolldown';
-import { watch } from 'rolldown';
+import type { RolldownOutput, RolldownWatcher, RolldownWatcherEvent } from '@rolldown/browser';
+import { watch } from '@rolldown/browser';
 
 import { getCompileResult, getRolldownInput, getRolldownInstance } from '#compiler';
 
@@ -10,9 +10,9 @@ interface WatchBundleResult {
 }
 
 export interface CompileOptions {
-  /** Absolute path to the input file to compile */
-  inputPath: string;
-  /** Working directory for resolving modules */
+  /** Absolute path to the input file. */
+  input: string;
+  /** Working directory for resolving modules. */
   cwd: string;
   /** Glob patterns for files to include in compilation */
   include: string[];
@@ -43,8 +43,10 @@ export interface CompileResult {
 export async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const startTime = Date.now();
   const rolldownInput = getRolldownInput(options);
-  // Rolldown nicely provides an `asyncDispose` symbol.
-  await using rolldownCompiler = await getRolldownInstance(rolldownInput);
+  // Rolldown nicely provides an `asyncDispose` symbol. However, disposing the compiler at the end here when using rolldown-based vite
+  // will halt the build process indefinitely. TODO: Figure out how we can nicely dispose the compiler if it's not needed anymore.
+  // await using rolldownCompiler = await getRolldownInstance(rolldownInput);
+  const rolldownCompiler = await getRolldownInstance(rolldownInput);
   const rolldownOutput = await rolldownCompiler.generate();
   const chunk = rolldownOutput.output[0];
 
@@ -81,12 +83,7 @@ export function compileWatch(options: CompileOptions, watchOptions: WatchOptions
 
     const chunk = output.output[0];
 
-    const result = await getCompileResult(
-      chunk.code,
-      chunk.imports,
-      chunk.dynamicImports,
-      chunk.moduleIds,
-    );
+    const result = await getCompileResult(chunk.code, chunk.imports, chunk.dynamicImports, chunk.moduleIds);
 
     await bundle.close();
 

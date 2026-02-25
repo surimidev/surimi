@@ -87,7 +87,7 @@ async function runCompile(options: CLIOptions) {
   }
 
   const outputPaths = generateOutputPaths(inputPath, outDir ? resolve(cwd, outDir) : undefined);
-  const compileOptions = { inputPath, cwd, include, exclude };
+  const compileOptions = { input: inputPath, cwd, include, exclude };
 
   try {
     intro(`🍣 @surimi/compiler (v${version})`);

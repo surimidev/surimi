@@ -18,9 +18,7 @@ export abstract class CoreBuilder<TContext extends Token[] = []> extends SurimiB
   }
 
   protected getRule(selector: string): CssRule | undefined {
-    return this._container.nodes.find(
-      (node): node is CssRule => node.type === 'rule' && node.selector === selector,
-    );
+    return this._container.nodes.find((node): node is CssRule => node.type === 'rule' && node.selector === selector);
   }
 
   protected getOrCreateRule(): CssRule {

@@ -22,8 +22,7 @@ export function createDeclarationsFromProperties(properties: CssProperties): Css
   for (const [property, value] of Object.entries(properties)) {
     if (value != null) {
       const formattedProperty = formatPropertyName(property);
-      const formattedValue =
-        value instanceof CustomPropertyBuilder ? value.build() : formatPropertyValue(value);
+      const formattedValue = value instanceof CustomPropertyBuilder ? value.build() : formatPropertyValue(value);
 
       declarations.push(
         decl({

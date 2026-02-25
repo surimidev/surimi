@@ -4,6 +4,6 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: 'esm',
   platform: 'neutral',
-  target: 'es2020',
+  target: 'esnext',
   dts: true,
 });

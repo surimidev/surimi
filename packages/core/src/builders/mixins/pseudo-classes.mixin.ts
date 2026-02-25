@@ -48,8 +48,7 @@ export abstract class WithPseudoClasses<TContext extends string>
   public popoverOpen = () => this.createPseudoClass('popover-open');
   public seeking = () => this.createPseudoClass('seeking');
   public stalled = () => this.createPseudoClass('stalled');
-  public state = (name?: string) =>
-    this.createPseudoClass(name ? `state(${name})` : 'state');
+  public state = (name?: string) => this.createPseudoClass(name ? `state(${name})` : 'state');
   public targetCurrent = () => this.createPseudoClass('target-current');
   public volumeLocked = () => this.createPseudoClass('volume-locked');
   public where = (selector: string) => this.createPseudoClass(`where(${selector})`);

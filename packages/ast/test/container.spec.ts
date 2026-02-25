@@ -58,11 +58,7 @@ describe('container', () => {
       r.append(rule({ selector: '.first' }));
       r.append(rule({ selector: '.second' }));
       r.append(atRule({ name: 'media', params: 'screen' }));
-      expect(r.nodes.map(n => (n.type === 'rule' ? n.selector : n.type))).toEqual([
-        '.first',
-        '.second',
-        'atrule',
-      ]);
+      expect(r.nodes.map(n => (n.type === 'rule' ? n.selector : n.type))).toEqual(['.first', '.second', 'atrule']);
     });
   });
 

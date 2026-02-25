@@ -5,9 +5,9 @@ import path from 'node:path';
 import type { CompileOptions } from '../../src';
 
 // Creates default compile options for testing
-export function createDefaultOptions(inputPath: string): CompileOptions {
+export function createDefaultOptions(input: string): CompileOptions {
   return {
-    inputPath,
+    input,
     cwd: process.cwd(),
     include: ['**/*.css.ts'],
     exclude: ['**/node_modules/**'],

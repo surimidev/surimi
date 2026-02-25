@@ -9,5 +9,8 @@
   "eslint.useFlatConfig": true,
   // Enable if you have issues with the eslint plugin
   "eslint.debug": false,
-  "eslint.run": "onType"
+  "eslint.run": "onType",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

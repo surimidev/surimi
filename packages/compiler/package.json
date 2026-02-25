@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "commander": "^14.0.3",
-    "rolldown": "catalog:build"
+    "@rolldown/browser": "1.0.0-rc.5",
+    "commander": "^14.0.3"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",

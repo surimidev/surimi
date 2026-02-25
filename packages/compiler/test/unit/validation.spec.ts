@@ -5,29 +5,29 @@ import { compile } from '../../src';
 
 describe('Compiler Validation', () => {
   const validOptions = {
-    inputPath: path.resolve(__dirname, '../fixtures/simple.css.ts'),
+    input: path.resolve(__dirname, '../fixtures/simple.css.ts'),
     cwd: process.cwd(),
     include: ['**/*.css.ts'],
     exclude: ['**/node_modules/**'],
   };
 
-  describe('inputPath validation', () => {
-    it('should throw error when inputPath is missing', async () => {
+  describe('input validation', () => {
+    it('should throw error when input is missing', async () => {
       await expect(
         compile({
           ...validOptions,
-          inputPath: '',
+          input: '',
         }),
-      ).rejects.toThrow('inputPath must be a non-empty string');
+      ).rejects.toThrow('input must be a non-empty string');
     });
 
-    it('should throw error when inputPath is not a string', async () => {
+    it('should throw error when input is not a string', async () => {
       await expect(
         compile({
           ...validOptions,
-          inputPath: 123 as unknown as string,
+          input: 123 as unknown as string,
         }),
-      ).rejects.toThrow('inputPath must be a non-empty string');
+      ).rejects.toThrow('input must be a non-empty string');
     });
   });
 

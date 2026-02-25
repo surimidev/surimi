@@ -1,5 +1,5 @@
-import type { CssAtRule, CssChild, CssDeclaration, CssRoot, CssRule } from './types.js';
 import { stringify } from './stringify.js';
+import type { CssAtRule, CssChild, CssDeclaration, CssRoot, CssRule } from './types.js';
 
 function setParent(child: CssChild, parent: CssRoot | CssRule | CssAtRule): void {
   (child as CssChild & { parent?: CssRoot | CssRule | CssAtRule }).parent = parent;
@@ -57,11 +57,7 @@ export function atRule(options: { name: string; params?: string | undefined }): 
   };
 }
 
-export function decl(options: {
-  prop: string;
-  value: string;
-  important?: boolean;
-}): CssDeclaration {
+export function decl(options: { prop: string; value: string; important?: boolean }): CssDeclaration {
   return {
     type: 'decl',
     prop: options.prop,

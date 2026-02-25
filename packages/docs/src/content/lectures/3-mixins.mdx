@@ -1,0 +1,55 @@
+---
+title: The real life
+description: Selecting things properly, like in the real world
+orderId: 3
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    select('body').style({
+      backgroundColor: '#f5f5f5',
+      color: '#333',
+      fontFamily: 'system-ui, sans-serif',
+    });
+
+    select('h1').style({
+      color: '#3498db',
+      fontSize: '2.5rem',
+    });
+  "/index.html": |
+    <div id="root">
+      <h1>Welcome to <span>Surimi</span>!</h1>
+      <button>Click me!</button>
+    </div>
+---
+
+## Selecting things by their tag...
+
+is fun, but not applicable in the real world. You will select things by their class name, id, attribute, etc.
+In plain css, you might use something like [BEM](https://getbem.com/) or [CUBE](https://cube.fyi/) to create logical selectors by combining class names in some ways.
+
+That's totally possible in surimi, but the cool thing is that you can just re-use your selectors. So your life get's even easier.
+
+A simple example are child elements. Instead of creating "hierarchical" classes for them, just select them directly.
+
+```ts
+const heading = select('h1');
+const span = heading.child('span');
+```
+Check the type hints: This selects `h1 > span`.
+More realistically, with classes:
+
+```ts
+const heading = select('.blog-heading');
+const span = heading.child('.blog-decoration');
+```
+
+
+and of course, this works with all other selectors.
+
+```ts
+const container = select('#root');
+container.child('.my-content').hover().style({...});
+container.child("button[disabled]:hover").style({...});
+```
+etc.

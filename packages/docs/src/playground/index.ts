@@ -1,1 +1,1 @@
-export { default as Playground } from '#playground/components/Playground/playground';
+export { default as Playground } from '#playground/components/Playground/Playground';

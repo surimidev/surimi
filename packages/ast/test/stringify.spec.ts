@@ -20,10 +20,7 @@ describe('stringify', () => {
   it('rule with multiple declarations', () => {
     const r = root();
     const ruleNode = rule({ selector: '.bar' });
-    ruleNode.append(
-      decl({ prop: 'color', value: 'blue' }),
-      decl({ prop: 'margin', value: '0' }),
-    );
+    ruleNode.append(decl({ prop: 'color', value: 'blue' }), decl({ prop: 'margin', value: '0' }));
     r.append(ruleNode);
     expect(stringify(r)).toBe(`.bar {
     color: blue;
@@ -63,10 +60,7 @@ describe('stringify', () => {
   it('at-rule without params', () => {
     const r = root();
     const at = atRule({ name: 'font-face' });
-    at.append(
-      decl({ prop: 'font-family', value: 'MyFont' }),
-      decl({ prop: 'src', value: 'url(font.woff2)' }),
-    );
+    at.append(decl({ prop: 'font-family', value: 'MyFont' }), decl({ prop: 'src', value: 'url(font.woff2)' }));
     r.append(at);
     expect(stringify(r)).toBe(`@font-face {
     font-family: MyFont;

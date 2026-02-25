@@ -9,12 +9,7 @@ function stringifyDecl(decl: CssDeclaration, indent: string, semicolon: boolean)
   return indent + out;
 }
 
-function stringifyRule(
-  node: CssRule,
-  indentLevel: number,
-  baseIndent: string,
-  semicolon: boolean,
-): string {
+function stringifyRule(node: CssRule, indentLevel: number, baseIndent: string, semicolon: boolean): string {
   const indent = baseIndent.repeat(indentLevel);
   const innerIndent = baseIndent.repeat(indentLevel + 1);
   const parts: string[] = [];
@@ -29,12 +24,7 @@ function stringifyRule(
   return indent + node.selector + ' {' + body + '}';
 }
 
-function stringifyAtRule(
-  node: CssAtRule,
-  indentLevel: number,
-  baseIndent: string,
-  semicolon: boolean,
-): string {
+function stringifyAtRule(node: CssAtRule, indentLevel: number, baseIndent: string, semicolon: boolean): string {
   const indent = baseIndent.repeat(indentLevel);
   const innerIndent = baseIndent.repeat(indentLevel + 1);
   const head = '@' + node.name + (node.params !== undefined && node.params !== '' ? ' ' + node.params : '');
@@ -50,12 +40,7 @@ function stringifyAtRule(
   return indent + head + ' {' + body + '}';
 }
 
-function stringifyNode(
-  node: CssRule | CssAtRule,
-  indentLevel: number,
-  baseIndent: string,
-  semicolon: boolean,
-): string {
+function stringifyNode(node: CssRule | CssAtRule, indentLevel: number, baseIndent: string, semicolon: boolean): string {
   if (node.type === 'rule') return stringifyRule(node, indentLevel, baseIndent, semicolon);
   return stringifyAtRule(node, indentLevel, baseIndent, semicolon);
 }
