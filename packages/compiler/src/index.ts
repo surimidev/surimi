@@ -43,8 +43,10 @@ export interface CompileResult {
 export async function compile(options: CompileOptions): Promise<CompileResult | undefined> {
   const startTime = Date.now();
   const rolldownInput = getRolldownInput(options);
-  // Rolldown nicely provides an `asyncDispose` symbol.
-  await using rolldownCompiler = await getRolldownInstance(rolldownInput);
+  // Rolldown nicely provides an `asyncDispose` symbol. However, disposing the compiler at the end here when using rolldown-based vite
+  // will halt the build process indefinitely. TODO: Figure out how we can nicely dispose the compiler if it's not needed anymore.
+  // await using rolldownCompiler = await getRolldownInstance(rolldownInput);
+  const rolldownCompiler = await getRolldownInstance(rolldownInput);
   const rolldownOutput = await rolldownCompiler.generate();
   const chunk = rolldownOutput.output[0];
 

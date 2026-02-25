@@ -20,7 +20,6 @@ function vitePluginBundleSurimi() {
           treeshake: false,
           output: {
             format: 'es',
-            codeSplitting: false,
             exports: 'named',
             preserveModules: false,
           },
