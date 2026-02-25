@@ -13,7 +13,7 @@ catalogs:
       specifier: ^5.9.3
       version: 5.9.3
     vite:
-      specifier: ^8.0.0-beta.15
+      specifier: 8.0.0-beta.15
       version: 8.0.0-beta.15
   docs:
     '@astrojs/mdx':
@@ -446,6 +446,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
       memfs:
         specifier: ^4.56.10
         version: 4.56.10(tslib@2.8.1)
@@ -3603,6 +3606,11 @@ packages:
 
   marked@14.0.0:
     resolution: {integrity: sha512-uIj4+faQ+MgHgwUW1l2PsPglZLOLOT1uErt06dAPtx2kjteLAkbsd/0FiYg/MGS+i7ZKLb7w2WClxHkzOOuryQ==}
+    engines: {node: '>= 18'}
+    hasBin: true
+
+  marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -8399,6 +8407,8 @@ snapshots:
   markdown-table@3.0.4: {}
 
   marked@14.0.0: {}
+
+  marked@15.0.12: {}
 
   math-intrinsics@1.1.0: {}
 

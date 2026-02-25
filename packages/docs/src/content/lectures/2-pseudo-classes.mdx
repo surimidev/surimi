@@ -1,0 +1,48 @@
+---
+title: Pseudo-Classes & State
+description: Learn how to use pseudo-classes
+orderId: 2
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    select('body').style({
+      backgroundColor: '#1a1a2e',
+      color: '#eee',
+      fontFamily: 'system-ui, sans-serif',
+    });
+
+    select('button').style({
+      padding: '12px 24px',
+      backgroundColor: '#16c79a',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+    });
+
+    select('button').hover().style({
+      backgroundColor: '#19e6af',
+    });
+  "/index.html": |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Preview</title>
+    </head>
+    <body>
+      <div id="root">
+        <h1>Interactive States</h1>
+        <button>Hover and click me</button>
+      </div>
+    </body>
+    </html>
+---
+
+# Pseudo-Classes in Surimi
+
+- `.hover()` – Style elements on mouse hover
+- `.focus()` – Style elements when focused
+- `.active()` – Style elements when active

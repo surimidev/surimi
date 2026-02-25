@@ -2,7 +2,8 @@ import './LectureContent.css';
 
 export interface LectureContentProps {
   title: string;
-  content: string;
+  description: string;
+  contentHtml: string;
   currentIndex: number;
   totalLectures: number;
   onPrevious: () => void;
@@ -11,7 +12,8 @@ export interface LectureContentProps {
 
 export default function LectureContent({
   title,
-  content,
+  description,
+  contentHtml,
   currentIndex,
   totalLectures,
   onPrevious,
@@ -24,14 +26,14 @@ export default function LectureContent({
     <div className="lecture-content">
       <div className="lecture-content__header">
         <h2>{title}</h2>
+        <p>{description}</p>
         <div className="lecture-content__progress">
           Lecture {currentIndex + 1} of {totalLectures}
         </div>
       </div>
 
       <div className="lecture-content__body">
-        {/* This div will be rendered by Astro with the markdown content */}
-        <div className="lecture-content__markdown" dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="lecture-content__markdown" dangerouslySetInnerHTML={{ __html: contentHtml }} />
       </div>
 
       <div className="lecture-content__navigation">

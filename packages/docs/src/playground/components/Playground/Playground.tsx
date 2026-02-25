@@ -11,11 +11,26 @@ import Header from '#playground/components/Header/Header';
 import HtmlCssView from '#playground/components/HtmlCssView/HtmlCssView';
 import LectureContent from '#playground/components/LectureContent/LectureContent';
 import OutputViewer from '#playground/components/OutputViewer/OutputViewer';
-import { lectures } from '#playground/lectures';
 
 import './playground.css';
 
 const FS = memfs as { fs: unknown; volume: Volume };
+
+export interface PlaygroundLecture {
+  id: string;
+  title: string;
+  description: string;
+  files: Record<string, string>;
+  /** Rendered HTML from Astro (marked.parse(entry.body)) */
+  contentHtml: string;
+}
+
+export interface PlaygroundProps {
+  lectures: PlaygroundLecture[];
+  initialLectureId: string;
+  /** Astro client directive; not actually passed to the component */
+  'client:only'?: boolean;
+}
 
 function initFs() {
   FS.volume.reset();
@@ -30,18 +45,24 @@ function initFs() {
   });
 }
 
-function getLectureFilePaths(lecture: (typeof lectures)[number]): string[] {
+const ENTRY_FILE = 'index.css.ts';
+const noop = () => {};
+
+function getLectureFilePaths(lecture: PlaygroundLecture): string[] {
   const paths = Object.keys(lecture.files);
-  const entryPath = `/${lecture.entryFile}`;
+  const entryPath = `/${ENTRY_FILE}`;
   if (paths.includes(entryPath)) {
     return [entryPath, ...paths.filter(p => p !== entryPath)];
   }
   return paths;
 }
 
-export default function Playground() {
+export default function Playground({ lectures, initialLectureId }: PlaygroundProps) {
   const [isReady, setIsReady] = useState(false);
-  const [currentLectureIndex, setCurrentLectureIndex] = useState(0);
+  const [currentLectureIndex, setCurrentLectureIndex] = useState(() => {
+    const i = lectures.findIndex(l => l.id === initialLectureId);
+    return i >= 0 ? i : 0;
+  });
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [fileContent, setFileContent] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
@@ -55,6 +76,28 @@ export default function Playground() {
     initFs();
     setIsReady(true);
   }, []);
+
+  // On mount: sync lecture from URL (static build bakes initialLectureId for /playground only, so query is lost)
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('lecture');
+    if (id) {
+      const i = lectures.findIndex(l => l.id === id);
+      if (i >= 0) setCurrentLectureIndex(i);
+    }
+  }, [lectures]);
+
+  // When user uses browser back/forward, sync state from URL
+  useEffect(() => {
+    const onPopState = () => {
+      const id = new URLSearchParams(window.location.search).get('lecture');
+      if (id) {
+        const i = lectures.findIndex(l => l.id === id);
+        if (i >= 0) setCurrentLectureIndex(i);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [lectures]);
 
   // When lecture changes or isReady: write lecture files to memfs, select first file, read from memfs
   useEffect(() => {
@@ -77,10 +120,9 @@ export default function Playground() {
   }, [isReady, currentLectureIndex, currentLecture, vol]);
 
   const runCompile = useCallback(async () => {
-    if (!currentLecture) return;
     try {
       const res = await compile({
-        input: currentLecture.entryFile,
+        input: ENTRY_FILE,
         cwd: '/',
         include: ['**/*.css.ts'],
         exclude: ['**/node_modules/**'],
@@ -90,7 +132,7 @@ export default function Playground() {
       console.error('Compile failed:', err);
       setCompileResult(undefined);
     }
-  }, [currentLecture]);
+  }, []);
 
   // Persist current file to memfs and trigger debounced compile when content changes
   useEffect(() => {
@@ -114,10 +156,16 @@ export default function Playground() {
     [selectedFile, fileContent, vol],
   );
 
-  const handleLectureChange = useCallback((newIndex: number) => {
-    if (newIndex < 0 || newIndex >= lectures.length) return;
-    setCurrentLectureIndex(newIndex);
-  }, []);
+  const goToLecture = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= lectures.length) return;
+      setCurrentLectureIndex(index);
+      const url = new URL(window.location.href);
+      url.searchParams.set('lecture', lectures[index].id);
+      window.history.replaceState(null, '', url.pathname + url.search);
+    },
+    [lectures],
+  );
 
   if (!currentLecture) {
     return <div>No lecture found.</div>;
@@ -132,15 +180,14 @@ export default function Playground() {
           <Panel defaultSize={25} minSize={20} maxSize={40}>
             <LectureContent
               title={currentLecture.title}
-              content={currentLecture.markdown}
+              description={currentLecture.description}
+              contentHtml={currentLecture.contentHtml}
               currentIndex={currentLectureIndex}
               totalLectures={lectures.length}
-              onPrevious={() => {
-                handleLectureChange(currentLectureIndex - 1);
-              }}
-              onNext={() => {
-                handleLectureChange(currentLectureIndex + 1);
-              }}
+              onPrevious={currentLectureIndex > 0 ? () => goToLecture(currentLectureIndex - 1) : noop}
+              onNext={
+                currentLectureIndex < lectures.length - 1 ? () => goToLecture(currentLectureIndex + 1) : noop
+              }
             />
           </Panel>
 
