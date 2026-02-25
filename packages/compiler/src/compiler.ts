@@ -103,27 +103,21 @@ export async function execute(code: string) {
     const cssValue = module[SURIMI_CSS_EXPORT_NAME] ?? '';
     const css = typeof cssValue === 'string' ? cssValue : '';
 
-    // Collect all exports except the special CSS export and default
+    // Collect all exports except the special CSS export and default.
+    // We only re-export values that can be JSON-serialized (so they can be inlined in the output).
     const exports: string[] = [];
     for (const [key, value] of Object.entries(module)) {
       if (key !== 'default' && key !== SURIMI_CSS_EXPORT_NAME) {
         if (!isSerializable(value)) {
-          // Skip non-serializable values (functions, symbols, etc.)
           continue;
         }
-
-        if (typeof value === 'string') {
-          // Regular string export
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
-          // Primitive types
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else if (typeof value === 'object') {
-          // Other object exports (like theme objects, arrays)
-          exports.push(`export const ${key} = ${JSON.stringify(value)};`);
-        } else {
-          // Fallback for other types (should not reach here due to isSerializable check)
-          exports.push(`export const ${key} = ${JSON.stringify(String(value))};`);
+        let serialized: string;
+        try {
+          serialized = JSON.stringify(value);
+          exports.push(`export const ${key} = ${serialized};`);
+        } catch {
+          // Potentially unserializable value, skip
+          continue;
         }
       }
     }
