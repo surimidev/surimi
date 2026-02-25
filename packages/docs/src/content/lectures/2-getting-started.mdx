@@ -1,0 +1,58 @@
+---
+title: Getting started
+description: Learn the basics of Surimi
+orderId: 2
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    select('body').style({
+      backgroundColor: '#f5f5f5',
+      color: '#333',
+      fontFamily: 'system-ui, sans-serif',
+    });
+
+    select('h1').style({
+      color: '#3498db',
+      fontSize: '2.5rem',
+    });
+  "/index.html": |
+    <div id="root">
+      <h1>Welcome to <span>Surimi</span>!</h1>
+      <button>Click me!</button>
+    </div>
+---
+
+## How to... style things.
+
+
+Simple: You use the `select` function to select something, and then call `style()` on it with the styles you want.
+
+```ts
+const button = select('button');
+```
+
+gives you a selector with a loooot of methods on it. For now, just call `.style()` and pass an object with styles. Like this:
+
+```ts
+button.style({
+  backgroundColor: 'blue',
+  color: 'white',
+});
+```
+
+In contrast to some other css-in-js libraries, surimi does not generate any class names for you (by default). Instead, you simply write any css selectors, like you would in vanilla css.
+
+Check out the type hint for the `button selector` in the editor. It's typed as `SelectorBuilder<'button'>`. What does that mean?
+It's a builder because it has the entire CSS spec baked in as a functional API. That means you can access all the CSS features just by chaining methods, declaring variables etc.
+
+What if we want a button that's only colored when it's hovered?
+
+```ts
+button.hover().style({
+  backgroundColor: 'blue',
+  color: 'white',
+});
+```
+
+And now the cool part: Surimi knows what you're selecting. So if you're at any point unsure what surimi code does, just hover over it and you'll see. In our case: `SelectorBuilder<"button:hover">`.

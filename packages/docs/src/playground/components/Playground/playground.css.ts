@@ -67,7 +67,6 @@ playground.descendant('.surimi-playground__editor').style({
   border: `1px solid ${theme.border.default}`,
   borderTop: 'none',
   borderRadius: '0 0 4px 4px',
-  overflow: 'hidden',
   minHeight: '200px',
 });
 
@@ -93,8 +92,8 @@ select('.surimi-playground__resize-handle[data-panel-group-direction="horizontal
 
 // Right panel: output (compiled CSS) on top, preview view below
 playground.descendant('.surimi-playground__output-section').style({
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gridTemplateRows: '1fr 1fr',
   height: '100%',
   overflow: 'hidden',
   minHeight: '0',

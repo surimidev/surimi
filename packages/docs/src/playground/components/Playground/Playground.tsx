@@ -67,6 +67,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
   const [fileContent, setFileContent] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
   const [compileResult, setCompileResult] = useState<CompileResult | undefined>(undefined);
+  const [compileError, setCompileError] = useState<string | undefined>(undefined);
 
   const currentLecture = lectures[currentLectureIndex];
   const filePaths = currentLecture ? getLectureFilePaths(currentLecture) : [];
@@ -96,7 +97,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       }
     };
     window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+    };
   }, [lectures]);
 
   // When lecture changes or isReady: write lecture files to memfs, select first file, read from memfs
@@ -128,9 +131,11 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
         exclude: ['**/node_modules/**'],
       });
       setCompileResult(res);
+      setCompileError(undefined);
     } catch (err) {
       console.error('Compile failed:', err);
       setCompileResult(undefined);
+      setCompileError(err instanceof Error ? err.message : String(err));
     }
   }, []);
 
@@ -161,7 +166,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       if (index < 0 || index >= lectures.length) return;
       setCurrentLectureIndex(index);
       const url = new URL(window.location.href);
-      url.searchParams.set('lecture', lectures[index].id);
+      url.searchParams.set('lecture', lectures[index]?.id ?? '');
       window.history.replaceState(null, '', url.pathname + url.search);
     },
     [lectures],
@@ -177,23 +182,33 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
 
       <div className="surimi-playground__container">
         <PanelGroup direction="horizontal">
-          <Panel defaultSize={25} minSize={20} maxSize={40}>
+          <Panel defaultSize={25} minSize={25} maxSize={40}>
             <LectureContent
               title={currentLecture.title}
               description={currentLecture.description}
               contentHtml={currentLecture.contentHtml}
               currentIndex={currentLectureIndex}
               totalLectures={lectures.length}
-              onPrevious={currentLectureIndex > 0 ? () => goToLecture(currentLectureIndex - 1) : noop}
+              onPrevious={
+                currentLectureIndex > 0
+                  ? () => {
+                      goToLecture(currentLectureIndex - 1);
+                    }
+                  : noop
+              }
               onNext={
-                currentLectureIndex < lectures.length - 1 ? () => goToLecture(currentLectureIndex + 1) : noop
+                currentLectureIndex < lectures.length - 1
+                  ? () => {
+                      goToLecture(currentLectureIndex + 1);
+                    }
+                  : noop
               }
             />
           </Panel>
 
           <PanelResizeHandle className="surimi-playground__resize-handle" />
 
-          <Panel defaultSize={40} minSize={30} maxSize={60}>
+          <Panel defaultSize={55} minSize={30} maxSize={60}>
             <div className="surimi-playground__editor-section">
               <div className="surimi-playground__editor-container">
                 <div className="surimi-playground__editor-tabs">
@@ -223,9 +238,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
 
           <PanelResizeHandle className="surimi-playground__resize-handle" />
 
-          <Panel defaultSize={35} minSize={20} maxSize={50}>
+          <Panel defaultSize={25} minSize={20} maxSize={50}>
             <div className="surimi-playground__output-section">
-              <OutputViewer css={compileResult?.css ?? ''} />
+              <OutputViewer result={compileResult} error={compileError} />
               <HtmlCssView html={htmlContent} css={compileResult?.css ?? ''} />
             </div>
           </Panel>

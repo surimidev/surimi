@@ -6,6 +6,7 @@ import remarkEmoji from 'remark-emoji';
 import remarkGithub from 'remark-github';
 import blockquoteAlert from 'remark-github-blockquote-alert';
 import { build, type Plugin } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import surimiPlugin from 'vite-plugin-surimi';
 
 function vitePluginBundleSurimi() {
@@ -71,7 +72,21 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [surimiPlugin(), vitePluginBundleSurimi()],
+    plugins: [
+      // @ts-expect-error errors here are because we use vite 8 already for the vite plugin, but not for astro.
+      surimiPlugin(),
+      vitePluginBundleSurimi(),
+      nodePolyfills({
+        // We only need the path polyfill for monaco-editor-auto-typings
+        include: ['path'],
+        globals: {
+          global: false,
+          Buffer: false,
+          process: false,
+        },
+        protocolImports: false,
+      }),
+    ],
     optimizeDeps: {
       exclude: ['@surimi/compiler', '@rolldown/browser'],
     },

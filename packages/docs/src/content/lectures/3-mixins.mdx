@@ -1,40 +1,55 @@
 ---
-title: Reusable Mixins
-description: Create reusable style mixins
+title: The real life
+description: Selecting things properly, like in the real world
 orderId: 3
 files:
   "/index.css.ts": |
-    import { mixin, select } from 'surimi';
+    import { select } from 'surimi';
 
-    const cardHover = mixin(':hover').style({
-      transform: 'translateY(-4px)',
-      boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+    select('body').style({
+      backgroundColor: '#f5f5f5',
+      color: '#333',
+      fontFamily: 'system-ui, sans-serif',
     });
 
-    select('.card').use(cardHover).style({
-      padding: '1.5rem',
-      backgroundColor: '#1a1a2e',
-      borderRadius: '8px',
-      transition: 'all 0.2s',
+    select('h1').style({
+      color: '#3498db',
+      fontSize: '2.5rem',
     });
   "/index.html": |
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Preview</title>
-    </head>
-    <body>
-      <div id="root">
-        <h1>Cards</h1>
-        <div class="card">Card 1</div>
-        <div class="card">Card 2</div>
-      </div>
-    </body>
-    </html>
+    <div id="root">
+      <h1>Welcome to <span>Surimi</span>!</h1>
+      <button>Click me!</button>
+    </div>
 ---
 
-# Mixins in Surimi
+## Selecting things by their tag...
 
-Use `mixin()` to create reusable style patterns.
+is fun, but not applicable in the real world. You will select things by their class name, id, attribute, etc.
+In plain css, you might use something like [BEM](https://getbem.com/) or [CUBE](https://cube.fyi/) to create logical selectors by combining class names in some ways.
+
+That's totally possible in surimi, but the cool thing is that you can just re-use your selectors. So your life get's even easier.
+
+A simple example are child elements. Instead of creating "hierarchical" classes for them, just select them directly.
+
+```ts
+const heading = select('h1');
+const span = heading.child('span');
+```
+Check the type hints: This selects `h1 > span`.
+More realistically, with classes:
+
+```ts
+const heading = select('.blog-heading');
+const span = heading.child('.blog-decoration');
+```
+
+
+and of course, this works with all other selectors.
+
+```ts
+const container = select('#root');
+container.child('.my-content').hover().style({...});
+container.child("button[disabled]:hover").style({...});
+```
+etc.

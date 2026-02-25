@@ -44,7 +44,6 @@ markdown.style({
 });
 
 markdown.child('h1, h2, h3, h4, h5, h6').style({
-  marginTop: '1.5em',
   marginBottom: '0.5em',
   fontWeight: theme.font.weight.bold,
   lineHeight: '1.3',

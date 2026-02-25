@@ -1,13 +1,10 @@
 import Editor from '@monaco-editor/react';
+import type mnco from 'monaco-editor';
 import { AutoTypings, LocalStorageCache } from 'monaco-editor-auto-typings/custom-editor';
 import { useRef } from 'react';
 
-type EditorOnMount = NonNullable<React.ComponentProps<typeof Editor>['onMount']>;
-type EditorInstance = Parameters<EditorOnMount>[0];
-type MonacoInstance = Parameters<EditorOnMount>[1];
-
-function setTypeScriptCompilerOptions(monaco: MonacoInstance) {
-  const ts = monaco.languages.typescript;
+function setTypeScriptCompilerOptions(monaco: typeof mnco) {
+  const ts = monaco.typescript;
   ts.typescriptDefaults.setCompilerOptions({
     strict: true,
     target: ts.ScriptTarget.ESNext,
@@ -46,7 +43,7 @@ export default function CodeEditor({
 }: CodeEditorProps) {
   const autoTypingsRef = useRef<Awaited<ReturnType<typeof AutoTypings.create>> | null>(null);
 
-  const handleMount: EditorOnMount = (editor: EditorInstance, monaco: MonacoInstance) => {
+  const handleMount = (editor: mnco.editor.IStandaloneCodeEditor, monaco: typeof mnco) => {
     if (readOnly || !TYPED_LANGUAGES.has(language)) return;
     AutoTypings.create(editor, {
       monaco,

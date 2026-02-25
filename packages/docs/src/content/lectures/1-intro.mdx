@@ -1,0 +1,46 @@
+---
+title: Welcome to Surimi!
+description: A quick introduction
+orderId: 1
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    select('body').style({
+      backgroundColor: '#f5f5f5',
+      color: '#333',
+      fontFamily: 'system-ui, sans-serif',
+    });
+
+    select('h1').style({
+      color: '#3498db',
+      fontSize: '2.5rem',
+    });
+  "/index.html": |
+    <div id="root">
+      <h1>Welcome to <span>Surimi</span>!</h1>
+      <p>You can edit the CSS and HTML you see here live!</p>
+    </div>
+---
+
+----
+> This playground is work-in-progress. It's not done yet.
+
+----
+
+## Welcome to Surimi!
+
+Surimi is a powerful CSS-in-TypeScript library that allows you to write type-safe, re-usable styles with typescript.
+It is meant as a modern alternative to CSS preprocessors. It has the entire css specification baked in, shown to you as type hints, and because it's just typescript,
+you don't have to re-learn anything.
+
+## What you'll learn
+
+In the next couple of (super quick) lectures, you'll go from the basics of Surimi to mastering it. It's super easy, so it'll only take a few minutes.
+If you want to see the documentation or learn how it all works, check out the [How It works](/docs/how-it-works) section of the docs.
+
+## Let's do this!
+
+Click the "next" button below to get started, or just play around on this page for a while.
+
+You can only use the surimi package right now. The editor might show you type hints for other packages, but the'll not be installed.

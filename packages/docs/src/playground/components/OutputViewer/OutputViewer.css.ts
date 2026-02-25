@@ -35,3 +35,15 @@ output.descendant('.surimi-playground__output-content').style({
   flex: '1',
   overflow: 'hidden',
 });
+
+output.descendant('.surimi-playground__output-error').style({
+  margin: 0,
+  padding: theme.spacing[4],
+  fontFamily: 'monospace',
+  fontSize: theme.font.size.xs,
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+  overflow: 'auto',
+  maxHeight: '100%',
+  color: theme.text.default,
+});
