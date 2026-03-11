@@ -109,3 +109,57 @@ playground.descendant('.surimi-playground__output-section .surimi-playground__vi
   flex: '1',
   minHeight: '0',
 });
+
+// Mobile: tab bar + single view
+select('.surimi-playground--mobile').style({
+  display: 'flex',
+  flexDirection: 'column',
+  height: `calc(100vh - ${config.header.height})`,
+  overflow: 'hidden',
+});
+
+select('.surimi-playground__mobile-tabs').style({
+  display: 'flex',
+  flexShrink: 0,
+  borderBottom: `1px solid ${theme.border.default}`,
+  backgroundColor: theme.bg.subtle,
+  padding: `0 ${theme.spacing[2]}`,
+  gap: theme.spacing[1],
+});
+
+const mobileTab = select('.surimi-playground__mobile-tab').style({
+  padding: `${theme.spacing[3]} ${theme.spacing[4]}`,
+  fontSize: theme.font.size.sm,
+  fontWeight: theme.font.weight.medium,
+  border: 'none',
+  borderBottom: '2px solid transparent',
+  backgroundColor: 'transparent',
+  color: theme.text.subtle,
+  cursor: 'pointer',
+  transition: 'color 0.15s, border-color 0.15s',
+  marginBottom: '-1px',
+});
+
+mobileTab.hover().style({
+  color: theme.text.default,
+});
+
+select('.surimi-playground__mobile-tab--active').style({
+  color: theme.text.primary,
+  borderBottomColor: theme.border.focus,
+});
+
+select('.surimi-playground__mobile-panel').style({
+  flex: '1',
+  minHeight: '0',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: theme.bg.app,
+});
+
+select('.surimi-playground__mobile-panel > *').style({
+  flex: '1',
+  minHeight: '0',
+  overflow: 'auto',
+});
