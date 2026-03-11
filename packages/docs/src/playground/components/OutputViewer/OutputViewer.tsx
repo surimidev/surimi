@@ -16,7 +16,6 @@ export default function OutputViewer({ result, error }: OutputViewerProps) {
   return (
     <div className="surimi-playground__output">
       <div className="surimi-playground__output-header">
-        <h3>Output</h3>
         <span className="surimi-playground__output-path">
           output.css
           {result && ` (compiled in ${result.duration}ms)`}

@@ -79,7 +79,8 @@ markdown.child('code').style({
 
 markdown.child('pre').style({
   padding: theme.spacing[4],
-  backgroundColor: theme.bg.subtle,
+  outline: `1px solid ${theme.border.default}`,
+  backgroundColor: theme.bg.active,
   borderRadius: '6px',
   overflow: 'auto',
   marginBottom: '1em',

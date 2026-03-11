@@ -1,10 +1,10 @@
-import { select } from 'surimi';
+import { fontFace, select } from 'surimi';
 
 import { config, theme } from '.';
 
 import './code.css';
 
-select('@font-face').style({
+fontFace({
   fontFamily: 'IBM Plex Mono',
   fontStyle: 'normal',
   fontWeight: '400',

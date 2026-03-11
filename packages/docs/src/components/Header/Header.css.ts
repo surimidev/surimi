@@ -122,6 +122,10 @@ nav
     color: theme.text.primary,
   });
 
+nav.child('.header__nav-link--active').style({
+  color: theme.text.primary,
+});
+
 const social = right.child('.header__social').style({
   display: 'flex',
   gap: theme.spacing[3],

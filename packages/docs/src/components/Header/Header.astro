@@ -1,18 +1,21 @@
 ---
-import { BarsIcon, ExternalLinkIcon, GithubIcon, NpmIcon } from '../icons';
+import { BarsIcon, GithubIcon, NpmIcon } from '../icons';
 
 import './Header.css';
 
 const NAV_LINKS = [
   { href: '/docs/getting-started', text: 'Getting Started' },
   { href: '/docs/reference', text: 'API Reference' },
-  { href: '/playground', text: 'Playground', external: true },
+  { href: '/playground', text: 'Playground' },
 ] as const;
 
 const SOCIAL_LINKS = [
   { href: 'https://github.com/surimidev/surimi', text: 'GitHub', icon: GithubIcon },
   { href: 'https://www.npmjs.com/package/surimi', text: 'NPM', icon: NpmIcon },
 ];
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 ---
 
 <div class="header">
@@ -30,9 +33,12 @@ const SOCIAL_LINKS = [
     <nav class="header__nav">
       {
         NAV_LINKS.map(link => (
-          <a class="header__nav-link" href={link.href}>
+          <a
+            class:list={['header__nav-link', { 'header__nav-link--active': isActive(link.href) }]}
+            href={link.href}
+            aria-current={isActive(link.href) ? 'page' : undefined}
+          >
             {link.text}
-            {'external' in link && link.external ? <Fragment set:html={ExternalLinkIcon.html} /> : null}
           </a>
         ))
       }

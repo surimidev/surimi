@@ -12,7 +12,6 @@ const playground = select('.surimi-playground').style({
 playground.descendant('.surimi-playground__container').style({
   flex: '1',
   overflow: 'hidden',
-  padding: theme.spacing[3],
   minHeight: '0',
 });
 
@@ -37,6 +36,7 @@ playground.descendant('.surimi-playground__editor-tabs').style({
   borderBottom: `1px solid ${theme.border.default}`,
   backgroundColor: theme.bg.subtle,
   paddingLeft: theme.spacing[2],
+  height: theme.spacing[7],
 });
 
 const editorTab = select('.surimi-playground__editor-tab').style({

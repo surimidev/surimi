@@ -7,7 +7,6 @@ import surimiCode from 'surimi?bundle';
 import { compile, type CompileResult } from '@surimi/compiler';
 
 import CodeEditor from '#playground/components/Editor/CodeEditor';
-import Header from '#playground/components/Header/Header';
 import HtmlCssView from '#playground/components/HtmlCssView/HtmlCssView';
 import LectureContent from '#playground/components/LectureContent/LectureContent';
 import OutputViewer from '#playground/components/OutputViewer/OutputViewer';
@@ -178,8 +177,6 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
 
   return (
     <div className="surimi-playground">
-      <Header />
-
       <div className="surimi-playground__container">
         <PanelGroup direction="horizontal">
           <Panel defaultSize={25} minSize={25} maxSize={40}>

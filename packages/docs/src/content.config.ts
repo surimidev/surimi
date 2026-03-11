@@ -16,7 +16,7 @@ const docs = defineCollection({
 });
 
 const lectures = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/lectures' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/pages/lectures' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
