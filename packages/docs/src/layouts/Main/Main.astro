@@ -12,8 +12,16 @@ const { title, description, class: className, hideDefaultHeader = false } = Astr
 const metaDescription = description || 'Janis Jansen - Fullstack dev & creator';
 ---
 
-<html lang="en" data-theme="janis-light">
+<html lang="en" data-theme="light">
   <head>
+    <script is:inline>
+      (function () {
+        const key = 'theme';
+        const stored = localStorage.getItem(key);
+        const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', stored || preferred);
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

@@ -1,58 +1,51 @@
 /**
  * Design System Colors
- * Based on Radix Colors 12-step color scales
- * Each step is designed for specific use cases following industry standards
+ * Radix Colors v3 (https://www.radix-ui.com/colors)
+ * Slate = blue-tinted neutral. Blue + slate = natural pairing.
  */
-export const colors = {
-  // Gray scale (neutral colors)
-  gray: {
-    1: '#fcfcfc', // App background
-    2: '#f9f9f9', // Subtle background
-    3: '#f0f0f0', // UI element background
-    4: '#e8e8e8', // Hovered UI element background
-    5: '#e0e0e0', // Active / Selected UI element background
-    6: '#d9d9d9', // Subtle borders and separators
-    7: '#cecece', // UI element border and focus rings
-    8: '#bbbbbb', // Hovered UI element border
-    9: '#8d8d8d', // Solid backgrounds
-    10: '#838383', // Hovered solid backgrounds
-    11: '#646464', // Low-contrast text
-    12: '#202020', // High-contrast text
+const lightColors = {
+  slate: {
+    1: '#fcfcfd',
+    2: '#f9f9fb',
+    3: '#f0f0f3',
+    4: '#e8e8ec',
+    5: '#e0e1e6',
+    6: '#d9d9e0',
+    7: '#cdced6',
+    8: '#b9bbc6',
+    9: '#8b8d98',
+    10: '#80838d',
+    11: '#60646c',
+    12: '#1c2024',
   },
-
-  // Primary brand colors (blue)
   blue: {
-    1: '#fbfcfe',
-    2: '#f4f8fe',
-    3: '#e9f1fd',
-    4: '#dbeaff',
-    5: '#cae1ff',
-    6: '#b6d3fb',
-    7: '#9dc2f4',
-    8: '#78aaed', // Primary brand color
-    9: '#1c71d8', // Solid background
-    10: '#0363c9', // Hovered solid background
-    11: '#176dd4', // Low-contrast text
-    12: '#103360', // High-contrast text
+    1: '#fbfdff',
+    2: '#f4faff',
+    3: '#e6f4fe',
+    4: '#d5efff',
+    5: '#c2e5ff',
+    6: '#acd8fc',
+    7: '#8ec8f6',
+    8: '#5eb1ef',
+    9: '#0090ff',
+    10: '#0588f0',
+    11: '#0d74ce',
+    12: '#113264',
   },
-
-  // Accent colors (violet)
   violet: {
-    1: '#fefcff',
-    2: '#fdfaff',
-    3: '#f9f1fe',
-    4: '#f3e7fc',
-    5: '#eddbf9',
-    6: '#e3ccf4',
-    7: '#d3b4ed',
-    8: '#be93e4',
-    9: '#8e4ec6', // Accent solid background
-    10: '#8347b9', // Hovered accent
-    11: '#8145b5', // Low-contrast text
-    12: '#402060', // High-contrast text
+    1: '#fdfcfe',
+    2: '#faf8ff',
+    3: '#f4f0fe',
+    4: '#ebe4ff',
+    5: '#e1d9ff',
+    6: '#d4cafe',
+    7: '#c2b5f5',
+    8: '#aa99ec',
+    9: '#6e56cf',
+    10: '#654dc4',
+    11: '#6550b9',
+    12: '#2f265f',
   },
-
-  // Status colors
   red: {
     1: '#fffcfc',
     2: '#fff7f7',
@@ -62,177 +55,384 @@ export const colors = {
     6: '#fdbdbe',
     7: '#f4a9aa',
     8: '#eb8e90',
-    9: '#e5484d', // Error solid background
+    9: '#e5484d',
     10: '#dc3e42',
     11: '#ce2c31',
     12: '#641723',
   },
-
   green: {
     1: '#fbfefc',
-    2: '#f4fcf7',
-    3: '#e6f7ed',
+    2: '#f4fbf6',
+    3: '#e6f6eb',
     4: '#d6f1df',
     5: '#c4e8d1',
     6: '#adddc0',
     7: '#8eceaa',
     8: '#5bb98b',
-    9: '#30a46c', // Success solid background
+    9: '#30a46c',
     10: '#2b9a66',
     11: '#218358',
     12: '#193b2d',
   },
-
   yellow: {
-    1: '#fefdfb',
-    2: '#fef9e7',
-    3: '#fef2d1',
-    4: '#fde68a',
-    5: '#fcd34d',
-    6: '#f59e0b',
-    7: '#d97706',
-    8: '#b45309',
-    9: '#92400e', // Warning solid background
-    10: '#78350f',
-    11: '#451a03',
-    12: '#1c0a00',
+    1: '#fdfdf9',
+    2: '#fefce9',
+    3: '#fffab8',
+    4: '#fff394',
+    5: '#ffe770',
+    6: '#f3d768',
+    7: '#e4c767',
+    8: '#d5ae39',
+    9: '#ffe629',
+    10: '#ffdc00',
+    11: '#9e6c00',
+    12: '#473b1f',
   },
 } as const;
 
+const darkColors = {
+  slate: {
+    1: '#111113',
+    2: '#18191b',
+    3: '#212225',
+    4: '#272a2d',
+    5: '#2e3135',
+    6: '#363a3f',
+    7: '#43484e',
+    8: '#5a6169',
+    9: '#696e77',
+    10: '#777b84',
+    11: '#b0b4ba',
+    12: '#edeef0',
+  },
+  blue: {
+    1: '#0d1520',
+    2: '#111927',
+    3: '#0d2847',
+    4: '#003362',
+    5: '#004074',
+    6: '#104d87',
+    7: '#205d9e',
+    8: '#2870bd',
+    9: '#0090ff',
+    10: '#3b9eff',
+    11: '#70b8ff',
+    12: '#c2e6ff',
+  },
+  violet: {
+    1: '#14121f',
+    2: '#1b1525',
+    3: '#291f43',
+    4: '#33255b',
+    5: '#3c2e69',
+    6: '#473876',
+    7: '#56468b',
+    8: '#6958ad',
+    9: '#6e56cf',
+    10: '#7d66d9',
+    11: '#baa7ff',
+    12: '#e2ddfe',
+  },
+  red: {
+    1: '#191111',
+    2: '#201314',
+    3: '#3b1219',
+    4: '#500f1c',
+    5: '#611623',
+    6: '#72232d',
+    7: '#8c333a',
+    8: '#b54548',
+    9: '#e5484d',
+    10: '#ec5d5e',
+    11: '#ff9592',
+    12: '#ffd1d9',
+  },
+  green: {
+    1: '#0e1512',
+    2: '#121b17',
+    3: '#132d21',
+    4: '#113b29',
+    5: '#174933',
+    6: '#20573e',
+    7: '#28684a',
+    8: '#2f7c57',
+    9: '#30a46c',
+    10: '#33b074',
+    11: '#3dd68c',
+    12: '#b1f1cb',
+  },
+  yellow: {
+    1: '#14120b',
+    2: '#1b180f',
+    3: '#2d2305',
+    4: '#362b00',
+    5: '#433500',
+    6: '#524202',
+    7: '#665417',
+    8: '#836a21',
+    9: '#ffe629',
+    10: '#ffff57',
+    11: '#f5e147',
+    12: '#f6eeb4',
+  },
+} as const;
+
+type L = typeof lightColors;
+type D = typeof darkColors;
+
+export const colors = { light: lightColors, dark: darkColors };
+
+/** Single source of truth: var name -> { light, dark } values. Used by theme.css.ts to emit CSS. */
+const SEMANTIC_TOKENS: Array<[string, (l: L, d: D) => { light: string; dark: string }]> = [
+  ['bg-app', (l, d) => ({ light: l.slate[1], dark: d.slate[1] })],
+  ['bg-canvas', (l, d) => ({ light: l.slate[2], dark: d.slate[2] })],
+  ['bg-subtle', (l, d) => ({ light: l.blue[1], dark: d.blue[1] })],
+  ['bg-default', (l, d) => ({ light: l.slate[3], dark: d.slate[3] })],
+  ['bg-hover', (l, d) => ({ light: l.slate[4], dark: d.slate[4] })],
+  ['bg-active', (l, d) => ({ light: l.slate[5], dark: d.slate[5] })],
+  ['bg-primary', (l, d) => ({ light: l.blue[9], dark: d.blue[9] })],
+  ['bg-primary-hover', (l, d) => ({ light: l.blue[10], dark: d.blue[10] })],
+  ['bg-primary-subtle', (l, d) => ({ light: l.blue[3], dark: d.blue[3] })],
+  ['bg-primary-subtle-hover', (l, d) => ({ light: l.blue[4], dark: d.blue[4] })],
+  ['bg-accent', (l, d) => ({ light: l.violet[9], dark: d.violet[9] })],
+  ['bg-accent-hover', (l, d) => ({ light: l.violet[10], dark: d.violet[10] })],
+  ['bg-accent-subtle', (l, d) => ({ light: l.violet[3], dark: d.violet[3] })],
+  ['bg-accent-subtle-hover', (l, d) => ({ light: l.violet[4], dark: d.violet[4] })],
+  ['bg-error', (l, d) => ({ light: l.red[9], dark: d.red[9] })],
+  ['bg-error-subtle', (l, d) => ({ light: l.red[3], dark: d.red[3] })],
+  ['bg-success', (l, d) => ({ light: l.green[9], dark: d.green[9] })],
+  ['bg-success-subtle', (l, d) => ({ light: l.green[3], dark: d.green[3] })],
+  ['bg-warning', (l, d) => ({ light: l.yellow[9], dark: d.yellow[9] })],
+  ['bg-warning-subtle', (l, d) => ({ light: l.yellow[3], dark: d.yellow[3] })],
+  ['border-default', (l, d) => ({ light: l.slate[6], dark: d.slate[6] })],
+  ['border-hover', (l, d) => ({ light: l.slate[7], dark: d.slate[7] })],
+  ['border-focus', (l, d) => ({ light: l.blue[8], dark: d.blue[8] })],
+  ['border-strong', (l, d) => ({ light: l.slate[8], dark: d.slate[8] })],
+  ['border-primary', (l, d) => ({ light: l.blue[6], dark: d.blue[6] })],
+  ['border-primary-hover', (l, d) => ({ light: l.blue[7], dark: d.blue[7] })],
+  ['border-accent', (l, d) => ({ light: l.violet[6], dark: d.violet[6] })],
+  ['border-accent-hover', (l, d) => ({ light: l.violet[7], dark: d.violet[7] })],
+  ['border-error', (l, d) => ({ light: l.red[6], dark: d.red[6] })],
+  ['border-success', (l, d) => ({ light: l.green[6], dark: d.green[6] })],
+  ['border-warning', (l, d) => ({ light: l.yellow[6], dark: d.yellow[6] })],
+  ['text-default', (l, d) => ({ light: l.slate[12], dark: d.slate[12] })],
+  ['text-subtle', (l, d) => ({ light: l.slate[11], dark: d.slate[11] })],
+  ['text-muted', (l, d) => ({ light: l.slate[9], dark: d.slate[9] })],
+  ['text-inverse', () => ({ light: '#ffffff', dark: '#ffffff' })],
+  ['text-primary', (l, d) => ({ light: l.blue[11], dark: d.blue[11] })],
+  ['text-accent', (l, d) => ({ light: l.violet[11], dark: d.violet[11] })],
+  ['text-error', (l, d) => ({ light: l.red[11], dark: d.red[11] })],
+  ['text-success', (l, d) => ({ light: l.green[11], dark: d.green[11] })],
+  ['text-warning', (l, d) => ({ light: l.yellow[11], dark: d.yellow[11] })],
+  ['interactive-primary-default', (l, d) => ({ light: l.blue[9], dark: d.blue[9] })],
+  ['interactive-primary-hover', (l, d) => ({ light: l.blue[10], dark: d.blue[10] })],
+  ['interactive-primary-active', (l, d) => ({ light: l.blue[11], dark: d.blue[11] })],
+  ['interactive-primary-disabled', (l, d) => ({ light: l.slate[6], dark: d.slate[6] })],
+  ['interactive-primary-text', () => ({ light: '#ffffff', dark: '#ffffff' })],
+  ['interactive-secondary-default', (l, d) => ({ light: l.slate[3], dark: d.slate[3] })],
+  ['interactive-secondary-hover', (l, d) => ({ light: l.slate[4], dark: d.slate[4] })],
+  ['interactive-secondary-active', (l, d) => ({ light: l.slate[5], dark: d.slate[5] })],
+  ['interactive-secondary-disabled', (l, d) => ({ light: l.slate[2], dark: d.slate[2] })],
+  ['interactive-secondary-text', (l, d) => ({ light: l.slate[12], dark: d.slate[12] })],
+  ['interactive-accent-default', (l, d) => ({ light: l.violet[9], dark: d.violet[9] })],
+  ['interactive-accent-hover', (l, d) => ({ light: l.violet[10], dark: d.violet[10] })],
+  ['interactive-accent-active', (l, d) => ({ light: l.violet[11], dark: d.violet[11] })],
+  ['interactive-accent-disabled', (l, d) => ({ light: l.slate[6], dark: d.slate[6] })],
+  ['interactive-accent-text', () => ({ light: '#ffffff', dark: '#ffffff' })],
+  ['interactive-ghost-default', () => ({ light: 'transparent', dark: 'transparent' })],
+  ['interactive-ghost-hover', (l, d) => ({ light: l.slate[3], dark: d.slate[3] })],
+  ['interactive-ghost-active', (l, d) => ({ light: l.slate[4], dark: d.slate[4] })],
+  ['interactive-ghost-disabled', () => ({ light: 'transparent', dark: 'transparent' })],
+  ['interactive-ghost-text', (l, d) => ({ light: l.slate[11], dark: d.slate[11] })],
+  [
+    'gradient-primary',
+    (l, d) => ({
+      light: `linear-gradient(135deg, ${l.blue[8]} 0%, ${l.violet[9]} 100%)`,
+      dark: `linear-gradient(135deg, ${d.blue[8]} 0%, ${d.violet[9]} 100%)`,
+    }),
+  ],
+  [
+    'gradient-subtle',
+    (l, d) => ({
+      light: `linear-gradient(180deg, ${l.blue[2]} 0%, ${l.slate[1]} 100%)`,
+      dark: `linear-gradient(180deg, ${d.blue[2]} 0%, ${d.slate[1]} 100%)`,
+    }),
+  ],
+  [
+    'gradient-subtle-reverse',
+    (l, d) => ({
+      light: `linear-gradient(0deg, ${l.blue[2]} 0%, ${l.slate[1]} 100%)`,
+      dark: `linear-gradient(0deg, ${d.blue[2]} 0%, ${d.slate[1]} 100%)`,
+    }),
+  ],
+  [
+    'gradient-brand',
+    (l, d) => ({
+      light: `linear-gradient(90deg, ${l.blue[9]} 0%, ${l.blue[11]} 100%)`,
+      dark: `linear-gradient(90deg, ${d.blue[9]} 0%, ${d.blue[11]} 100%)`,
+    }),
+  ],
+  ['shadow-xs', () => ({ light: '0 1px 2px 0 rgb(0 0 0 / 0.05)', dark: '0 1px 2px 0 rgb(0 0 0 / 0.2)' })],
+  [
+    'shadow-sm',
+    () => ({
+      light: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+      dark: '0 1px 3px 0 rgb(0 0 0 / 0.25), 0 1px 2px -1px rgb(0 0 0 / 0.2)',
+    }),
+  ],
+  [
+    'shadow-base',
+    () => ({
+      light: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      dark: '0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.2)',
+    }),
+  ],
+  [
+    'shadow-md',
+    () => ({
+      light: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      dark: '0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.2)',
+    }),
+  ],
+  [
+    'shadow-lg',
+    () => ({
+      light: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+      dark: '0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.2)',
+    }),
+  ],
+  ['shadow-xl', () => ({ light: '0 25px 50px -12px rgb(0 0 0 / 0.25)', dark: '0 25px 50px -12px rgb(0 0 0 / 0.4)' })],
+  ['shadow-2xl', () => ({ light: '0 25px 50px -12px rgb(0 0 0 / 0.25)', dark: '0 25px 50px -12px rgb(0 0 0 / 0.4)' })],
+  ['shadow-inner', () => ({ light: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)', dark: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.2)' })],
+];
+
+/** Build { light: { '--bg-app': ..., ... }, dark: { ... } } for use in .css.ts. */
+export function getThemeVars(): { light: Record<string, string>; dark: Record<string, string> } {
+  const light: Record<string, string> = {};
+  const dark: Record<string, string> = {};
+  for (const [name, get] of SEMANTIC_TOKENS) {
+    const { light: l, dark: d } = get(lightColors, darkColors);
+    light[`--${name}`] = l;
+    dark[`--${name}`] = d;
+  }
+  return { light, dark };
+}
+
+const v = (name: string) => `var(--${name})`;
+
 /**
  * Design System Theme
- * Semantic tokens following industry standards from Radix UI, Chakra UI, and Material Design
+ * Color/gradient/shadow tokens reference CSS vars set in theme.css.ts (:root = light, [data-theme="dark"] = dark).
  */
 export const theme = {
-  // Background colors following Radix guidelines
   bg: {
-    // App and component backgrounds (steps 1-2)
-    app: colors.gray[1], // Main app background
-    canvas: colors.gray[2], // Canvas area, card backgrounds
-    subtle: colors.blue[1], // Subtle accent background
-
-    // Component backgrounds (steps 3-5)
-    default: colors.gray[3], // Default component background
-    hover: colors.gray[4], // Hovered component background
-    active: colors.gray[5], // Pressed/selected component background
-
-    // Brand backgrounds
-    primary: colors.blue[9], // Primary button background
-    'primary-hover': colors.blue[10], // Primary button hover
-    'primary-subtle': colors.blue[3], // Primary subtle background
-    'primary-subtle-hover': colors.blue[4], // Primary subtle hover
-
-    accent: colors.violet[9], // Accent button background
-    'accent-hover': colors.violet[10], // Accent button hover
-    'accent-subtle': colors.violet[3], // Accent subtle background
-    'accent-subtle-hover': colors.violet[4], // Accent subtle hover
-
-    // Status backgrounds
-    error: colors.red[9], // Error background
-    'error-subtle': colors.red[3], // Error subtle background
-    success: colors.green[9], // Success background
-    'success-subtle': colors.green[3], // Success subtle background
-    warning: colors.yellow[9], // Warning background
-    'warning-subtle': colors.yellow[3], // Warning subtle background
+    app: v('bg-app'),
+    canvas: v('bg-canvas'),
+    subtle: v('bg-subtle'),
+    default: v('bg-default'),
+    hover: v('bg-hover'),
+    active: v('bg-active'),
+    primary: v('bg-primary'),
+    'primary-hover': v('bg-primary-hover'),
+    'primary-subtle': v('bg-primary-subtle'),
+    'primary-subtle-hover': v('bg-primary-subtle-hover'),
+    accent: v('bg-accent'),
+    'accent-hover': v('bg-accent-hover'),
+    'accent-subtle': v('bg-accent-subtle'),
+    'accent-subtle-hover': v('bg-accent-subtle-hover'),
+    error: v('bg-error'),
+    'error-subtle': v('bg-error-subtle'),
+    success: v('bg-success'),
+    'success-subtle': v('bg-success-subtle'),
+    warning: v('bg-warning'),
+    'warning-subtle': v('bg-warning-subtle'),
   },
-
-  // Border colors (steps 6-8)
   border: {
-    default: colors.gray[6], // Default borders, separators
-    hover: colors.gray[7], // Interactive element borders
-    focus: colors.blue[8], // Focus rings, active borders
-    strong: colors.gray[8], // Strong borders
-
-    primary: colors.blue[6], // Primary borders
-    'primary-hover': colors.blue[7], // Primary border hover
-    accent: colors.violet[6], // Accent borders
-    'accent-hover': colors.violet[7], // Accent border hover
-
-    error: colors.red[6], // Error borders
-    success: colors.green[6], // Success borders
-    warning: colors.yellow[6], // Warning borders
+    default: v('border-default'),
+    hover: v('border-hover'),
+    focus: v('border-focus'),
+    strong: v('border-strong'),
+    primary: v('border-primary'),
+    'primary-hover': v('border-primary-hover'),
+    accent: v('border-accent'),
+    'accent-hover': v('border-accent-hover'),
+    error: v('border-error'),
+    success: v('border-success'),
+    warning: v('border-warning'),
   },
-
-  // Text colors (steps 11-12)
   text: {
-    default: colors.gray[12], // High-contrast text
-    subtle: colors.gray[11], // Low-contrast text
-    muted: colors.gray[9], // Muted text, placeholders
-    inverse: '#ffffff', // Text on colored backgrounds
-
-    primary: colors.blue[11], // Primary text
-    accent: colors.violet[11], // Accent text
-
-    error: colors.red[11], // Error text
-    success: colors.green[11], // Success text
-    warning: colors.yellow[11], // Warning text (readable on light bg)
+    default: v('text-default'),
+    subtle: v('text-subtle'),
+    muted: v('text-muted'),
+    inverse: v('text-inverse'),
+    primary: v('text-primary'),
+    accent: v('text-accent'),
+    error: v('text-error'),
+    success: v('text-success'),
+    warning: v('text-warning'),
   },
-
-  // Interactive element states
   interactive: {
-    // Primary actions
     primary: {
-      default: colors.blue[9],
-      hover: colors.blue[10],
-      active: colors.blue[11],
-      disabled: colors.gray[6],
-      text: '#ffffff',
+      default: v('interactive-primary-default'),
+      hover: v('interactive-primary-hover'),
+      active: v('interactive-primary-active'),
+      disabled: v('interactive-primary-disabled'),
+      text: v('interactive-primary-text'),
     },
-
-    // Secondary actions
     secondary: {
-      default: colors.gray[3],
-      hover: colors.gray[4],
-      active: colors.gray[5],
-      disabled: colors.gray[2],
-      text: colors.gray[12],
+      default: v('interactive-secondary-default'),
+      hover: v('interactive-secondary-hover'),
+      active: v('interactive-secondary-active'),
+      disabled: v('interactive-secondary-disabled'),
+      text: v('interactive-secondary-text'),
     },
-
-    // Accent actions
     accent: {
-      default: colors.violet[9],
-      hover: colors.violet[10],
-      active: colors.violet[11],
-      disabled: colors.gray[6],
-      text: '#ffffff',
+      default: v('interactive-accent-default'),
+      hover: v('interactive-accent-hover'),
+      active: v('interactive-accent-active'),
+      disabled: v('interactive-accent-disabled'),
+      text: v('interactive-accent-text'),
     },
-
-    // Ghost/subtle actions
     ghost: {
-      default: 'transparent',
-      hover: colors.gray[3],
-      active: colors.gray[4],
-      disabled: 'transparent',
-      text: colors.gray[11],
+      default: v('interactive-ghost-default'),
+      hover: v('interactive-ghost-hover'),
+      active: v('interactive-ghost-active'),
+      disabled: v('interactive-ghost-disabled'),
+      text: v('interactive-ghost-text'),
     },
   },
-
-  // Gradients
   gradients: {
-    primary: `linear-gradient(135deg, ${colors.blue[8]} 0%, ${colors.violet[9]} 100%)`,
-    subtle: `linear-gradient(180deg, ${colors.blue[2]} 0%, ${colors.gray[1]} 100%)`,
-    subtleReverse: `linear-gradient(0deg, ${colors.blue[2]} 0%, ${colors.gray[1]} 100%)`,
-    brand: `linear-gradient(90deg, ${colors.blue[9]} 0%, ${colors.blue[11]} 100%)`,
+    primary: v('gradient-primary'),
+    subtle: v('gradient-subtle'),
+    subtleReverse: v('gradient-subtle-reverse'),
+    brand: v('gradient-brand'),
   },
-
-  // Typography
+  shadow: {
+    xs: v('shadow-xs'),
+    sm: v('shadow-sm'),
+    base: v('shadow-base'),
+    md: v('shadow-md'),
+    lg: v('shadow-lg'),
+    xl: v('shadow-xl'),
+    '2xl': v('shadow-2xl'),
+    inner: v('shadow-inner'),
+  },
   font: {
     size: {
-      xs: '0.75rem', // 12px
-      sm: '0.875rem', // 14px
-      base: '1rem', // 16px
-      lg: '1.125rem', // 18px
-      xl: '1.25rem', // 20px
-      '2xl': '1.5rem', // 24px
-      '3xl': '1.875rem', // 30px
-      '4xl': '2.25rem', // 36px
-      '5xl': '3rem', // 48px
-      '6xl': '3.75rem', // 60px
-      '7xl': '4.5rem', // 72px
-      '8xl': '6rem', // 96px
-      '9xl': '8rem', // 128px
+      xs: '0.75rem',
+      sm: '0.875rem',
+      base: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+      '2xl': '1.5rem',
+      '3xl': '1.875rem',
+      '4xl': '2.25rem',
+      '5xl': '3rem',
+      '6xl': '3.75rem',
+      '7xl': '4.5rem',
+      '8xl': '6rem',
+      '9xl': '8rem',
     },
-
     weight: {
       thin: '100',
       extralight: '200',
@@ -244,7 +444,6 @@ export const theme = {
       extrabold: '800',
       black: '900',
     },
-
     lineHeight: {
       none: '1',
       tight: '1.25',
@@ -254,8 +453,6 @@ export const theme = {
       loose: '2',
     },
   },
-
-  // Spacing scale (Tailwind-based)
   spacing: {
     0: '0rem',
     1: '0.125rem',
@@ -270,59 +467,39 @@ export const theme = {
     10: '6rem',
     11: '8rem',
   },
-
-  // Border radius
   radius: {
     none: '0px',
-    sm: '0.125rem', // 2px
-    base: '0.25rem', // 4px
-    md: '0.375rem', // 6px
-    lg: '0.5rem', // 8px
-    xl: '0.75rem', // 12px
-    '2xl': '1rem', // 16px
-    '3xl': '1.5rem', // 24px
+    sm: '0.125rem',
+    base: '0.25rem',
+    md: '0.375rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    '2xl': '1rem',
+    '3xl': '1.5rem',
     full: '9999px',
   },
-
-  // Shadows
-  shadow: {
-    xs: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-    sm: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-    base: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    md: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-    lg: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-    xl: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-    '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-    inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
-  },
-
-  // Animation durations
   duration: {
     fast: '150ms',
     normal: '200ms',
     slow: '300ms',
   },
-
-  // Easing functions
   ease: {
     linear: 'linear',
     in: 'cubic-bezier(0.4, 0, 1, 1)',
     out: 'cubic-bezier(0, 0, 0.2, 1)',
     'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
-
   borderRadius: {
     none: '0px',
-    sm: '0.125rem', // 2px
-    base: '0.25rem', // 4px
-    md: '0.375rem', // 6px
-    lg: '0.5rem', // 8px
-    xl: '0.75rem', // 12px
-    '2xl': '1rem', // 16px
-    '3xl': '1.5rem', // 24px
+    sm: '0.125rem',
+    base: '0.25rem',
+    md: '0.375rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    '2xl': '1rem',
+    '3xl': '1.5rem',
     full: '9999px',
   },
-
   screen: {
     sm: '640px',
     md: '768px',

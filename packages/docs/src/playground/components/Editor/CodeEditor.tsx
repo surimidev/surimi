@@ -1,9 +1,11 @@
 import Editor from '@monaco-editor/react';
 import type mnco from 'monaco-editor';
 import { AutoTypings, LocalStorageCache } from 'monaco-editor-auto-typings/custom-editor';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-function setTypeScriptCompilerOptions(monaco: typeof mnco) {
+import { getMonacoThemeName, registerMonacoThemes } from './monaco-theme';
+
+function beforeMount(monaco: typeof mnco) {
   const ts = monaco.typescript;
   ts.typescriptDefaults.setCompilerOptions({
     strict: true,
@@ -22,6 +24,7 @@ function setTypeScriptCompilerOptions(monaco: typeof mnco) {
     skipLibCheck: true,
   });
   ts.javascriptDefaults.setCompilerOptions(ts.typescriptDefaults.getCompilerOptions());
+  registerMonacoThemes(monaco);
 }
 
 export interface CodeEditorProps {
@@ -42,8 +45,28 @@ export default function CodeEditor({
   height = '100%',
 }: CodeEditorProps) {
   const autoTypingsRef = useRef<Awaited<ReturnType<typeof AutoTypings.create>> | null>(null);
+  const monacoRef = useRef<typeof mnco | null>(null);
+  const [theme, setTheme] = useState<'surimi-light' | 'surimi-dark'>(getMonacoThemeName);
+
+  useEffect(() => {
+    setTheme(getMonacoThemeName());
+    const el = document.documentElement;
+    const observer = new MutationObserver(() => setTheme(getMonacoThemeName()));
+    observer.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    monacoRef.current?.editor.setTheme(theme);
+  }, [theme]);
+
+  const handleBeforeMount = (monaco: typeof mnco) => {
+    monacoRef.current = monaco;
+    beforeMount(monaco);
+  };
 
   const handleMount = (editor: mnco.editor.IStandaloneCodeEditor, monaco: typeof mnco) => {
+    monaco.editor.setTheme(theme);
     if (readOnly || !TYPED_LANGUAGES.has(language)) return;
     AutoTypings.create(editor, {
       monaco,
@@ -63,7 +86,7 @@ export default function CodeEditor({
       height={height}
       language={language}
       options={{
-        theme: 'vs-light',
+        theme,
         readOnly,
         minimap: { enabled: false },
         fontSize: 13,
@@ -73,7 +96,7 @@ export default function CodeEditor({
       }}
       value={value}
       onChange={v => onChange?.(v ?? '')}
-      beforeMount={setTypeScriptCompilerOptions}
+      beforeMount={handleBeforeMount}
       onMount={handleMount}
     />
   );

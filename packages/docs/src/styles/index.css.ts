@@ -3,6 +3,7 @@ import { fontFace, select } from 'surimi';
 import { config, theme } from '.';
 
 import './code.css';
+import './theme.css';
 
 fontFace({
   fontFamily: 'IBM Plex Mono',
@@ -76,4 +77,14 @@ select('svg').style({
   width: '1em',
   height: '1em',
   verticalAlign: 'sub',
+});
+
+// View Transitions API: disable default animation so JS can run wavy reveal
+select('::view-transition-old(root)').style({
+  animation: 'none',
+  zIndex: -1,
+});
+select('::view-transition-new(root)').style({
+  animation: 'none',
+  mixBlendMode: 'normal',
 });

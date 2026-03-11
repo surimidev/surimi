@@ -126,6 +126,36 @@ nav.child('.header__nav-link--active').style({
   color: theme.text.primary,
 });
 
+const themeToggle = right.child('.header__theme-toggle').style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing[2],
+  backgroundColor: 'transparent',
+  border: 'none',
+  borderRadius: theme.radius.base,
+  cursor: 'pointer',
+  color: theme.text.subtle,
+  transition: `color ${theme.duration.normal} ${theme.ease.out}`,
+});
+
+themeToggle.hover().style({
+  color: theme.text.primary,
+});
+
+themeToggle.descendant('svg').style({
+  width: '1.25em',
+  height: '1.25em',
+});
+
+select('[data-theme="light"] .header__theme-toggle-icon--dark').style({
+  display: 'none',
+});
+
+select('[data-theme="dark"] .header__theme-toggle-icon--light').style({
+  display: 'none',
+});
+
 const social = right.child('.header__social').style({
   display: 'flex',
   gap: theme.spacing[3],

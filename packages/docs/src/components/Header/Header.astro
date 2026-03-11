@@ -1,5 +1,5 @@
 ---
-import { BarsIcon, GithubIcon, NpmIcon } from '../icons';
+import { BarsIcon, GithubIcon, MoonIcon, NpmIcon, SunIcon } from '../icons';
 
 import './Header.css';
 
@@ -43,6 +43,18 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
         ))
       }
     </nav>
+    <button type="button" class="header__theme-toggle" aria-label="Toggle theme">
+      <span
+        class="header__theme-toggle-icon header__theme-toggle-icon--light"
+        set:html={SunIcon.html}
+        aria-hidden="true"
+      />
+      <span
+        class="header__theme-toggle-icon header__theme-toggle-icon--dark"
+        set:html={MoonIcon.html}
+        aria-hidden="true"
+      />
+    </button>
     <div class="header__social">
       {
         SOCIAL_LINKS.map(link => (
@@ -55,10 +67,14 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   </div>
 </div>
 
-<script lang="ts">
+<script>
+  import { setTheme, THEME_STORAGE_KEY, toggleTheme, watchPreferredColorScheme } from '../../utils/theme';
+  import { withViewTransition } from '../../utils/view-transition';
+
   const headerToggleButton = document.querySelector('.header__toggle');
   const header = document.querySelector('.header');
   const headerBackdrop = document.querySelector('.header__backdrop');
+  const themeToggleButton = document.querySelector('.header__theme-toggle');
 
   headerToggleButton?.addEventListener('click', () => {
     header?.classList.toggle('header--open');
@@ -66,5 +82,15 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
 
   headerBackdrop?.addEventListener('click', () => {
     header?.classList.remove('header--open');
+  });
+
+  themeToggleButton?.addEventListener('click', () => {
+    withViewTransition(themeToggleButton as HTMLElement, toggleTheme);
+  });
+
+  watchPreferredColorScheme(preferred => {
+    if (localStorage.getItem(THEME_STORAGE_KEY) == null) {
+      setTheme(preferred, false);
+    }
   });
 </script>
