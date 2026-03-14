@@ -1,7 +1,6 @@
 import { select } from 'surimi';
 import { when } from 'surimi/conditional';
 
-select('*').style({ boxSizing: 'border-box' });
 select('body').style({
   margin: '0',
   padding: '2rem',
@@ -15,7 +14,6 @@ select('#app').style({
   backgroundColor: 'white',
   borderRadius: '8px',
   padding: '2rem',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
 });
 
 select('#app h1').style({

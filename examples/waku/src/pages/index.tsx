@@ -1,8 +1,6 @@
-import Counter from './components/Counter';
+import { Counter } from '../components/counter';
 
-import './App.css';
-
-function App() {
+export default function HomePage() {
   return (
     <div id="app">
       <h1>Surimi</h1>
@@ -14,4 +12,6 @@ function App() {
   );
 }
 
-export default App;
+export const getConfig = () => {
+  return { render: 'static' } as const;
+};

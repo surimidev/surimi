@@ -1,7 +1,6 @@
 import { select } from 'surimi';
 import { when } from 'surimi/conditional';
 
-select('*').style({ boxSizing: 'border-box' });
 select('body').style({
   margin: '0',
   padding: '2rem',
@@ -28,7 +27,19 @@ select('.card').style({
   display: 'flex',
   gap: '1rem',
   flexWrap: 'wrap',
-  justifyContent: 'center',
+});
+
+select('.counter button').style({
+  padding: '0.5rem 1rem',
+  fontSize: '1rem',
+  borderRadius: '4px',
+  border: '1px solid #ddd',
+  backgroundColor: 'white',
+  cursor: 'pointer',
+});
+
+select('.counter button').hover().style({
+  backgroundColor: '#f0f0f0',
 });
 
 const counterA = select('.counter-a');
@@ -36,10 +47,8 @@ const counterB = select('.counter-b');
 
 when(counterA.child('button')).hovered().select(counterB).style({
   filter: 'blur(4px)',
-  transition: 'all 0.3s ease-in-out',
 });
 
 when(counterB.child('button')).hovered().select(counterA).style({
   filter: 'blur(4px)',
-  transition: 'all 0.3s ease-in-out',
 });

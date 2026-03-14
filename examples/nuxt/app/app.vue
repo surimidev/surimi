@@ -1,13 +1,56 @@
 <template>
-  <div>
-    <h1>Hello World</h1>
+  <div id="app">
+    <h1>Surimi</h1>
+    <div class="card">
+      <Counter class="counter counter-a" />
+      <Counter class="counter counter-b" />
+    </div>
   </div>
 </template>
 
 <surimi lang="ts">
 import { select } from 'surimi';
+import { when } from 'surimi/conditional';
 
-select('h1').style({
-  color: 'blue',
+select('body').style({
+  margin: '0',
+  padding: '2rem',
+  fontFamily: 'system-ui, sans-serif',
+  backgroundColor: '#f5f5f5',
+});
+
+select('#app').style({
+  maxWidth: '600px',
+  margin: '0 auto',
+  backgroundColor: 'white',
+  borderRadius: '8px',
+  padding: '2rem',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+});
+
+select('#app h1').style({
+  marginTop: 0,
+  marginBottom: '1.5rem',
+  color: '#333',
+});
+
+select('.card').style({
+  display: 'flex',
+  gap: '1rem',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+});
+
+const counterA = select('.counter-a');
+const counterB = select('.counter-b');
+
+when(counterA.child('button')).hovered().select(counterB).style({
+  filter: 'blur(4px)',
+  transition: 'all 0.3s ease-in-out',
+});
+
+when(counterB.child('button')).hovered().select(counterA).style({
+  filter: 'blur(4px)',
+  transition: 'all 0.3s ease-in-out',
 });
 </surimi>
