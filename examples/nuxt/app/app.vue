@@ -45,12 +45,12 @@ const counterA = select('.counter-a');
 const counterB = select('.counter-b');
 
 when(counterA.child('button')).hovered().select(counterB).style({
-  filter: 'blur(4px)',
+  filter: 'grayscale(100%)',
   transition: 'all 0.3s ease-in-out',
 });
 
 when(counterB.child('button')).hovered().select(counterA).style({
-  filter: 'blur(4px)',
+  filter: 'grayscale(100%)',
   transition: 'all 0.3s ease-in-out',
 });
 </surimi>
