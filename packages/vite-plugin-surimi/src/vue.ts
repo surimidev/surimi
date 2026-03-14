@@ -14,7 +14,7 @@ import type { SharedPluginContext } from './types.js';
  * @see https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue#example-for-transforming-custom-blocks
  * @see https://vuejs.org/guide/scaling-up/tooling.html#sfc-custom-block-integrations
  */
-const VUE_SURIMI_BLOCK_RE = /[?&]vue&type=surimi/;
+export const VUE_SURIMI_BLOCK_RE = /[?&]vue&type=surimi/;
 const VIRTUAL_CSS_SUFFIX = '.surimi.css';
 
 /**
@@ -41,7 +41,7 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
           include: [VUE_SURIMI_BLOCK_RE],
         },
       },
-      async handler(code, id) {
+      async handler(code, id, options) {
         const [filePath] = id.split('?');
         if (!filePath) return;
 
@@ -62,19 +62,31 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
 
         ctx.compilationCache.set(virtualInput, compileResult);
 
-        const cssImport = `import "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
-        let jsCode = `${compileResult.js}\n${cssImport}`;
+        // SSR: include compiled JS + virtual CSS import so the CSS is part of the
+        // server-rendered HTML (prevents flash of unstyled content). No DOM injection.
+        // hotUpdate still runs transformRequest on SSR so full-page refresh gets new styles.
+        if (options?.ssr) {
+          let ssrCode = compileResult.js;
+          ssrCode += `\nimport "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
+          ssrCode += `\nexport default () => {};`;
+          return {
+            code: ssrCode,
+            map: { version: 3, file: path.basename(id), sources: [], names: [], mappings: '' },
+          };
+        }
 
-        if (ctx.inlineCss) {
+        let jsCode: string;
+
+        if (ctx.isDev || ctx.inlineCss) {
           jsCode = `${compileResult.js}\n${injectCssChunkForVue(compileResult.css, virtualInput)}`;
+        } else {
+          jsCode = `${compileResult.js}\nimport "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
         }
 
         if (ctx.isDev) {
           jsCode += `\nif (import.meta.hot) { import.meta.hot.accept(); }`;
         }
 
-        // Custom blocks must export a default function that receives the component.
-        // We use a no-op since surimi only needs CSS injection, not component modification.
         jsCode += `\nexport default () => {};`;
 
         return {

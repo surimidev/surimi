@@ -1,13 +1,18 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type {
+  EnvironmentModuleGraph,
+  EnvironmentModuleNode,
+  Plugin,
+  ResolvedConfig,
+} from 'vite';
 import { createFilter, normalizePath } from 'vite';
 
 import { compile } from '@surimi/compiler';
 import type { CompileResult } from '@surimi/compiler';
 
 import type { SharedPluginContext, SurimiOptions } from './types.js';
-import { createVuePlugin } from './vue.js';
+import { createVuePlugin, VUE_SURIMI_BLOCK_RE } from './vue.js';
 
 // Constants
 const VIRTUAL_CSS_SUFFIX = '.surimi.css';
@@ -80,10 +85,11 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     return cacheEntry;
   };
 
-  const collectDependentModules = (changedFile: string, server: ViteDevServer): ModuleNode[] => {
-    const modules: ModuleNode[] = [];
-
-    // Vite reports changed files using normalized POSIX paths, so we convert here to keep comparisons stable.
+  const collectDependentModules = (
+    changedFile: string,
+    moduleGraph: EnvironmentModuleGraph,
+  ): EnvironmentModuleNode[] => {
+    const modules: EnvironmentModuleNode[] = [];
     const normalizedChangedFile = normalizePath(changedFile);
 
     for (const [cachedFile] of ctx.compilationCache) {
@@ -92,7 +98,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
       const cacheEntry = ctx.compilationCache.get(cachedFile);
       if (cacheEntry?.dependencies.includes(normalizedChangedFile)) {
         ctx.compilationCache.delete(cachedFile);
-        modules.push(...collectModulesForInvalidation(cachedFile, server, inlineCss));
+        modules.push(...collectModulesForInvalidation(cachedFile, moduleGraph, inlineCss));
       }
     }
 
@@ -138,30 +144,66 @@ if (import.meta.hot) {
     name: 'vite-plugin-surimi',
     configResolved(config) {
       ctx.resolvedConfig = config;
-      ctx.isDev = config.command !== 'build' && !config.build.watch;
+      ctx.isDev = config.command === 'serve';
     },
     buildStart() {
       this.warn(
         'Surimi is still in early development. Please report any issues you encounter at https://github.com/surimidev/surimi\n',
       );
     },
-    handleHotUpdate({ file, server }) {
-      const modules = [];
+    async hotUpdate({ file, modules, timestamp, type }) {
+      if (type !== 'update') return;
 
-      if (tsFileFilter(file)) {
-        // Direct change to a .css.ts file
-        ctx.compilationCache.delete(file);
-        modules.push(...collectModulesForInvalidation(file, server, inlineCss));
-        modules.push(...collectDependentModules(file, server));
-      } else {
-        // Check if any .css.ts files depend on this changed file
-        modules.push(...collectDependentModules(file, server));
+      const normalizedFile = normalizePath(file);
+      const isSSR = this.environment.config.consumer === 'server';
+      const surimiModules = modules.filter(m => VUE_SURIMI_BLOCK_RE.test(m.url));
+
+      // Clear our compilation cache for entries derived from this file
+      for (const key of [...ctx.compilationCache.keys()]) {
+        if (key !== normalizedFile && key.startsWith(normalizedFile)) {
+          ctx.compilationCache.delete(key);
+        }
       }
 
-      // Only return modules if we found any to handle,
-      // otherwise, let vite handle it as usual
-      if (modules.length > 0) {
-        return modules;
+      // When surimi custom blocks change: force @vitejs/plugin-vue to update its descriptor
+      // cache (and our compilation cache) so the next load/transform gets fresh content.
+      // Do this for both client and SSR so HMR shows new styles and full-page refresh does too.
+      if (surimiModules.length > 0) {
+        const allModsForFile = this.environment.moduleGraph.getModulesByFile(normalizedFile);
+        if (allModsForFile) {
+          const mainMod = [...allModsForFile].find(m => !m.url.includes('?'));
+          if (mainMod) {
+            this.environment.moduleGraph.invalidateModule(mainMod, new Set(), timestamp, true);
+            await this.environment.transformRequest(mainMod.url);
+          }
+        }
+        // SSR: suppress the HMR event (return []) to avoid a full page reload during dev.
+        // The transformRequest above already updated the SSR bundle for the next refresh.
+        if (isSSR) {
+          const nonSurimi = modules.filter(m => !VUE_SURIMI_BLOCK_RE.test(m.url));
+          return nonSurimi.length > 0 ? nonSurimi : [];
+        }
+        return;
+      }
+
+      // Handle .css.ts file changes (non-Vue)
+      if (tsFileFilter(file)) {
+        ctx.compilationCache.delete(normalizedFile);
+        const additionalModules = [
+          ...collectModulesForInvalidation(normalizedFile, this.environment.moduleGraph, inlineCss),
+          ...collectDependentModules(normalizedFile, this.environment.moduleGraph),
+        ];
+        if (additionalModules.length > 0) {
+          return [...modules, ...additionalModules];
+        }
+      } else {
+        const additionalModules = collectDependentModules(
+          normalizedFile,
+          this.environment.moduleGraph,
+        );
+        if (additionalModules.length > 0) {
+          return [...modules, ...additionalModules];
+        }
       }
     },
     resolveId: {
@@ -345,11 +387,15 @@ const getAbsoluteId = (filePath: string, config: ResolvedConfig) => {
 const getVirtualCssId = (sourceId: string): string => `${sourceId}${VIRTUAL_CSS_SUFFIX}`;
 const getSourceIdFromVirtual = (virtualId: string): string => virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
 
-const collectModulesForInvalidation = (fileId: string, server: ViteDevServer, inlineCss: boolean): ModuleNode[] => {
-  const modules: ModuleNode[] = [];
+const collectModulesForInvalidation = (
+  fileId: string,
+  moduleGraph: EnvironmentModuleGraph,
+  inlineCss: boolean,
+): EnvironmentModuleNode[] => {
+  const modules: EnvironmentModuleNode[] = [];
 
   const addModule = (id: string) => {
-    const module = server.moduleGraph.getModuleById(id);
+    const module = moduleGraph.getModuleById(id);
     if (module) modules.push(module);
   };
 
