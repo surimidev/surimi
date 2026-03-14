@@ -1,3 +1,17 @@
+import type { ResolvedConfig } from 'vite';
+
+import type { CompileResult } from '@surimi/compiler';
+
+/** Shared state passed from the core plugin to framework-specific plugins (Vue, etc.) */
+export interface SharedPluginContext {
+  compilationCache: Map<string, CompileResult>;
+  include: string[];
+  exclude: string[];
+  inlineCss: boolean;
+  resolvedConfig: ResolvedConfig | undefined;
+  isDev: boolean | undefined;
+}
+
 export interface SurimiOptions {
   /**
    * Files to include for processing as surimi files.

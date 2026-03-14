@@ -204,6 +204,78 @@ describe('Compiler', () => {
     });
   });
 
+  describe('Inline source compilation', () => {
+    it('should compile inline source code', async () => {
+      const source = `
+import { select } from 'surimi';
+
+select('.inline-test').style({
+  color: 'blue',
+  fontSize: '14px',
+});
+
+export const testClass = 'inline-test';
+`;
+      const result = await compile({
+        input: path.join(fixturesDir, 'virtual-entry.css.ts'),
+        cwd: process.cwd(),
+        include: ['**/*.css.ts'],
+        exclude: ['**/node_modules/**'],
+        source,
+      });
+
+      expect(result).toBeDefined();
+      expect(result?.css).toContain('.inline-test');
+      expect(result?.css).toContain('color');
+      expect(result?.css).toContain('blue');
+      expect(result?.js).toContain('export const testClass = "inline-test"');
+    });
+
+    it('should resolve relative imports from the input path', async () => {
+      const source = `
+import { select } from 'surimi';
+import { buttonClass } from './simple.css';
+
+select('.from-inline').style({
+  backgroundColor: 'green',
+});
+
+export { buttonClass };
+`;
+      const result = await compile({
+        input: path.join(fixturesDir, 'virtual-with-import.css.ts'),
+        cwd: process.cwd(),
+        include: ['**/*.css.ts'],
+        exclude: ['**/node_modules/**'],
+        source,
+      });
+
+      expect(result).toBeDefined();
+      expect(result?.css).toContain('.from-inline');
+      expect(result?.css).toContain('background-color');
+      expect(result?.js).toContain('export const buttonClass');
+    });
+
+    it('should work even when include pattern does not match input path', async () => {
+      const source = `
+import { select } from 'surimi';
+
+select('.mismatched').style({ display: 'block' });
+`;
+      const result = await compile({
+        input: path.join(fixturesDir, 'App.vue.__surimi_0.css.ts'),
+        cwd: process.cwd(),
+        include: ['**/*.style.ts'],
+        exclude: ['**/node_modules/**'],
+        source,
+      });
+
+      expect(result).toBeDefined();
+      expect(result?.css).toContain('.mismatched');
+      expect(result?.css).toContain('display');
+    });
+  });
+
   describe('Error scenarios', () => {
     it('should handle non-existent files gracefully', async () => {
       await expect(compile(createOptions('non-existent-file.css.ts'))).rejects.toThrow();

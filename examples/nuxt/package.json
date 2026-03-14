@@ -1,0 +1,23 @@
+{
+  "name": "example-nuxt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "postinstall": "nuxt prepare",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "nuxt": "^4.4.2",
+    "vue": "^3.5.30",
+    "vue-router": "^5.0.3"
+  },
+  "devDependencies": {
+    "@surimi/linter-config": "workspace:*",
+    "@surimi/typescript-config": "workspace:*",
+    "surimi": "workspace:*",
+    "vite-plugin-surimi": "workspace:*"
+  }
+}

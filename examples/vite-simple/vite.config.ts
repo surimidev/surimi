@@ -7,7 +7,7 @@ export default defineConfig(() => {
     plugins: [
       surimi({
         inlineCss: false,
-        include: ['**/*.style.ts'], // In case you want to use an alternative naming
+        include: ['**/*.style.ts'], // Leave this out if you want to use .css.ts files (default)
       }),
       analyzer({
         analyzerMode: 'static',

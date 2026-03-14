@@ -10,7 +10,7 @@ interface WatchBundleResult {
 }
 
 export interface CompileOptions {
-  /** Absolute path to the input file. */
+  /** Absolute path to the input file (or virtual entry path when `source` is provided). */
   input: string;
   /** Working directory for resolving modules. */
   cwd: string;
@@ -18,6 +18,11 @@ export interface CompileOptions {
   include: string[];
   /** Glob patterns for files to exclude from compilation */
   exclude: string[];
+  /**
+   * Inline source code to compile instead of reading `input` from disk.
+   * When provided, `input` is used as the virtual module ID for resolving relative imports.
+   */
+  source?: string;
 }
 
 export interface WatchOptions {

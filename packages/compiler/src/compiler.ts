@@ -32,11 +32,11 @@ interface SurimiModule extends Record<string, unknown> {
   [SURIMI_CSS_EXPORT_NAME]?: unknown;
 }
 
-function createSurimiTransformPlugin(options: CompileOptions) {
+function createSurimiTransformPlugin(include: CompileOptions['include'], exclude: CompileOptions['exclude']) {
   return {
     name: COMPILER_PLUGIN_NAME,
     transform: {
-      filter: { id: { include: options.include, exclude: options.exclude } },
+      filter: { id: { include, exclude } },
       handler(code: string) {
         return `\
 import { Surimi as __surimi__instance__ } from 'surimi';
@@ -49,15 +49,32 @@ export const ${SURIMI_CSS_EXPORT_NAME} = __surimi__instance__.build();
   };
 }
 
+function createVirtualSourcePlugin(input: string, source: string) {
+  return {
+    name: 'surimi:virtual-source',
+    resolveId(id: string) {
+      if (id === input) return id;
+    },
+    load(id: string) {
+      if (id === input) return source;
+    },
+  };
+}
+
 export function getRolldownInput(options: CompileOptions) {
   validateCompileOptions(options);
 
-  const { input, cwd } = options;
+  const { input, cwd, source } = options;
+
+  // When compiling inline source, the entry path may not match the user's include globs
+  // (e.g. a Vue SFC virtual path vs '**/*.css.ts'). Adding it ensures the surimi wrapper is applied.
+  const effectiveInclude = source != null ? [...options.include, input] : options.include;
+  const virtualSourcePlugin = source != null ? [createVirtualSourcePlugin(input, source)] : [];
 
   return {
     input,
     cwd,
-    plugins: [createSurimiTransformPlugin(options)],
+    plugins: [...virtualSourcePlugin, createSurimiTransformPlugin(effectiveInclude, options.exclude)],
   } satisfies InputOptions;
 }
 
