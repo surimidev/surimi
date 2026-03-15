@@ -33,7 +33,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@surimi/compiler": "workspace:*"
+    "@surimi/compiler": "workspace:*",
+    "escape-string-regexp": "^5.0.0"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
