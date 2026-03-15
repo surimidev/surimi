@@ -7,5 +7,9 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  return <div id="app">{children}</div>;
+  return <div id="app">
+          <meta name="description" content="Surimi + Waku" />
+          <title>Surimi + Waku</title>
+          {children}
+        </div>;
 }

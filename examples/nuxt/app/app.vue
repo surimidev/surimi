@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <meta name="description" content="Surimi + Nuxt" />
+    <title>Surimi + Nuxt</title>
     <h1>Surimi</h1>
     <div class="card">
       <Counter class="counter counter-a" />

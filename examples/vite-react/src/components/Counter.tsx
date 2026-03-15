@@ -11,7 +11,7 @@ export default function Counter({ className }: CounterProps) {
 
   return (
     <div className={className}>
-      <button type="button" onClick={() => setCount((c) => c + 1)}>
+      <button type="button" onClick={() => { setCount((c) => c + 1); }}>
         count is {count}
       </button>
     </div>
