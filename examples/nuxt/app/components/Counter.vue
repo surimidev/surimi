@@ -1,8 +1,6 @@
 <template>
   <div class="counter">
-    <button type="button" @click="count += 1">
-      count is {{ count }}
-    </button>
+    <button type="button" @click="count += 1">count is {{ count }}</button>
   </div>
 </template>
 

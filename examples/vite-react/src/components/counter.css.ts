@@ -1,4 +1,5 @@
 import { select } from 'surimi';
+
 import { theme } from '../styles/theme.css';
 
 select('.counter button').style({

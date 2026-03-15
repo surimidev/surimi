@@ -196,14 +196,8 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       contentHtml={currentLecture.contentHtml}
       currentIndex={currentLectureIndex}
       totalLectures={lectures.length}
-      onPrevious={
-        currentLectureIndex > 0 ? () => goToLecture(currentLectureIndex - 1) : noop
-      }
-      onNext={
-        currentLectureIndex < lectures.length - 1
-          ? () => goToLecture(currentLectureIndex + 1)
-          : noop
-      }
+      onPrevious={currentLectureIndex > 0 ? () => goToLecture(currentLectureIndex - 1) : noop}
+      onNext={currentLectureIndex < lectures.length - 1 ? () => goToLecture(currentLectureIndex + 1) : noop}
     />
   );
 

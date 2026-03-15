@@ -1,4 +1,8 @@
+'use client';
+
 import { Counter } from '../components/counter';
+
+import '../app.css';
 
 export default function HomePage() {
   return (
@@ -11,7 +15,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-export const getConfig = () => {
-  return { render: 'static' } as const;
-};

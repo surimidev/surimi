@@ -33,22 +33,11 @@ function wavyCirclePath(cx: number, cy: number, radius: number): string {
 }
 
 export function supportsViewTransition(): boolean {
-  return (
-    'startViewTransition' in document &&
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  return 'startViewTransition' in document && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function animateWavyReveal(
-  cx: number,
-  cy: number,
-  pseudoElement: string,
-  duration: number,
-): void {
-  const maxRadius = Math.hypot(
-    Math.max(cx, window.innerWidth - cx),
-    Math.max(cy, window.innerHeight - cy),
-  );
+function animateWavyReveal(cx: number, cy: number, pseudoElement: string, duration: number): void {
+  const maxRadius = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy));
   const fadeIn = 50 / duration;
   const keyframes: Keyframe[] = [];
   for (let i = 0; i <= KEYFRAME_COUNT; i++) {
@@ -85,7 +74,9 @@ export function withViewTransition(triggerEl: HTMLElement | null, apply: () => v
   const transition = doc.startViewTransition(() => {
     apply();
   });
-  transition.ready.then(() => {
-    animateWavyReveal(cx, cy, '::view-transition-new(root)', 500);
-  }).catch(() => {});
+  transition.ready
+    .then(() => {
+      animateWavyReveal(cx, cy, '::view-transition-new(root)', 500);
+    })
+    .catch(() => {});
 }

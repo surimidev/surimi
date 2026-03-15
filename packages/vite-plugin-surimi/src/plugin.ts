@@ -1,11 +1,5 @@
-import { createHash } from 'node:crypto';
 import path from 'node:path';
-import type {
-  EnvironmentModuleGraph,
-  EnvironmentModuleNode,
-  Plugin,
-  ResolvedConfig,
-} from 'vite';
+import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin, ResolvedConfig } from 'vite';
 import { createFilter, normalizePath } from 'vite';
 
 import { compile } from '@surimi/compiler';
@@ -13,8 +7,13 @@ import type { CompileResult } from '@surimi/compiler';
 
 import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX, VIRTUAL_SURIMI_PATH_REGEX } from './constants.js';
 import type { SharedPluginContext, SurimiOptions } from './types.js';
-import { createSourceMap } from './utils.js';
-import { createVuePlugin, VUE_SURIMI_BLOCK_RE } from './vue.js';
+import { addWatchFilesForDeps, createSourceMap, injectCssChunk } from './utils.js';
+import {
+  collectVueSurimiModulesForInvalidation,
+  createVuePlugin,
+  handleVueSurimiHotUpdate,
+  VUE_SURIMI_VIRTUAL_PATH_RE,
+} from './vue.js';
 
 /**
  * Vite plugin for Surimi CSS-in-TS: compiles `.css.ts` / `.css.js` and Vue `<surimi>` blocks.
@@ -87,8 +86,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     const normalizedChangedFile = normalizePath(changedFile);
 
     for (const [cachedFile] of ctx.compilationCache) {
-      const isRelevant =
-        tsFileFilter(cachedFile) || VUE_SURIMI_VIRTUAL_PATH_RE.test(cachedFile);
+      const isRelevant = tsFileFilter(cachedFile) || VUE_SURIMI_VIRTUAL_PATH_RE.test(cachedFile);
       if (!isRelevant) continue;
 
       const cacheEntry = ctx.compilationCache.get(cachedFile);
@@ -143,33 +141,17 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     async hotUpdate({ file, modules, timestamp, type }) {
       if (type !== 'update') return;
 
+      const vueResult = await handleVueSurimiHotUpdate(
+        { file, modules, timestamp, type },
+        {
+          compilationCache: ctx.compilationCache as Map<string, unknown>,
+          environment: this.environment,
+          transformRequest: (url: string) => this.environment.transformRequest(url),
+        },
+      );
+      if (vueResult !== undefined) return vueResult;
+
       const normalizedFile = normalizePath(file);
-      const isSSR = this.environment.config.consumer === 'server';
-      const surimiModules = modules.filter(m => VUE_SURIMI_BLOCK_RE.test(m.url));
-
-      for (const key of [...ctx.compilationCache.keys()]) {
-        if (key !== normalizedFile && key.startsWith(normalizedFile)) {
-          ctx.compilationCache.delete(key);
-        }
-      }
-
-      if (surimiModules.length > 0) {
-        const allModsForFile = this.environment.moduleGraph.getModulesByFile(normalizedFile);
-        if (allModsForFile) {
-          const mainMod = [...allModsForFile].find(m => !m.url.includes('?'));
-          if (mainMod) {
-            this.environment.moduleGraph.invalidateModule(mainMod, new Set(), timestamp, true);
-            await this.environment.transformRequest(mainMod.url);
-          }
-        }
-        // SSR: suppress the HMR event (return []) to avoid a full page reload during dev.
-        // The transformRequest above already updated the SSR bundle for the next refresh.
-        if (isSSR) {
-          const nonSurimi = modules.filter(m => !VUE_SURIMI_BLOCK_RE.test(m.url));
-          return nonSurimi.length > 0 ? nonSurimi : [];
-        }
-        return;
-      }
 
       if (tsFileFilter(file)) {
         ctx.compilationCache.delete(normalizedFile);
@@ -181,10 +163,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
           return [...modules, ...additionalModules];
         }
       } else {
-        const additionalModules = collectDependentModules(
-          normalizedFile,
-          this.environment.moduleGraph,
-        );
+        const additionalModules = collectDependentModules(normalizedFile, this.environment.moduleGraph);
         if (additionalModules.length > 0) {
           return [...modules, ...additionalModules];
         }
@@ -236,9 +215,10 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
           }
 
           if (cacheEntry) {
+            const cssLineCount = (cacheEntry.css.match(/\n/g)?.length ?? 0) + 1;
             return {
               code: cacheEntry.css,
-              map: createSourceMap(path.basename(validId), path.basename(absoluteId)),
+              map: createSourceMap(path.basename(validId), path.basename(absoluteId), cssLineCount),
             };
           }
           this.error(`Missing build cache entry for virtual CSS file: ${id}`);
@@ -273,22 +253,15 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
 
           const jsCode = generateJsWithHmr(js, css, id, styleDependencies);
 
-          // Add file dependencies for proper HMR
           if (ctx.isDev && !options?.ssr) {
-            dependencies.forEach((dep: string) => {
-              // Watch only real filesystem entries; virtual ids ("\0" prefixed) cannot be monitored and would
-              // trigger noise in Vite's watcher set.
-              if (!path.isAbsolute(dep)) return;
-              if (!filesWatched.has(dep)) {
-                filesWatched.add(dep);
-                this.addWatchFile(dep);
-              }
-            });
+            const addWatch = this.addWatchFile.bind(this);
+            addWatchFilesForDeps(dependencies, filesWatched, addWatch, (p: string) => path.isAbsolute(p));
           }
 
+          const lineCount = (jsCode.match(/\n/g)?.length ?? 0) + 1;
           return {
             code: jsCode,
-            map: createSourceMap(path.basename(id), path.basename(id)),
+            map: createSourceMap(path.basename(id), path.basename(id), lineCount),
           };
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
@@ -301,104 +274,34 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   return [corePlugin, createVuePlugin(ctx)];
 }
 
-export function injectCssChunk(css: string, id: string, isDev = false): string {
-  const identifier = path.basename(id);
-  const chunkHash = createHash('md5').update(id).digest('hex').slice(0, 8);
-  const styleId = `surimi-style_${identifier}_${chunkHash}`;
-
-  let hmrCode = '';
-
-  if (isDev) {
-    hmrCode = `
-if (import.meta.hot) {
-  import.meta.hot.dispose(() => { document.getElementById(styleId)?.remove(); });
-  import.meta.hot.accept(() => {});
-}`;
-  }
-
-  return `
-const css = ${JSON.stringify(css)};
-const styleId = '${styleId}';
-
-const existingStyle = document.getElementById(styleId);
-
-// Create and inject new style element
-const styleElement = document.createElement('style');
-styleElement.id = styleId;
-styleElement.textContent = css;
-document.head.appendChild(styleElement);
-
-if (existingStyle) {
-  existingStyle.remove();
-}${hmrCode}
-`;
-}
-
 /** Normalize to absolute path; handles root-relative paths used in some SSR setups (e.g. Astro). */
 function getAbsoluteId(filePath: string, config: ResolvedConfig): string {
   const alreadyAbsolute =
     filePath.startsWith(config.root) ||
-    (path.isAbsolute(filePath) &&
-      filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1]);
+    (path.isAbsolute(filePath) && filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1]);
   return normalizePath(alreadyAbsolute ? filePath : path.join(config.root, filePath));
 }
 
 const getVirtualCssId = (sourceId: string): string => `${sourceId}${VIRTUAL_CSS_SUFFIX}`;
-const getSourceIdFromVirtual = (virtualId: string): string =>
-  virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
+const getSourceIdFromVirtual = (virtualId: string): string => virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
 
-/** Cache key shape for Vue surimi blocks; Vite uses SFC query URL, so we map for module graph lookup. */
-const VUE_SURIMI_VIRTUAL_PATH_RE = /^(.+\.vue)\.__surimi_(\d+)\.css\.ts$/;
-
-/**
- * Resolve the real Vite module id for a Vue surimi block from the module graph.
- * Vite can register the block as ?vue&type=surimi&index=N&lang.ts, &lang.js, or no lang;
- * we match by file and query fragment so invalidation works regardless.
- */
-function resolveVueSurimiModuleId(
-  vueFilePath: string,
-  index: string,
-  moduleGraph: EnvironmentModuleGraph,
-): string | null {
-  const normalizedVue = normalizePath(vueFilePath);
-  const fragment = `type=surimi&index=${index}`;
-  const mods = moduleGraph.getModulesByFile(normalizedVue);
-  if (!mods) return null;
-  for (const mod of mods) {
-    const id = mod.id ?? mod.url;
-    if (id.includes(fragment)) return id;
-  }
-  return null;
-}
-
-const collectModulesForInvalidation = (
+function collectModulesForInvalidation(
   fileId: string,
   moduleGraph: EnvironmentModuleGraph,
   inlineCss: boolean,
-): EnvironmentModuleNode[] => {
-  const modules: EnvironmentModuleNode[] = [];
+): EnvironmentModuleNode[] {
+  const vueModules = collectVueSurimiModulesForInvalidation(fileId, moduleGraph);
+  if (vueModules !== null) return vueModules;
 
+  const modules: EnvironmentModuleNode[] = [];
   const addModule = (id: string) => {
     const module = moduleGraph.getModuleById(id);
     if (module) modules.push(module);
   };
 
-  // Vue surimi blocks are cached under a virtual path (App.vue.__surimi_0.css.ts) but
-  // Vite registers the module under the SFC query id (lang can be .ts, .js, or omitted).
-  const vueMatch = VUE_SURIMI_VIRTUAL_PATH_RE.exec(fileId);
-  if (vueMatch) {
-    const vueFilePath = vueMatch[1] ?? '';
-    const idx = vueMatch[2] ?? '0';
-    const resolved = resolveVueSurimiModuleId(vueFilePath, idx, moduleGraph);
-    addModule(resolved ?? `${vueFilePath}?vue&type=surimi&index=${idx}&lang.ts`);
-    return modules;
-  }
-
   addModule(fileId);
-
   if (!inlineCss) {
     addModule(getVirtualCssId(fileId));
   }
-
   return modules;
-};
+}
