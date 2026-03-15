@@ -1,7 +1,11 @@
-import type { InputOptions } from '@rolldown/browser';
-import { rolldown } from '@rolldown/browser';
+import type { CompileOptions, CompileResult } from './types';
 
-import type { CompileOptions, CompileResult } from '.';
+/** Minimal rolldown input shape; compatible with both 'rolldown' and '@rolldown/browser'. */
+export interface RolldownInput {
+  input: string;
+  cwd: string;
+  plugins: unknown[];
+}
 
 /** Base64-encode UTF-8 string; works in Node (Buffer) and browser (TextEncoder + btoa). */
 function toBase64Utf8(str: string): string {
@@ -75,11 +79,21 @@ export function getRolldownInput(options: CompileOptions) {
     input,
     cwd,
     plugins: [...virtualSourcePlugin, createSurimiTransformPlugin(effectiveInclude, options.exclude)],
-  } satisfies InputOptions;
+  };
 }
 
-export async function getRolldownInstance(input: InputOptions) {
-  return rolldown(input);
+/** Matches data: URLs in error messages and stack traces so we can replace with source path. */
+const DATA_URL_PATTERN = /data:text\/javascript;base64,[A-Za-z0-9+/=]+/g;
+
+function rewriteDataUrlInError(error: Error, sourcePath: string): Error {
+  const message = error.message.replace(DATA_URL_PATTERN, sourcePath);
+  const stack = error.stack?.replace(DATA_URL_PATTERN, sourcePath);
+  const rewritten = new Error(message);
+  rewritten.name = error.name;
+  if (stack) rewritten.stack = stack;
+  if (error.cause)
+    rewritten.cause = error.cause instanceof Error ? rewriteDataUrlInError(error.cause, sourcePath) : error.cause;
+  return rewritten;
 }
 
 /**
@@ -92,8 +106,9 @@ export async function getCompileResult(
   imports: string[],
   dynamicImports: string[],
   moduleIds: string[],
+  sourcePath?: string,
 ): Promise<CompileResult | undefined> {
-  const { css, js } = await execute(code);
+  const { css, js } = await execute(code, sourcePath);
 
   // Extract all imported modules as watch files
   const watchFiles = getModuleDependencies(imports, dynamicImports, moduleIds);
@@ -109,11 +124,17 @@ export async function getCompileResult(
 /**
  * Executes the compiled Surimi code in a data URL module context
  * and extracts the generated CSS and preserved exports.
+ * When sourcePath is provided, errors are rewritten to show it instead of the data: URL.
  */
-export async function execute(code: string) {
+export async function execute(code: string, sourcePath?: string) {
   try {
-    const module = (await /* @vite-ignore */ import(
-      `data:text/javascript;base64,${toBase64Utf8(code)}`
+    // Dynamic import with variable URL so Vite (and other bundlers) don't try to pre-bundle this data URL
+    const dataUrl = `data:text/javascript;base64,${toBase64Utf8(code)}`;
+    const module = (await import(
+      // TODO: Fix this. We need to preserve the vite-ignore comment so this import isn't flagged
+      // by vite, as it cannot be analyzed. @preserve doesn't work for some reason.
+      //! @vite-ignore
+      dataUrl
     )) as SurimiModule;
 
     // Get the generated CSS
@@ -145,14 +166,22 @@ export async function execute(code: string) {
     return { css, js };
   } catch (error) {
     if (error instanceof Error) {
-      const message = error.message || String(error);
-      if (message.includes('from "data:')) {
-        // We suppress the ugly data URL in the error message
-        const strippedMessage = message.replace(/("data:[^ ]+)/g, '<surimi-module>');
-        throw new Error(`Failed to build surimi output: ${strippedMessage}`);
+      if (sourcePath) {
+        throw rewriteDataUrlInError(error, sourcePath);
       }
+      const message = error.message || String(error);
+      if (message.includes('data:') || message.includes('from "data:')) {
+        const strippedMessage = message
+          .replace(DATA_URL_PATTERN, '<surimi-module>')
+          .replace(/("data:[^"]*")/g, '<surimi-module>');
+        throw new Error(
+          strippedMessage.includes('Failed to build')
+            ? strippedMessage
+            : `Failed to build surimi output: ${strippedMessage}`,
+        );
+      }
+      throw error;
     }
-
     throw error;
   }
 }

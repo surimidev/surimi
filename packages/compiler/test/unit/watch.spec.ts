@@ -1,8 +1,7 @@
 import path from 'node:path';
-import type { RolldownWatcher } from '@rolldown/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { compileWatch } from '../../src';
+import { compileWatch, type RolldownWatcher } from '../../src';
 
 const fixturesDir = path.resolve(__dirname, '../fixtures');
 
@@ -35,6 +34,7 @@ describe('Compiler Watch Mode', () => {
       watcher = compileWatch(createOptions('simple.css.ts'), createWatchOptions());
 
       expect(watcher).toBeDefined();
+      if (!watcher) return;
       expect(watcher).toHaveProperty('on');
       expect(watcher).toHaveProperty('close');
       expect(typeof watcher.on).toBe('function');

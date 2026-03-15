@@ -5,9 +5,11 @@ import { basename, dirname, extname, resolve } from 'node:path';
 import process from 'node:process';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
 import { Command } from 'commander';
+import pc from 'picocolors';
 
-import { compile, compileWatch } from '.';
 import { version } from '../package.json';
+import { compile, compileWatch } from './index.node';
+import type { CompileResult, RolldownWatcherEvent } from './types';
 
 interface CLIOptions {
   input: string;
@@ -35,6 +37,29 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry): entry is string => typeof entry === 'string');
 }
 
+/** Format rolldown/compile errors for display. Preserves rolldown's multi-line boxed message when present. */
+function formatCompileError(error: unknown): string {
+  if (error instanceof Error) {
+    const msg = error.message || String(error);
+    if (msg.includes('\n')) return msg;
+    const stack = error.stack;
+    const firstStackLine = stack?.split('\n')[1]?.trim();
+    if (firstStackLine?.includes(':')) return `${msg}\n  at ${firstStackLine}`;
+    return msg;
+  }
+  return String(error);
+}
+
+function logError(err: unknown) {
+  const msg = formatCompileError(err);
+  log.error(pc.red(msg));
+}
+
+function printIntro() {
+  console.clear();
+  intro(`🍣 @surimi/compiler ${pc.bgCyan(pc.black(` v${version} `))}`);
+  note('Surimi is still in early development. Please report any issues you encounter!', 'Warning: Early Development');
+}
 function generateOutputPaths(inputPath: string, outDir?: string): { css: string; js: string } {
   const parsed = {
     dir: outDir ?? dirname(inputPath),
@@ -90,8 +115,7 @@ async function runCompile(options: CLIOptions) {
   const compileOptions = { input: inputPath, cwd, include, exclude };
 
   try {
-    intro(`🍣 @surimi/compiler (v${version})`);
-    note('Surimi is still in early development. Please report any issues you encounter!', 'Warning: Early Development');
+    printIntro();
 
     const s = spinner();
     const filename = basename(inputPath);
@@ -105,7 +129,8 @@ async function runCompile(options: CLIOptions) {
 
     outro(`Thanks for using surimi! 👋`);
   } catch (error) {
-    cancel(`Compilation failed: ${error instanceof Error ? error.message : String(error)}`);
+    logError(error);
+    cancel('Compilation failed');
     process.exit(1);
   }
 }
@@ -135,7 +160,6 @@ async function runSingleCompile(
     s.stop(`Compilation completed in ${String(result.duration)}ms`);
   } catch (error) {
     s.stop('Compilation failed');
-    log.error(`${error instanceof Error ? error.message : String(error)}\n`);
     throw error;
   }
 }
@@ -150,32 +174,72 @@ async function runWatchMode(
   s: ReturnType<typeof spinner>,
   filename: string,
 ): Promise<void> {
-  s.start(`Watching ${filename}...`);
+  // Initial build so output exists before watching (rolldown watch may not emit BUNDLE_END immediately)
+  s.start(`Compiling ${filename}...`);
+  try {
+    const initialResult = await compile(compileOptions);
+    if (initialResult) {
+      await writeCompilationOutput(initialResult, outputPaths, options);
+      s.message(`✅ Initial build in ${initialResult.duration}ms. Watching...`);
+    } else {
+      s.message(`❌ Initial build failed - Watching...`);
+    }
+  } catch (error) {
+    logError(error);
+    s.message(`❌ Initial build failed - Watching...`);
+  }
 
-  await new Promise<void>(resolve => {
+  await new Promise<void>(_resolve => {
+    let lastWasError = false;
+
     const watcher = compileWatch(compileOptions, {
-      onChange: result => {
-        (async () => {
+      onChange: (result: CompileResult | undefined, _event: RolldownWatcherEvent, error?: unknown) => {
+        void (async () => {
           try {
             if (!result) {
+              s.stop('');
+              printIntro();
+              if (error !== undefined) logError(error);
+              s.start(`Compiling ${filename}...`);
               s.message(`❌ Build failed - Watching...`);
+              lastWasError = true;
               return;
             }
 
             await writeCompilationOutput(result, outputPaths, options);
 
+            if (lastWasError) {
+              s.stop('');
+              printIntro();
+              s.start(`Compiling ${filename}...`);
+            }
+            lastWasError = false;
             s.message(`✅ Compiled in ${result.duration}ms. Watching...`);
-          } catch (error) {
-            log.error(`${error instanceof Error ? error.message : String(error)}\n`);
+          } catch (err) {
+            s.stop('');
+            printIntro();
+            logError(err);
+            s.start(`Compiling ${filename}...`);
             s.message(`❌ Error writing files - Watching...`);
+            lastWasError = true;
           }
-        })().catch(console.error);
+        })().catch((err: unknown) => {
+          s.stop('');
+          printIntro();
+          logError(err);
+          s.start(`Compiling ${filename}...`);
+          s.message(`❌ Build failed - Watching...`);
+          lastWasError = true;
+        });
       },
     });
 
-    // Cleanup function to restore terminal state
-    const cleanup = () => {
+    // Cleanup function to restore terminal state and remove listeners
+    const cleanup = (onKeyPress?: (key: string) => void) => {
       try {
+        if (onKeyPress && process.stdin.isTTY) {
+          process.stdin.off('data', onKeyPress);
+        }
         if (process.stdin.isTTY) {
           process.stdin.setRawMode(false);
           process.stdin.pause();
@@ -205,12 +269,10 @@ async function runWatchMode(
         if (key === 'q' || key === '\u0003') {
           // 'q' or Ctrl+C
           s.stop('ℹ Exiting watch mode...');
-          cleanup();
+          cleanup(onKeyPress);
           watcher
             .close()
-            .then(() => {
-              resolve();
-            })
+            .then(() => process.exit(0))
             .catch(console.error);
         }
       };
@@ -271,6 +333,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  log.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+  logError(error);
   process.exit(1);
 });

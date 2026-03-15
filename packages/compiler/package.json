@@ -15,13 +15,20 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/index.node.d.ts",
+      "browser": "./dist/index.browser.js",
+      "import": "./dist/index.node.js",
+      "default": "./dist/index.node.js"
+    },
+    "./browser": {
+      "types": "./dist/index.browser.d.ts",
+      "import": "./dist/index.browser.js",
+      "default": "./dist/index.browser.js"
     }
   },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.node.js",
+  "module": "dist/index.node.js",
+  "types": "dist/index.node.d.ts",
   "bin": {
     "surimi": "./dist/cli.js"
   },
@@ -36,8 +43,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@rolldown/browser": "1.0.0-rc.5",
-    "commander": "^14.0.3"
+    "commander": "^14.0.3",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@surimi/linter-config": "workspace:*",
@@ -47,6 +54,13 @@
     "typescript": "catalog:build"
   },
   "peerDependencies": {
+    "@rolldown/browser": "1.0.0-rc.9",
+    "rolldown": "1.0.0-rc.9",
     "surimi": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@rolldown/browser": {
+      "optional": true
+    }
   }
 }

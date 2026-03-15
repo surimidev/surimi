@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
-    "@rolldown/browser": "1.0.0-rc.5",
+    "@rolldown/browser": "1.0.0-rc.9",
     "@surimi/compiler": "workspace:*",
     "clsx": "^2.1.1",
     "fancy-ansi": "^0.1.3",
