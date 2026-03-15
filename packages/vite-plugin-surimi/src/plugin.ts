@@ -11,7 +11,7 @@ import { createFilter, normalizePath } from 'vite';
 import { compile } from '@surimi/compiler';
 import type { CompileResult } from '@surimi/compiler';
 
-import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX } from './constants.js';
+import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX, VIRTUAL_SURIMI_PATH_REGEX } from './constants.js';
 import type { SharedPluginContext, SurimiOptions } from './types.js';
 import { createSourceMap } from './utils.js';
 import { createVuePlugin, VUE_SURIMI_BLOCK_RE } from './vue.js';
@@ -87,7 +87,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     const normalizedChangedFile = normalizePath(changedFile);
 
     for (const [cachedFile] of ctx.compilationCache) {
-      if (!tsFileFilter(cachedFile)) continue;
+      const isRelevant =
+        tsFileFilter(cachedFile) || VUE_SURIMI_VIRTUAL_PATH_RE.test(cachedFile);
+      if (!isRelevant) continue;
 
       const cacheEntry = ctx.compilationCache.get(cachedFile);
       if (cacheEntry?.dependencies.includes(normalizedChangedFile)) {
@@ -191,19 +193,21 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     resolveId: {
       filter: {
         id: {
-          include: [VIRTUAL_CSS_REGEX],
+          include: [VIRTUAL_CSS_REGEX, VIRTUAL_SURIMI_PATH_REGEX],
         },
       },
       handler(source) {
         if (!ctx.resolvedConfig) throw new Error('resolveId called before config was resolved');
 
         const [validId, query] = source.split('?');
+        const absoluteId = getAbsoluteId(validId ?? '', ctx.resolvedConfig);
 
         if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-          // In SSR Mode, we can end up with paths like /src/styles.css.ts
-          const absoluteId = getAbsoluteId(validId, ctx.resolvedConfig);
-
           return query ? `${absoluteId}?${query}` : absoluteId;
+        }
+        // Bare virtual path (e.g. from compiler output): resolve to virtual CSS module so load() can serve from cache.
+        if (VIRTUAL_SURIMI_PATH_REGEX.test(validId ?? '') && ctx.compilationCache.has(absoluteId)) {
+          return query ? `${getVirtualCssId(absoluteId)}?${query}` : getVirtualCssId(absoluteId);
         }
         return null;
       },
@@ -347,14 +351,24 @@ const getSourceIdFromVirtual = (virtualId: string): string =>
 const VUE_SURIMI_VIRTUAL_PATH_RE = /^(.+\.vue)\.__surimi_(\d+)\.css\.ts$/;
 
 /**
- * Map a Vue surimi virtual path (our cache key) to the module id Vite uses.
- * Vite registers the module under the SFC query URL, not the virtual path.
+ * Resolve the real Vite module id for a Vue surimi block from the module graph.
+ * Vite can register the block as ?vue&type=surimi&index=N&lang.ts, &lang.js, or no lang;
+ * we match by file and query fragment so invalidation works regardless.
  */
-function vueSurimiVirtualPathToModuleId(virtualPath: string): string | null {
-  const m = VUE_SURIMI_VIRTUAL_PATH_RE.exec(virtualPath);
-  if (!m) return null;
-  const [, vueFilePath, index] = m;
-  return `${vueFilePath}?vue&type=surimi&index=${index}&lang.ts`;
+function resolveVueSurimiModuleId(
+  vueFilePath: string,
+  index: string,
+  moduleGraph: EnvironmentModuleGraph,
+): string | null {
+  const normalizedVue = normalizePath(vueFilePath);
+  const fragment = `type=surimi&index=${index}`;
+  const mods = moduleGraph.getModulesByFile(normalizedVue);
+  if (!mods) return null;
+  for (const mod of mods) {
+    const id = mod.id ?? mod.url;
+    if (id.includes(fragment)) return id;
+  }
+  return null;
 }
 
 const collectModulesForInvalidation = (
@@ -370,10 +384,13 @@ const collectModulesForInvalidation = (
   };
 
   // Vue surimi blocks are cached under a virtual path (App.vue.__surimi_0.css.ts) but
-  // Vite registers the module under the SFC query id (App.vue?vue&type=surimi&index=0&lang.ts).
-  const surrogateId = vueSurimiVirtualPathToModuleId(fileId);
-  if (surrogateId) {
-    addModule(surrogateId);
+  // Vite registers the module under the SFC query id (lang can be .ts, .js, or omitted).
+  const vueMatch = VUE_SURIMI_VIRTUAL_PATH_RE.exec(fileId);
+  if (vueMatch) {
+    const vueFilePath = vueMatch[1] ?? '';
+    const idx = vueMatch[2] ?? '0';
+    const resolved = resolveVueSurimiModuleId(vueFilePath, idx, moduleGraph);
+    addModule(resolved ?? `${vueFilePath}?vue&type=surimi&index=${idx}&lang.ts`);
     return modules;
   }
 

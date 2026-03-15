@@ -21,6 +21,7 @@ export const VUE_SURIMI_BLOCK_RE = /[?&]vue&type=surimi/;
  */
 export function createVuePlugin(ctx: SharedPluginContext): Plugin {
   const tsFileFilter = createFilter(ctx.include, ctx.exclude);
+  const filesWatched = new Set<string>();
 
   return {
     name: 'vite-plugin-surimi:vue',
@@ -59,6 +60,17 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
             }
           : compileResult;
         ctx.compilationCache.set(virtualInput, resultToCache);
+
+        // Mirror core plugin: watch compile-time dependencies (e.g. tokens.ts) so HMR runs when they change.
+        if (ctx.isDev && !options?.ssr) {
+          for (const dep of resultToCache.dependencies) {
+            if (!path.isAbsolute(dep)) continue;
+            if (!filesWatched.has(dep)) {
+              filesWatched.add(dep);
+              this.addWatchFile(dep);
+            }
+          }
+        }
 
         // Same as core plugin: pull in virtual CSS for any .css.ts/.css.js dependency so their
         // styles are included (e.g. theme.css.ts imported by the block). Without this, nested
