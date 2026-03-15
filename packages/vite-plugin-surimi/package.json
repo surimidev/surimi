@@ -40,7 +40,7 @@
     "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
-    "source-map": "^0.7.4",
+    "source-map": "^0.7.6",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
     "vite": "catalog:build"
