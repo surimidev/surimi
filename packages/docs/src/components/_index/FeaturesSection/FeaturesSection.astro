@@ -6,39 +6,39 @@ import './FeaturesSection.css';
 const features = [
   {
     icon: ShieldHalvedIcon,
-    title: 'Type Safety',
-    description: "Catch CSS errors at compile time with TypeScript's powerful type system. No more runtime surprises.",
+    title: 'Type-safe CSS',
+    description:
+      'No more wrong variable names, missing units etc. Surimi is pure typescript, so you see all errors in your editor (and the console).',
   },
   {
     icon: LightbulbIcon,
-    title: 'IntelliSense Everywhere',
-    description: 'Get autocomplete, hover information, and inline documentation right in your editor as you type.',
+    title: 'Perfect DX',
+    description:
+      'Get autocomplete, type hints, inline docs, compatibility notes, spec information and more. right in your editor as you type.',
   },
   {
     icon: BoltIcon,
-    title: 'Incredible DevEx',
+    title: 'No language barrier',
     description:
-      'Share styles, selectors, themes like you are used to. And if you need, export them to JS with ease. All that with zero runtime.',
+      "Built-in support for mixins, composition and more. And it's TypeScript! So use loops, functions, objects, nesting - all of it, fully typed.",
   },
   {
     icon: CodeIcon,
     title: 'Zero learning curve',
     description:
-      'If you already know CSS and TypeScript, you know Surimi. And if not, the information is just one hover away.',
+      "If you already know CSS and TypeScript, you know Surimi. And if not, Surimi show's you all your options. Just one hover away.",
   },
 ];
 ---
 
 <section class="features-section">
   <div class="features-section__container">
-    <h2 class="features-section__title">Why Choose Surimi?</h2>
+    <h2 class="features-section__title">Not another preprocessor</h2>
     <p class="features-section__subtitle">
-      CSS preprocessors like SCSS are great, but with CSS getting more and more features, it's time for a new approach
-      to <b>supercharge</b> CSS. Developers figured out the typing and the programming part already ...with <b
-        >TypeScript</b
-      >.
-      <br />
-      <b>So let's use TypeScript to write composable, maintainable styles.</b>
+      CSS preprocessors like SCSS are great, but as CSS is getting more and more modern,
+      <b>they solve less and less problems</b>. Today, <b>CSS's biggest problems</b> are
+      <b>Developer experience, type-safety, composability, extensibility, complex selectors etc.</b>
+      and Surimi solves all of them.
     </p>
 
     <div class="features-section__grid">

@@ -1,0 +1,21 @@
+```ts
+const button = select('.my-button')
+const input = select('input')
+
+button.style({
+  backgroundColor: primary,
+})
+
+// Everything can be re-used.
+button.hover().use(interactiveIcon, focusable, transitions.fast)
+
+// Everything is chainable and type-safe.
+button.active().not().disabled().style({
+  scale: 1.2,
+})
+
+// Incredible API. Yes, this works with ZERO runtime.
+when(button).not.disabled().and.hovered().select('header').style({
+  scale: 1.2,
+})
+``` 

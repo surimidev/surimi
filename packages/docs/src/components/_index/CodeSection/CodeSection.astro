@@ -1,48 +1,28 @@
 ---
+import { Content as BeforeCode } from './code.mdx';
+
 import './CodeSection.css';
-
-import { Content as BeforeCode } from './examples/before.mdx';
-import { Content as SurimiCode } from './examples/surimi.mdx';
-
-const codeBlocks = [
-  {
-    id: 'before',
-    label: 'Before',
-    className: '',
-    code: 'before',
-  },
-  {
-    id: 'surimi',
-    label: 'With Surimi',
-    className: 'code-block--surimi',
-    code: 'surimi',
-  },
-];
 ---
 
 <section class="code-section">
   <h2>See It In Action</h2>
   <p class="section-subtitle">
-    CSS is nice and (somewhat) simple. But it's lacking things we're used to in coding, like <b>re-usable</b> selectors,
-    <b>compile-time</b> and <b>type safety</b>, a direct <b>JS interface</b>, <b>composability</b> and other things that
-    make coding great.
+    CSS is nice and powerful, but lacking things we're used to in coding, like <b>re-usable</b> selectors,
+    <b>compile-time</b> and <b>type safety</b>, a direct <b>JS interface</b>, <b>composability</b> etc.
     <br />
-    <br />
-    This is how <b>surimi</b> solves these issues:
+    Typescript already solves all of this - and Surimi takes advantage of that.
   </p>
 
   <div class="code-comparison">
-    {
-      codeBlocks.map(block => (
-        <div class={`code-block ${block.className}`}>
-          <div class="code-header">
-            <span class="code-label">{block.label}</span>
-          </div>
-          {/* prettier-ignore */}
-          {block.code === 'before' ? <BeforeCode /> : <SurimiCode />}
-        </div>
-      ))
-    }
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-label">Some examples of Surimi code</span>
+        <a href="/playground">
+          <button class="code-button"> See more in the playground </button>
+        </a>
+      </div>
+      <BeforeCode />
+    </div>
   </div>
 
   <div class="pro-tip">

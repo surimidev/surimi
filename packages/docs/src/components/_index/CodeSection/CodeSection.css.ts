@@ -10,6 +10,10 @@ const codeSection = select('.code-section').style({
   borderBottom: `1px solid ${theme.border.default}`,
 });
 
+media().maxWidth('768px').select(codeSection).style({
+  textAlign: 'left',
+});
+
 codeSection.child('h2').style({
   fontSize: '2.5rem',
   fontWeight: 700,
@@ -20,6 +24,7 @@ codeSection.child('h2').style({
 
 codeSection.child('.section-subtitle').style({
   fontSize: '1.125rem',
+  lineHeight: 1.6,
   color: theme.text.subtle,
   marginBottom: '48px',
   margin: '0 auto 48px',
@@ -27,17 +32,12 @@ codeSection.child('.section-subtitle').style({
 
 // Code comparison grid
 const codeComparison = codeSection.child('.code-comparison').style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-  gap: '24px',
-  maxWidth: '70%',
+  maxWidth: '50%',
   margin: '0 auto 40px',
 });
 
-media().maxWidth('768px').select('.code-section .code-comparison').style({
-  gridTemplateColumns: '100%',
+media().maxWidth('1020px').select('.code-section .code-comparison').style({
   maxWidth: '100%',
-  margin: '0 0 20px 0',
 });
 
 // Code blocks
@@ -51,13 +51,7 @@ const codeBlock = codeComparison.child('.code-block').style({
 });
 
 codeBlock.hover().style({
-  transform: 'translateY(-2px)',
   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-});
-
-// Surimi code block special styling
-const surimiCodeBlock = codeComparison.child('.code-block.code-block--surimi').style({
-  border: `1px solid ${theme.interactive.primary.default}`,
 });
 
 // Code header
@@ -70,11 +64,6 @@ const codeHeader = codeBlock.child('.code-header').style({
   borderBottom: `1px solid ${theme.border.default}`,
 });
 
-// Surimi header gradient
-select('.code-block--surimi .code-header').style({
-  background: `linear-gradient(135deg, ${theme.interactive.primary.default}, ${theme.interactive.primary.hover})`,
-});
-
 codeHeader.child('.code-label').style({
   fontSize: '0.875rem',
   fontWeight: 600,
@@ -83,8 +72,15 @@ codeHeader.child('.code-label').style({
   letterSpacing: '0.05em',
 });
 
-surimiCodeBlock.descendant('.code-header .code-label').style({
-  color: theme.text.inverse,
+codeHeader.descendant('.code-button').style({
+  backgroundColor: theme.interactive.primary.default,
+  border: `1px solid ${theme.border.default}`,
+  borderRadius: '12px',
+  padding: '12px 16px',
+});
+
+media().maxWidth('768px').select(codeHeader.descendant('.code-button')).style({
+  display: 'none',
 });
 
 // Code content

@@ -20,7 +20,9 @@ select('html, body').style({
   padding: 0,
   fontFamily: 'IBM Plex Mono, sans-serif',
   backgroundColor: theme.bg.subtle,
+  hangingPunctuation: 'first last',
   color: theme.text.default,
+  lineHeight: 1.5,
   height: '100dvh',
   width: '100vw',
   overflowX: 'hidden',
@@ -43,6 +45,7 @@ select('h1, h2, h3, h4, h5, h6').style({
 select('p, li, dd').style({
   maxInlineSize: config.global.maxInlineWidth,
   textWrap: 'pretty',
+  maxWidth: config.global.maxInlineWidth,
 });
 
 const link = select('a').style({

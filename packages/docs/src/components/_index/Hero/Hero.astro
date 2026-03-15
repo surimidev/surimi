@@ -1,17 +1,19 @@
 ---
-import { ArrowLeftIcon, BookIcon, ExternalLinkIcon } from '../../icons';
+import { ArrowLeftIcon, LightbulbIcon } from '../../icons';
 
 import './Hero.css';
 ---
 
 <div class="hero">
   <h1 class="hero__title">
-    The next era of <br />
-    <div class="hero__title__gradient">writing CSS</div>
+    Modern CSS just
+    <br />
+    got
+    <div class="hero__title__gradient">even better!</div>
   </h1>
   <p class="hero__subtitle">
-    Surimi is the next generation of CSS 'preprocessors'. It combines the flexibility of traditional CSS preprocessors
-    with the power of CSS-in-JS tools. We call it <b>TS-in-CSS</b>: Using <b>TypeScript</b> as a CSS preprocessor.
+    Surimi is the next generation of CSS tooling. Think traditional CSS preprocessors, but with the power of Typescript
+    and Rust built in.
   </p>
   <div class="hero__buttons">
     <a class="hero__button hero__button--primary" href="/docs/getting-started">
@@ -19,8 +21,8 @@ import './Hero.css';
       <span class="hero__button__icon" set:html={ArrowLeftIcon.html} />
     </a>
     <a class="hero__button hero__button--secondary" href="/docs/reference">
-      <span class="hero__button__icon" set:html={BookIcon.html} />
-      View Documentation
+      <span class="hero__button__icon" set:html={LightbulbIcon.html} />
+      Why Surimi?
     </a>
   </div>
 </div>

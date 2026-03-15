@@ -23,6 +23,11 @@ const title = hero.child('.hero__title').style({
   marginBottom: theme.spacing[6],
 });
 
+media().maxWidth('768px').select(title).style({
+  marginTop: theme.spacing[9],
+  fontSize: theme.font.size['4xl'],
+});
+
 title.child('.hero__title__gradient').style({
   background: theme.gradients.brand,
   backgroundClip: 'text',
@@ -32,7 +37,7 @@ title.child('.hero__title__gradient').style({
   fontWeight: theme.font.weight.extrabold,
   margin: 0,
   lineHeight: theme.font.lineHeight.tight,
-  display: 'block',
+  display: 'inline-block',
 });
 
 hero.child('.hero__subtitle').style({

@@ -7,18 +7,19 @@ layout: "#layouts/Docs/Docs.astro"
 
 # {frontmatter.title}
 
-Welcome to Surimi! This is a quick guide to get you started with Surimi. For a more in-depth explaination of Surimi's concepts, check out the [How it works](/docs/how-it-works) section.
+Welcome to Surimi! This is a quick guide to get you started. If you want to dive right into code, check out the [Playground](/playground).
+If you're just curious how it works under the hood, see [How it works](/docs/how-it-works). 
 
-Surimi is a TS-in-CSS library to write type-safe, zero-runtime CSS in typescript. It is meant as a modern, hybrid approach between CSS preprocessors like SCSS and CSS-in-JS libraries like Vanilla Extract.
+Surimi is a TS-in-CSS library to write type-safe, zero-runtime CSS. It is a modern alternative to CSS preprocessors and CSS-in-JS libraries like [Vanilla Extract](https://vanilla-extract.style/).
+They can be nice, but Surimi takes another, CSS-first approach. We embrace CSS for what it is and put a modern, functional API on top - with as much support as you could possibly need.
+
+At the end of the day, Surimi is a way to write CSS in typescript. If you know these two things, you know Surimi.
 
 > [!NOTE]
 > Surimi is still in early development. The API might change, and some features are not yet implemented.
 > If you have feedback or issues, open an issue on [GitHub](surimidev/surimi)
 
 ## Installation
-
-> [!TIP]
-> If you use tools like Vite, Astro etc., have a look at our [Guides Overview](/docs/guides/overview) for specific setup instructions.
 
 Install Surimi with your package manager of choice:
 
@@ -30,10 +31,9 @@ yarn add -D surimi
 pnpm add -D surimi
 ```
 
-
-Next, you need to run the surimi compiler. While you could do that manually through the `@surimi/compiler` package, we recommend using the vite plugin.
-It will automatically compile your `.css.ts` files on change, and integrate with your build tool to include the generated CSS in your final bundle.
-It supports all vite-compatible frameworks like React, Vue, Svelte, Astro etc. with configuration options for custom requirements.
+If you use any vite based tool like Astro, Vue, Nuxt or use Vite with React etc. you should install our vite plugin.
+For more options, have a look at our [Guides Overview](/docs/guides/overview). Vite is NOT required for Surimi, but it's the easiest way to get started.
+More on that in a bit.
 
 ### Installation of the Vite plugin
 
@@ -45,7 +45,7 @@ yarn add -D vite-plugin-surimi
 pnpm add -D vite-plugin-surimi
 ```
 
-Note that both are installed as dev dependencies, as they are only needed at build time. Surimi does not (currently) need any runtime.
+Note that both `surimi` and the vite plugin are installed as dev dependencies, as they have zero runtime.
 
 Now, add the plugin to your `vite.config.ts`:
 
@@ -58,7 +58,10 @@ export default defineConfig({
 });
 ```
 
-Again, for more details on the vite plugin see [Using Surimi with Vite](/docs/guides/vite).
+For more details on the vite plugin see [Using Surimi with Vite](/docs/guides/vite).
+
+If you're not using vite, you can still use Surimi! Using it with rollup/rolldown is easy, but you can also use the compiler manually.
+Check out the [Compiler](/docs/compiler) page for more details.
 
 ## Usage
 
