@@ -11,22 +11,14 @@ import { createFilter, normalizePath } from 'vite';
 import { compile } from '@surimi/compiler';
 import type { CompileResult } from '@surimi/compiler';
 
+import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX } from './constants.js';
 import type { SharedPluginContext, SurimiOptions } from './types.js';
+import { createSourceMap } from './utils.js';
 import { createVuePlugin, VUE_SURIMI_BLOCK_RE } from './vue.js';
 
-// Constants
-const VIRTUAL_CSS_SUFFIX = '.surimi.css';
-// any exact match for .surimi.css files, possibly with vite 'query params' like `?inline`
-const VIRTUAL_CSS_REGEX = new RegExp(`\\${VIRTUAL_CSS_SUFFIX}(?:\\?.*)?$`);
-
 /**
- * Vite plugin to integrate Surimi CSS-in-TS compilation.
- * Supports both development (with HMR) and production build modes.
- *
- * Returns an array of plugins: the core compilation plugin and a Vue SFC
- * custom block handler (no-op for non-Vue projects).
- *
- * for plugin options, see {@link SurimiOptions}
+ * Vite plugin for Surimi CSS-in-TS: compiles `.css.ts` / `.css.js` and Vue `<surimi>` blocks.
+ * Returns [corePlugin, vuePlugin]. Options: {@link SurimiOptions}.
  */
 export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   const { include = ['**/*.css.{ts,js}'], exclude = ['node_modules/**', '**/*.d.ts'], inlineCss = false } = options;
@@ -107,9 +99,6 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     return modules;
   };
 
-  /**
-   * Generates JavaScript code with HMR support for development builds
-   */
   const generateJsWithHmr = (js: string, css: string, id: string, styleDependencies: string[]): string => {
     let jsCode: string;
 
@@ -131,12 +120,8 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
       jsCode = `${js}\n${Array.from(cssImports).join('\n')}`;
     }
 
-    // Add HMR acceptance for development builds
     if (ctx.isDev) {
-      jsCode += `\n// HMR support for Surimi
-if (import.meta.hot) {
-  import.meta.hot.accept();
-}`;
+      jsCode += `\nif (import.meta.hot) { import.meta.hot.accept(); }`;
     }
 
     return jsCode;
@@ -160,16 +145,12 @@ if (import.meta.hot) {
       const isSSR = this.environment.config.consumer === 'server';
       const surimiModules = modules.filter(m => VUE_SURIMI_BLOCK_RE.test(m.url));
 
-      // Clear our compilation cache for entries derived from this file
       for (const key of [...ctx.compilationCache.keys()]) {
         if (key !== normalizedFile && key.startsWith(normalizedFile)) {
           ctx.compilationCache.delete(key);
         }
       }
 
-      // When surimi custom blocks change: force @vitejs/plugin-vue to update its descriptor
-      // cache (and our compilation cache) so the next load/transform gets fresh content.
-      // Do this for both client and SSR so HMR shows new styles and full-page refresh does too.
       if (surimiModules.length > 0) {
         const allModsForFile = this.environment.moduleGraph.getModulesByFile(normalizedFile);
         if (allModsForFile) {
@@ -188,7 +169,6 @@ if (import.meta.hot) {
         return;
       }
 
-      // Handle .css.ts file changes (non-Vue)
       if (tsFileFilter(file)) {
         ctx.compilationCache.delete(normalizedFile);
         const additionalModules = [
@@ -219,7 +199,6 @@ if (import.meta.hot) {
 
         const [validId, query] = source.split('?');
 
-        // Handle virtual CSS imports
         if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
           // In SSR Mode, we can end up with paths like /src/styles.css.ts
           const absoluteId = getAbsoluteId(validId, ctx.resolvedConfig);
@@ -255,17 +234,10 @@ if (import.meta.hot) {
           if (cacheEntry) {
             return {
               code: cacheEntry.css,
-              map: {
-                version: 3,
-                file: path.basename(validId),
-                sources: [path.basename(absoluteId)],
-                names: [],
-                mappings: '',
-              },
+              map: createSourceMap(path.basename(validId), path.basename(absoluteId)),
             };
-          } else {
-            this.error(`Missing build cache entry for virtual CSS file: ${id}`);
           }
+          this.error(`Missing build cache entry for virtual CSS file: ${id}`);
         }
         return null;
       },
@@ -312,13 +284,7 @@ if (import.meta.hot) {
 
           return {
             code: jsCode,
-            map: {
-              version: 3,
-              file: path.basename(id),
-              sources: [path.basename(id)],
-              names: [],
-              mappings: '',
-            },
+            map: createSourceMap(path.basename(id), path.basename(id)),
           };
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
@@ -339,14 +305,10 @@ export function injectCssChunk(css: string, id: string, isDev = false): string {
   let hmrCode = '';
 
   if (isDev) {
-    hmrCode = `\n\n// HMR support: remove style when module is disposed (e.g. import removed)
+    hmrCode = `
 if (import.meta.hot) {
-  import.meta.hot.dispose(() => {
-    document.getElementById(styleId)?.remove();
-  });
-  import.meta.hot.accept(() => {
-    // The module will be re-executed with new CSS
-  });
+  import.meta.hot.dispose(() => { document.getElementById(styleId)?.remove(); });
+  import.meta.hot.accept(() => {});
 }`;
   }
 
@@ -368,31 +330,20 @@ if (existingStyle) {
 `;
 }
 
-// Used to convert file paths like /src/styles.css.ts to absolute paths.
-// This is introduced to make SSR scenarios (like Astro) work correctly.
-// There, the initial vite loading / resolution steps use absolute paths, but astro might not.
-const getAbsoluteId = (filePath: string, config: ResolvedConfig) => {
-  let resolvedId = filePath;
-
-  if (
+/** Normalize to absolute path; handles root-relative paths used in some SSR setups (e.g. Astro). */
+function getAbsoluteId(filePath: string, config: ResolvedConfig): string {
+  const alreadyAbsolute =
     filePath.startsWith(config.root) ||
-    // In monorepos the absolute path will be outside of config.root, so we check that they have the same root on the file system
-    // Paths from vite are always normalized, so we have to use the posix path separator
-    (path.isAbsolute(filePath) && filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1])
-  ) {
-    resolvedId = filePath;
-  } else {
-    // In SSR mode we can have paths like /app/styles.css.ts
-    resolvedId = path.join(config.root, filePath);
-  }
-
-  return normalizePath(resolvedId);
-};
+    (path.isAbsolute(filePath) &&
+      filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1]);
+  return normalizePath(alreadyAbsolute ? filePath : path.join(config.root, filePath));
+}
 
 const getVirtualCssId = (sourceId: string): string => `${sourceId}${VIRTUAL_CSS_SUFFIX}`;
-const getSourceIdFromVirtual = (virtualId: string): string => virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
+const getSourceIdFromVirtual = (virtualId: string): string =>
+  virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
 
-/** Matches our internal cache key for Vue surimi blocks: path/to/App.vue.__surimi_0.css.ts */
+/** Cache key shape for Vue surimi blocks; Vite uses SFC query URL, so we map for module graph lookup. */
 const VUE_SURIMI_VIRTUAL_PATH_RE = /^(.+\.vue)\.__surimi_(\d+)\.css\.ts$/;
 
 /**

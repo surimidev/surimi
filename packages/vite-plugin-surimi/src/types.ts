@@ -30,11 +30,8 @@ export interface SurimiOptions {
   exclude?: string[];
 
   /**
-   * Whether to inline the generated CSS into the JavaScript module.
-   * If `true`, will not emit separate CSS files, but instead inject CSS via JavaScript.
-   * If `false`, will emit separate CSS files and import them as virtual modules.
-   *
-   * Only used in 'manual' mode.
+   * When `false` (default), emit virtual CSS modules (separate chunks).
+   * When `true`, inject CSS into the JS output (no separate chunk).
    * @default false
    */
   inlineCss?: boolean;

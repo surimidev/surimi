@@ -5,32 +5,19 @@ import { createFilter, normalizePath } from 'vite';
 
 import { compile, type CompileResult } from '@surimi/compiler';
 
+import { VIRTUAL_CSS_SUFFIX } from './constants.js';
 import type { SharedPluginContext } from './types.js';
+import { createSourceMap } from './utils.js';
 
 /**
- * Regex matching Vue SFC custom block requests for `<surimi>` blocks.
- * Works with or without a `lang` attribute: `<surimi>`, `<surimi lang="ts">`, `<surimi lang="js">`.
- *
+ * Matches Vue SFC request URLs for `<surimi>` blocks (with or without lang).
  * @see https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue#example-for-transforming-custom-blocks
- * @see https://vuejs.org/guide/scaling-up/tooling.html#sfc-custom-block-integrations
  */
 export const VUE_SURIMI_BLOCK_RE = /[?&]vue&type=surimi/;
-const VIRTUAL_CSS_SUFFIX = '.surimi.css';
 
 /**
- * Vite plugin that handles `<surimi>` custom blocks in Vue Single-File Components.
- *
- * When `@vitejs/plugin-vue` encounters a `<surimi>` block, it extracts the block content
- * and emits a request like `App.vue?vue&type=surimi&index=0&lang.ts`. This plugin intercepts
- * that request, compiles the inline surimi code to CSS, and injects it via virtual CSS modules.
- *
- * All three forms are supported:
- * - `<surimi>` (no lang)
- * - `<surimi lang="ts">`
- * - `<surimi lang="js">`
- *
- * @see https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue#example-for-transforming-custom-blocks
- * @see https://vuejs.org/guide/scaling-up/tooling.html#sfc-custom-block-integrations
+ * Handles Vue SFC `<surimi>` blocks: compiles block content and injects CSS (or virtual CSS imports).
+ * Called by the core plugin with shared context; no-op if no Vue surimi blocks are used.
  */
 export function createVuePlugin(ctx: SharedPluginContext): Plugin {
   const tsFileFilter = createFilter(ctx.include, ctx.exclude);
@@ -83,18 +70,12 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
           (dep: string) => `import "${dep}${VIRTUAL_CSS_SUFFIX}";`,
         );
 
-        // SSR: include compiled JS + virtual CSS import so the CSS is part of the
-        // server-rendered HTML (prevents flash of unstyled content). No DOM injection.
-        // hotUpdate still runs transformRequest on SSR so full-page refresh gets new styles.
         if (options?.ssr) {
           let ssrCode = compileResult.js;
           if (cssImportLines.length > 0) ssrCode += `\n${cssImportLines.join('\n')}`;
           ssrCode += `\nimport "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
           ssrCode += `\nexport default () => {};`;
-          return {
-            code: ssrCode,
-            map: { version: 3, file: path.basename(id), sources: [], names: [], mappings: '' },
-          };
+          return { code: ssrCode, map: createSourceMap(path.basename(id)) };
         }
 
         let jsCode: string;
@@ -113,10 +94,7 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
 
         jsCode += `\nexport default () => {};`;
 
-        return {
-          code: jsCode,
-          map: { version: 3, file: path.basename(id), sources: [], names: [], mappings: '' },
-        };
+        return { code: jsCode, map: createSourceMap(path.basename(id)) };
       },
     },
   };
