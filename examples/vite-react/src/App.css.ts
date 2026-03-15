@@ -1,37 +1,45 @@
-import { media, select } from 'surimi';
+import { select } from 'surimi';
+import { when } from 'surimi/conditional';
 
-import { theme } from '#styles/theme.css';
+select('*').style({ boxSizing: 'border-box' });
+select('body').style({
+  margin: '0',
+  padding: '2rem',
+  fontFamily: 'system-ui, sans-serif',
+  backgroundColor: '#f5f5f5',
+});
 
-const app = select('#app').style({
-  width: '100vw',
-  height: '100vh',
+select('#app').style({
+  maxWidth: '600px',
+  margin: '0 auto',
+  backgroundColor: 'white',
+  borderRadius: '8px',
+  padding: '2rem',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+});
+
+select('#app h1').style({
+  marginTop: 0,
+  marginBottom: '1.5rem',
+  color: '#333',
+});
+
+select('.card').style({
   display: 'flex',
+  gap: '1rem',
+  flexWrap: 'wrap',
   justifyContent: 'center',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '1rem',
-  color: theme.colors.text,
-  backgroundColor: theme.colors.background,
 });
 
-app
-  .descendant('a')
-  .style({
-    color: theme.colors.primaryDark,
-    textDecoration: 'none',
-    fontWeight: 'bold',
-    margin: '0 0.5rem',
-  })
-  .hover()
-  .style({
-    textDecorationLine: 'underline',
-  });
+const counterA = select('.counter-a');
+const counterB = select('.counter-b');
 
-app.descendant('.card').style({
-  display: 'flex',
-  gap: '1rem',
+when(counterA.child('button')).hovered().select(counterB).style({
+  filter: 'grayscale(100%)',
+  transition: 'all 0.3s ease-in-out',
 });
 
-media().maxWidth('600px').select('#app').style({
-  gap: 0,
+when(counterB.child('button')).hovered().select(counterA).style({
+  filter: 'grayscale(100%)',
+  transition: 'all 0.3s ease-in-out',
 });

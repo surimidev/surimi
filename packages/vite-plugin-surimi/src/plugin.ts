@@ -1,33 +1,38 @@
-import { createHash } from 'node:crypto';
 import path from 'node:path';
-import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin, ResolvedConfig } from 'vite';
 import { createFilter, normalizePath } from 'vite';
 
 import { compile } from '@surimi/compiler';
 import type { CompileResult } from '@surimi/compiler';
 
-import type { SurimiOptions } from './types.js';
-
-// Constants
-const VIRTUAL_CSS_SUFFIX = '.surimi.css';
-// any exact match for .surimi.css files, possibly with vite 'query params' like `?inline`
-const VIRTUAL_CSS_REGEX = new RegExp(`\\${VIRTUAL_CSS_SUFFIX}(?:\\?.*)?$`);
+import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX, VIRTUAL_SURIMI_PATH_REGEX } from './constants.js';
+import type { SharedPluginContext, SurimiOptions } from './types.js';
+import { addWatchFilesForDeps, createSourceMap, injectCssChunk } from './utils.js';
+import {
+  collectVueSurimiModulesForInvalidation,
+  createVuePlugin,
+  handleVueSurimiHotUpdate,
+  VUE_SURIMI_VIRTUAL_PATH_RE,
+} from './vue.js';
 
 /**
- * Vite plugin to integrate Surimi CSS-in-JS compilation
- * Supports both development (with HMR) and production build modes
- *
- * for plugin options, see {@link SurimiOptions}
+ * Vite plugin for Surimi CSS-in-TS: compiles `.css.ts` / `.css.js` and Vue `<surimi>` blocks.
+ * Returns [corePlugin, vuePlugin]. Options: {@link SurimiOptions}.
  */
-export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
+export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   const { include = ['**/*.css.{ts,js}'], exclude = ['node_modules/**', '**/*.d.ts'], inlineCss = false } = options;
   const tsFileFilter = createFilter(include, exclude);
 
-  let resolvedConfig: ResolvedConfig | undefined;
-  let isDev: boolean | undefined;
+  // Shared state accessible by framework-specific plugins (Vue, etc.)
+  const ctx: SharedPluginContext = {
+    compilationCache: new Map<string, CompileResult>(),
+    include,
+    exclude,
+    inlineCss,
+    resolvedConfig: undefined,
+    isDev: undefined,
+  };
 
-  // Compilation cache - cleared during HMR for affected files
-  const compilationCache = new Map<string, CompileResult>();
   // Track files we've already added to watch list to avoid duplicates
   const filesWatched = new Set<string>();
 
@@ -38,16 +43,18 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
 
     if (cleanId.startsWith('\0')) return cleanId;
     if (path.isAbsolute(cleanId)) return normalizePath(cleanId);
-    if (resolvedConfig) return getAbsoluteId(cleanId, resolvedConfig);
+    if (ctx.resolvedConfig) return getAbsoluteId(cleanId, ctx.resolvedConfig);
 
     return normalizePath(path.resolve(path.dirname(ownerId), cleanId));
   };
 
+  ctx.normalizeDependencyId = normalizeDependencyId;
+
   const getCompilationResult = async (id: string): Promise<CompileResult> => {
-    if (!compilationCache.has(id)) {
+    if (!ctx.compilationCache.has(id)) {
       const compileResult = await compile({
         input: normalizePath(id),
-        cwd: resolvedConfig?.root ?? process.cwd(),
+        cwd: ctx.resolvedConfig?.root ?? process.cwd(),
         include,
         exclude,
       });
@@ -62,42 +69,41 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
 
         // Storing the normalized graph ensures follow-up builds (virtual CSS loads, HMR invalidations)
         // can reuse work instead of recompiling the same module under multiple cache keys.
-        compilationCache.set(id, normalizedResult);
+        ctx.compilationCache.set(id, normalizedResult);
       }
     }
 
-    const cacheEntry = compilationCache.get(id);
+    const cacheEntry = ctx.compilationCache.get(id);
     if (!cacheEntry) throw new Error('Unexpected missing cache entry');
     return cacheEntry;
   };
 
-  const collectDependentModules = (changedFile: string, server: ViteDevServer): ModuleNode[] => {
-    const modules: ModuleNode[] = [];
-
-    // Vite reports changed files using normalized POSIX paths, so we convert here to keep comparisons stable.
+  const collectDependentModules = (
+    changedFile: string,
+    moduleGraph: EnvironmentModuleGraph,
+  ): EnvironmentModuleNode[] => {
+    const modules: EnvironmentModuleNode[] = [];
     const normalizedChangedFile = normalizePath(changedFile);
 
-    for (const [cachedFile] of compilationCache) {
-      if (!tsFileFilter(cachedFile)) continue;
+    for (const [cachedFile] of ctx.compilationCache) {
+      const isRelevant = tsFileFilter(cachedFile) || VUE_SURIMI_VIRTUAL_PATH_RE.test(cachedFile);
+      if (!isRelevant) continue;
 
-      const cacheEntry = compilationCache.get(cachedFile);
+      const cacheEntry = ctx.compilationCache.get(cachedFile);
       if (cacheEntry?.dependencies.includes(normalizedChangedFile)) {
-        compilationCache.delete(cachedFile);
-        modules.push(...collectModulesForInvalidation(cachedFile, server, inlineCss));
+        ctx.compilationCache.delete(cachedFile);
+        modules.push(...collectModulesForInvalidation(cachedFile, moduleGraph, inlineCss));
       }
     }
 
     return modules;
   };
 
-  /**
-   * Generates JavaScript code with HMR support for development builds
-   */
   const generateJsWithHmr = (js: string, css: string, id: string, styleDependencies: string[]): string => {
     let jsCode: string;
 
     if (inlineCss) {
-      const inliningSnippet = injectCssChunk(css, id, isDev);
+      const inliningSnippet = injectCssChunk(css, id, ctx.isDev ?? false);
       jsCode = `${js}\n${inliningSnippet}`;
     } else {
       const cssImports = new Set<string>();
@@ -114,64 +120,73 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin {
       jsCode = `${js}\n${Array.from(cssImports).join('\n')}`;
     }
 
-    // Add HMR acceptance for development builds
-    if (isDev) {
-      jsCode += `\n// HMR support for Surimi
-if (import.meta.hot) {
-  import.meta.hot.accept();
-}`;
+    if (ctx.isDev) {
+      jsCode += `\nif (import.meta.hot) { import.meta.hot.accept(); }`;
     }
 
     return jsCode;
   };
 
-  return {
+  const corePlugin: Plugin = {
     name: 'vite-plugin-surimi',
     configResolved(config) {
-      resolvedConfig = config;
-      isDev = config.command !== 'build' && !config.build.watch;
+      ctx.resolvedConfig = config;
+      ctx.isDev = config.command === 'serve';
     },
     buildStart() {
       this.warn(
         'Surimi is still in early development. Please report any issues you encounter at https://github.com/surimidev/surimi\n',
       );
     },
-    handleHotUpdate({ file, server }) {
-      const modules = [];
+    async hotUpdate({ file, modules, timestamp, type }) {
+      if (type !== 'update') return;
+
+      const vueResult = await handleVueSurimiHotUpdate(
+        { file, modules, timestamp, type },
+        {
+          compilationCache: ctx.compilationCache as Map<string, unknown>,
+          environment: this.environment,
+          transformRequest: (url: string) => this.environment.transformRequest(url),
+        },
+      );
+      if (vueResult !== undefined) return vueResult;
+
+      const normalizedFile = normalizePath(file);
 
       if (tsFileFilter(file)) {
-        // Direct change to a .css.ts file
-        compilationCache.delete(file);
-        modules.push(...collectModulesForInvalidation(file, server, inlineCss));
-        modules.push(...collectDependentModules(file, server));
+        ctx.compilationCache.delete(normalizedFile);
+        const additionalModules = [
+          ...collectModulesForInvalidation(normalizedFile, this.environment.moduleGraph, inlineCss),
+          ...collectDependentModules(normalizedFile, this.environment.moduleGraph),
+        ];
+        if (additionalModules.length > 0) {
+          return [...modules, ...additionalModules];
+        }
       } else {
-        // Check if any .css.ts files depend on this changed file
-        modules.push(...collectDependentModules(file, server));
-      }
-
-      // Only return modules if we found any to handle,
-      // otherwise, let vite handle it as usual
-      if (modules.length > 0) {
-        return modules;
+        const additionalModules = collectDependentModules(normalizedFile, this.environment.moduleGraph);
+        if (additionalModules.length > 0) {
+          return [...modules, ...additionalModules];
+        }
       }
     },
     resolveId: {
       filter: {
         id: {
-          include: [VIRTUAL_CSS_REGEX],
+          include: [VIRTUAL_CSS_REGEX, VIRTUAL_SURIMI_PATH_REGEX],
         },
       },
       handler(source) {
-        if (!resolvedConfig) throw new Error('resolveId called before config was resolved');
+        if (!ctx.resolvedConfig) throw new Error('resolveId called before config was resolved');
 
         const [validId, query] = source.split('?');
+        const absoluteId = getAbsoluteId(validId ?? '', ctx.resolvedConfig);
 
-        // Handle virtual CSS imports
         if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
-          // In SSR Mode, we can end up with paths like /src/styles.css.ts
-          const absoluteId = getAbsoluteId(validId, resolvedConfig);
-
           return query ? `${absoluteId}?${query}` : absoluteId;
+        }
+        // Bare virtual path (e.g. from compiler output): resolve to virtual CSS module so load() can serve from cache.
+        if (VIRTUAL_SURIMI_PATH_REGEX.test(validId ?? '') && ctx.compilationCache.has(absoluteId)) {
+          return query ? `${getVirtualCssId(absoluteId)}?${query}` : getVirtualCssId(absoluteId);
         }
         return null;
       },
@@ -183,15 +198,15 @@ if (import.meta.hot) {
         },
       },
       async handler(id) {
-        if (!resolvedConfig) throw new Error('load handler called before config was resolved');
+        if (!ctx.resolvedConfig) throw new Error('load handler called before config was resolved');
 
         const [validId] = id.split('?');
         // Load virtual CSS files. Surimi TS files are handled in transform()
         if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
           const originalId = getSourceIdFromVirtual(validId);
           // In SSR Mode, we can end up with paths like /src/styles.css.ts
-          const absoluteId = getAbsoluteId(originalId, resolvedConfig);
-          let cacheEntry = compilationCache.get(absoluteId);
+          const absoluteId = getAbsoluteId(originalId, ctx.resolvedConfig);
+          let cacheEntry = ctx.compilationCache.get(absoluteId);
 
           // If cache entry is missing (e.g., during HMR), regenerate it
           if (!cacheEntry && tsFileFilter(absoluteId)) {
@@ -200,19 +215,13 @@ if (import.meta.hot) {
           }
 
           if (cacheEntry) {
+            const cssLineCount = (cacheEntry.css.match(/\n/g)?.length ?? 0) + 1;
             return {
               code: cacheEntry.css,
-              map: {
-                version: 3,
-                file: path.basename(validId),
-                sources: [path.basename(absoluteId)],
-                names: [],
-                mappings: '',
-              },
+              map: createSourceMap(path.basename(validId), path.basename(absoluteId), cssLineCount),
             };
-          } else {
-            this.error(`Missing build cache entry for virtual CSS file: ${id}`);
           }
+          this.error(`Missing build cache entry for virtual CSS file: ${id}`);
         }
         return null;
       },
@@ -244,28 +253,15 @@ if (import.meta.hot) {
 
           const jsCode = generateJsWithHmr(js, css, id, styleDependencies);
 
-          // Add file dependencies for proper HMR
-          if (isDev && !options?.ssr) {
-            dependencies.forEach((dep: string) => {
-              // Watch only real filesystem entries; virtual ids ("\0" prefixed) cannot be monitored and would
-              // trigger noise in Vite's watcher set.
-              if (!path.isAbsolute(dep)) return;
-              if (!filesWatched.has(dep)) {
-                filesWatched.add(dep);
-                this.addWatchFile(dep);
-              }
-            });
+          if (ctx.isDev && !options?.ssr) {
+            const addWatch = this.addWatchFile.bind(this);
+            addWatchFilesForDeps(dependencies, filesWatched, addWatch, (p: string) => path.isAbsolute(p));
           }
 
+          const lineCount = (jsCode.match(/\n/g)?.length ?? 0) + 1;
           return {
             code: jsCode,
-            map: {
-              version: 3,
-              file: path.basename(id),
-              sources: [path.basename(id)],
-              names: [],
-              mappings: '',
-            },
+            map: createSourceMap(path.basename(id), path.basename(id), lineCount),
           };
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
@@ -274,79 +270,38 @@ if (import.meta.hot) {
       },
     },
   };
+
+  return [corePlugin, createVuePlugin(ctx)];
 }
 
-export function injectCssChunk(css: string, id: string, isDev = false): string {
-  const identifier = path.basename(id);
-  const chunkHash = createHash('md5').update(id).digest('hex').slice(0, 8);
-  const styleId = `surimi-style_${identifier}_${chunkHash}`;
-
-  let hmrCode = '';
-
-  if (isDev) {
-    hmrCode = `\n\n// HMR support
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    // The module will be re-executed with new CSS
-  });
-}`;
-  }
-
-  return `
-const css = ${JSON.stringify(css)};
-const styleId = '${styleId}';
-
-const existingStyle = document.getElementById(styleId);
-
-// Create and inject new style element
-const styleElement = document.createElement('style');
-styleElement.id = styleId;
-styleElement.textContent = css;
-document.head.appendChild(styleElement);
-
-if (existingStyle) {
-  existingStyle.remove();
-}${hmrCode}
-`;
-}
-
-// Used to convert file paths like /src/styles.css.ts to absolute paths.
-// This is introduced to make SSR scenarios (like Astro) work correctly.
-// There, the initial vite loading / resolution steps use absolute paths, but astro might not.
-const getAbsoluteId = (filePath: string, config: ResolvedConfig) => {
-  let resolvedId = filePath;
-
-  if (
+/** Normalize to absolute path; handles root-relative paths used in some SSR setups (e.g. Astro). */
+function getAbsoluteId(filePath: string, config: ResolvedConfig): string {
+  const alreadyAbsolute =
     filePath.startsWith(config.root) ||
-    // In monorepos the absolute path will be outside of config.root, so we check that they have the same root on the file system
-    // Paths from vite are always normalized, so we have to use the posix path separator
-    (path.isAbsolute(filePath) && filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1])
-  ) {
-    resolvedId = filePath;
-  } else {
-    // In SSR mode we can have paths like /app/styles.css.ts
-    resolvedId = path.join(config.root, filePath);
-  }
-
-  return normalizePath(resolvedId);
-};
+    (path.isAbsolute(filePath) && filePath.split(path.posix.sep)[1] === config.root.split(path.posix.sep)[1]);
+  return normalizePath(alreadyAbsolute ? filePath : path.join(config.root, filePath));
+}
 
 const getVirtualCssId = (sourceId: string): string => `${sourceId}${VIRTUAL_CSS_SUFFIX}`;
 const getSourceIdFromVirtual = (virtualId: string): string => virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
 
-const collectModulesForInvalidation = (fileId: string, server: ViteDevServer, inlineCss: boolean): ModuleNode[] => {
-  const modules: ModuleNode[] = [];
+function collectModulesForInvalidation(
+  fileId: string,
+  moduleGraph: EnvironmentModuleGraph,
+  inlineCss: boolean,
+): EnvironmentModuleNode[] {
+  const vueModules = collectVueSurimiModulesForInvalidation(fileId, moduleGraph);
+  if (vueModules !== null) return vueModules;
 
+  const modules: EnvironmentModuleNode[] = [];
   const addModule = (id: string) => {
-    const module = server.moduleGraph.getModuleById(id);
+    const module = moduleGraph.getModuleById(id);
     if (module) modules.push(module);
   };
 
   addModule(fileId);
-
   if (!inlineCss) {
     addModule(getVirtualCssId(fileId));
   }
-
   return modules;
-};
+}

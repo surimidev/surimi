@@ -1,3 +1,19 @@
+import type { ResolvedConfig } from 'vite';
+
+import type { CompileResult } from '@surimi/compiler';
+
+/** Shared state passed from the core plugin to framework-specific plugins (Vue, etc.) */
+export interface SharedPluginContext {
+  compilationCache: Map<string, CompileResult>;
+  include: string[];
+  exclude: string[];
+  inlineCss: boolean;
+  resolvedConfig: ResolvedConfig | undefined;
+  isDev: boolean | undefined;
+  /** Normalize dependency paths so collectDependentModules can match changed files. Set by core plugin. */
+  normalizeDependencyId?: (dependencyId: string, ownerId: string) => string;
+}
+
 export interface SurimiOptions {
   /**
    * Files to include for processing as surimi files.
@@ -14,11 +30,8 @@ export interface SurimiOptions {
   exclude?: string[];
 
   /**
-   * Whether to inline the generated CSS into the JavaScript module.
-   * If `true`, will not emit separate CSS files, but instead inject CSS via JavaScript.
-   * If `false`, will emit separate CSS files and import them as virtual modules.
-   *
-   * Only used in 'manual' mode.
+   * When `false` (default), emit virtual CSS modules (separate chunks).
+   * When `true`, inject CSS into the JS output (no separate chunk).
    * @default false
    */
   inlineCss?: boolean;

@@ -303,7 +303,10 @@ const SEMANTIC_TOKENS: Array<[string, (l: L, d: D) => { light: string; dark: str
   ],
   ['shadow-xl', () => ({ light: '0 25px 50px -12px rgb(0 0 0 / 0.25)', dark: '0 25px 50px -12px rgb(0 0 0 / 0.4)' })],
   ['shadow-2xl', () => ({ light: '0 25px 50px -12px rgb(0 0 0 / 0.25)', dark: '0 25px 50px -12px rgb(0 0 0 / 0.4)' })],
-  ['shadow-inner', () => ({ light: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)', dark: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.2)' })],
+  [
+    'shadow-inner',
+    () => ({ light: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)', dark: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.2)' }),
+  ],
 ];
 
 /** Build { light: { '--bg-app': ..., ... }, dark: { ... } } for use in .css.ts. */
