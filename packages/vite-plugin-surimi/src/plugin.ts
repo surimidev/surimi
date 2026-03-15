@@ -103,7 +103,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     let jsCode: string;
 
     if (inlineCss) {
-      const inliningSnippet = injectCssChunk(css, id, ctx.isDev);
+      const inliningSnippet = injectCssChunk(css, id, ctx.isDev ?? false);
       jsCode = `${js}\n${inliningSnippet}`;
     } else {
       const cssImports = new Set<string>();

@@ -44,7 +44,6 @@ describe('createSourceMap', () => {
   it('handles missing sourceBasename', () => {
     const map = createSourceMap('out.css', undefined, 3);
     expect(map.sources).toEqual([]);
-    // Mappings still generated but point to source index 0 which doesn't exist - consumer may still parse
-    expect(map.mappings).toBeTruthy();
+    expect(map.mappings).toBe('');
   });
 });

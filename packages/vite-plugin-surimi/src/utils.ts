@@ -7,7 +7,10 @@ export function createSourceMap(
   sourceBasename?: string,
   outputLineCount?: number,
 ): { version: number; file: string; sources: string[]; names: string[]; mappings: string } {
-  const mappings = outputLineCount !== undefined && outputLineCount > 0 ? buildOneToOneMappings(outputLineCount) : '';
+  const mappings =
+    sourceBasename !== undefined && outputLineCount !== undefined && outputLineCount > 0
+      ? buildOneToOneMappings(outputLineCount)
+      : '';
   return {
     version: 3,
     file: fileBasename,
