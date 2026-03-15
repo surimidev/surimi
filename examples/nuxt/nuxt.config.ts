@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   typescript: {
     tsConfig: {
-      include: ['*.config.ts', 'src'],
+      include: ['*.config.ts', 'src', '../*.config.ts'],
       exclude: ['node_modules', 'dist', '.output'],
     },
   },

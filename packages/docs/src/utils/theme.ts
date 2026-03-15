@@ -3,6 +3,7 @@ export const THEME_STORAGE_KEY = 'theme';
 export type Theme = 'light' | 'dark';
 
 function isLocalStorageAvailable(): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
   return typeof window !== 'undefined' && 'localStorage' in window && window.localStorage != null;
 }
 
@@ -12,6 +13,7 @@ export function getTheme(): Theme {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
@@ -33,9 +35,17 @@ export function toggleTheme(): Theme {
 }
 
 export function watchPreferredColorScheme(callback: (theme: Theme) => void): () => void {
-  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
+  if (typeof window === 'undefined' || !window.matchMedia)
+    return () => {
+      /* noop */
+    };
   const mql = window.matchMedia('(prefers-color-scheme: dark)');
-  const handler = () => callback(mql.matches ? 'dark' : 'light');
+  const handler = () => {
+    callback(mql.matches ? 'dark' : 'light');
+  };
   mql.addEventListener('change', handler);
-  return () => mql.removeEventListener('change', handler);
+  return () => {
+    mql.removeEventListener('change', handler);
+  };
 }
