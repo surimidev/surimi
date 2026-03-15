@@ -10,7 +10,7 @@ const KEYFRAME_COUNT = 20;
 
 function wavyCirclePath(cx: number, cy: number, radius: number): string {
   const total = LOBES * POINTS_PER_LOBE;
-  const pts: [number, number][] = [];
+  const pts: Array<[number, number]> = [];
   for (let i = 0; i < total; i++) {
     const angle = (i / total) * Math.PI * 2;
     const lobe = Math.sin(LOBES * angle);
@@ -78,5 +78,7 @@ export function withViewTransition(triggerEl: HTMLElement | null, apply: () => v
     .then(() => {
       animateWavyReveal(cx, cy, '::view-transition-new(root)', 500);
     })
-    .catch(() => {});
+    .catch(() => {
+      /* noop */
+    });
 }

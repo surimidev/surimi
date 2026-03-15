@@ -6,8 +6,8 @@ export interface LectureContentProps {
   contentHtml: string;
   currentIndex: number;
   totalLectures: number;
-  onPrevious: () => void;
-  onNext: () => void;
+  onPrevious?: (() => void) | undefined;
+  onNext?: (() => void) | undefined;
 }
 
 export default function LectureContent({

@@ -51,9 +51,13 @@ export default function CodeEditor({
   useEffect(() => {
     setTheme(getMonacoThemeName());
     const el = document.documentElement;
-    const observer = new MutationObserver(() => setTheme(getMonacoThemeName()));
+    const observer = new MutationObserver(() => {
+      setTheme(getMonacoThemeName());
+    });
     observer.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {

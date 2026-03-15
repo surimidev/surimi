@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import surimiCode from 'surimi?bundle';
 
-import { compile, type CompileResult } from '@surimi/compiler';
+import { compile, type CompileResult } from '@surimi/compiler/browser';
 
 import CodeEditor from '#playground/components/Editor/CodeEditor';
 import HtmlCssView from '#playground/components/HtmlCssView/HtmlCssView';
@@ -46,7 +46,6 @@ function initFs() {
 
 const ENTRY_FILE = 'index.css.ts';
 const MOBILE_BREAKPOINT = 768;
-const noop = () => {};
 
 type MobileView = 'lecture' | 'editor' | 'output';
 
@@ -94,10 +93,14 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
   // Mobile layout: single view + tabs below MOBILE_BREAKPOINT
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-    const handler = () => setIsMobile(mql.matches);
+    const handler = () => {
+      setIsMobile(mql.matches);
+    };
     handler();
     mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
+    return () => {
+      mql.removeEventListener('change', handler);
+    };
   }, []);
 
   // When user uses browser back/forward, sync state from URL
@@ -196,8 +199,20 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       contentHtml={currentLecture.contentHtml}
       currentIndex={currentLectureIndex}
       totalLectures={lectures.length}
-      onPrevious={currentLectureIndex > 0 ? () => goToLecture(currentLectureIndex - 1) : noop}
-      onNext={currentLectureIndex < lectures.length - 1 ? () => goToLecture(currentLectureIndex + 1) : noop}
+      onPrevious={
+        currentLectureIndex > 0
+          ? () => {
+              goToLecture(currentLectureIndex - 1);
+            }
+          : undefined
+      }
+      onNext={
+        currentLectureIndex < lectures.length - 1
+          ? () => {
+              goToLecture(currentLectureIndex + 1);
+            }
+          : undefined
+      }
     />
   );
 
@@ -210,7 +225,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
               key={path}
               type="button"
               className={`surimi-playground__editor-tab ${path === selectedFile ? 'surimi-playground__editor-tab--active' : ''}`}
-              onClick={() => handleTabSelect(path)}
+              onClick={() => {
+                handleTabSelect(path);
+              }}
             >
               {path.replace(/^\//, '')}
             </button>
@@ -243,7 +260,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
             role="tab"
             aria-selected={activeMobileView === 'lecture'}
             className={`surimi-playground__mobile-tab ${activeMobileView === 'lecture' ? 'surimi-playground__mobile-tab--active' : ''}`}
-            onClick={() => setActiveMobileView('lecture')}
+            onClick={() => {
+              setActiveMobileView('lecture');
+            }}
           >
             Lecture
           </button>
@@ -252,7 +271,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
             role="tab"
             aria-selected={activeMobileView === 'editor'}
             className={`surimi-playground__mobile-tab ${activeMobileView === 'editor' ? 'surimi-playground__mobile-tab--active' : ''}`}
-            onClick={() => setActiveMobileView('editor')}
+            onClick={() => {
+              setActiveMobileView('editor');
+            }}
           >
             Code
           </button>
@@ -261,7 +282,9 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
             role="tab"
             aria-selected={activeMobileView === 'output'}
             className={`surimi-playground__mobile-tab ${activeMobileView === 'output' ? 'surimi-playground__mobile-tab--active' : ''}`}
-            onClick={() => setActiveMobileView('output')}
+            onClick={() => {
+              setActiveMobileView('output');
+            }}
           >
             Output
           </button>
@@ -285,7 +308,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
 
           <PanelResizeHandle className="surimi-playground__resize-handle" />
 
-          <Panel defaultSize={55} minSize={30} maxSize={60}>
+          <Panel defaultSize={50} minSize={30} maxSize={60}>
             {editorContent}
           </Panel>
 

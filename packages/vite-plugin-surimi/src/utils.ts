@@ -30,7 +30,7 @@ function vlqEncode(n: number): string {
     let digit = n & 31;
     n >>>= 5;
     if (n > 0) digit |= 32;
-    encoded += VLQ_BASE64[digit];
+    encoded += VLQ_BASE64[digit] ?? '';
   } while (n > 0);
   return encoded;
 }

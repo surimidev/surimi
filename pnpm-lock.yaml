@@ -413,11 +413,17 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0
       '@rolldown/browser':
-        specifier: 1.0.0-rc.5
-        version: 1.0.0-rc.5
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
       commander:
         specifier: ^14.0.3
         version: 14.0.3
+      picocolors:
+        specifier: ^1.1.1
+        version: 1.1.1
+      rolldown:
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
       surimi:
         specifier: workspace:*
         version: link:../surimi
@@ -503,8 +509,8 @@ importers:
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rolldown/browser':
-        specifier: 1.0.0-rc.5
-        version: 1.0.0-rc.5
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
       '@surimi/compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -2451,8 +2457,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rolldown/browser@1.0.0-rc.5':
-    resolution: {integrity: sha512-u7jPxa90kMYSZ8R9pjGw6lcFSkFgZdumC6Ir5yiLp1HqFy+ShvZwuwazL+w4L5rKlpHMMXT8sy6ZA+jOlbWG5Q==}
+  '@rolldown/browser@1.0.0-rc.9':
+    resolution: {integrity: sha512-McXuGuA0eMUfFu1zxrwWXG/A6eGIZmLikLUsxelKbDyFzPzmmsi55rlciwSQ5FcJw3jBlLHDWBz/9BWyZGO2aw==}
     hasBin: true
 
   '@rolldown/pluginutils@1.0.0-beta.45':
@@ -8999,7 +9005,7 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.0.0-rc.9':
     optional: true
 
-  '@rolldown/browser@1.0.0-rc.5':
+  '@rolldown/browser@1.0.0-rc.9':
     dependencies:
       '@napi-rs/wasm-runtime': 1.1.1
 

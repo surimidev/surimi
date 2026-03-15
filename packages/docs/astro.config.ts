@@ -73,7 +73,6 @@ export default defineConfig({
 
   vite: {
     plugins: [
-      // @ts-expect-error errors here are because we use vite 8 already for the vite plugin, but not for astro.
       surimiPlugin(),
       vitePluginBundleSurimi(),
       nodePolyfills({
