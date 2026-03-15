@@ -57,6 +57,8 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     return normalizePath(path.resolve(path.dirname(ownerId), cleanId));
   };
 
+  ctx.normalizeDependencyId = normalizeDependencyId;
+
   const getCompilationResult = async (id: string): Promise<CompileResult> => {
     if (!ctx.compilationCache.has(id)) {
       const compileResult = await compile({
@@ -337,8 +339,11 @@ export function injectCssChunk(css: string, id: string, isDev = false): string {
   let hmrCode = '';
 
   if (isDev) {
-    hmrCode = `\n\n// HMR support
+    hmrCode = `\n\n// HMR support: remove style when module is disposed (e.g. import removed)
 if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    document.getElementById(styleId)?.remove();
+  });
   import.meta.hot.accept(() => {
     // The module will be re-executed with new CSS
   });
@@ -387,6 +392,20 @@ const getAbsoluteId = (filePath: string, config: ResolvedConfig) => {
 const getVirtualCssId = (sourceId: string): string => `${sourceId}${VIRTUAL_CSS_SUFFIX}`;
 const getSourceIdFromVirtual = (virtualId: string): string => virtualId.replace(VIRTUAL_CSS_SUFFIX, '');
 
+/** Matches our internal cache key for Vue surimi blocks: path/to/App.vue.__surimi_0.css.ts */
+const VUE_SURIMI_VIRTUAL_PATH_RE = /^(.+\.vue)\.__surimi_(\d+)\.css\.ts$/;
+
+/**
+ * Map a Vue surimi virtual path (our cache key) to the module id Vite uses.
+ * Vite registers the module under the SFC query URL, not the virtual path.
+ */
+function vueSurimiVirtualPathToModuleId(virtualPath: string): string | null {
+  const m = VUE_SURIMI_VIRTUAL_PATH_RE.exec(virtualPath);
+  if (!m) return null;
+  const [, vueFilePath, index] = m;
+  return `${vueFilePath}?vue&type=surimi&index=${index}&lang.ts`;
+}
+
 const collectModulesForInvalidation = (
   fileId: string,
   moduleGraph: EnvironmentModuleGraph,
@@ -398,6 +417,14 @@ const collectModulesForInvalidation = (
     const module = moduleGraph.getModuleById(id);
     if (module) modules.push(module);
   };
+
+  // Vue surimi blocks are cached under a virtual path (App.vue.__surimi_0.css.ts) but
+  // Vite registers the module under the SFC query id (App.vue?vue&type=surimi&index=0&lang.ts).
+  const surrogateId = vueSurimiVirtualPathToModuleId(fileId);
+  if (surrogateId) {
+    addModule(surrogateId);
+    return modules;
+  }
 
   addModule(fileId);
 

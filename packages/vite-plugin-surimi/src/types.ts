@@ -10,6 +10,8 @@ export interface SharedPluginContext {
   inlineCss: boolean;
   resolvedConfig: ResolvedConfig | undefined;
   isDev: boolean | undefined;
+  /** Normalize dependency paths so collectDependentModules can match changed files. Set by core plugin. */
+  normalizeDependencyId?: (dependencyId: string, ownerId: string) => string;
 }
 
 export interface SurimiOptions {
