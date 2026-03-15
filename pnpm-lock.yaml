@@ -669,6 +669,9 @@ importers:
       '@surimi/compiler':
         specifier: workspace:*
         version: link:../compiler
+      escape-string-regexp:
+        specifier: ^5.0.0
+        version: 5.0.0
       surimi:
         specifier: workspace:*
         version: link:../surimi
