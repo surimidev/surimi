@@ -11,7 +11,11 @@
   "author": "Janis Jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*/index.ts"
+    ]
   },
   "exports": {
     ".": {
@@ -57,8 +61,8 @@
     "vitest": "catalog:test"
   },
   "peerDependencies": {
-    "@rolldown/browser": "1.0.0-rc.9",
-    "rolldown": "1.0.0-rc.9",
+    "@rolldown/browser": "catalog:build",
+    "rolldown": "catalog:build",
     "surimi": "workspace:*"
   },
   "peerDependenciesMeta": {

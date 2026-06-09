@@ -12,6 +12,8 @@ catalogs:
     tsdown: ^0.22.2
     typescript: ^6.0.3
     vite: ^8.0.16
+    "@rolldown/browser": ^1.1.0
+    rolldown: ^1.1.0
   docs:
     "@astrojs/mdx": ^6.0.3
     "@astrojs/react": ^5.0.7
