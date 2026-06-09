@@ -1,8 +1,7 @@
 import path from 'node:path';
+import { type CompileResult, compile } from '@surimi/compiler';
 import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin } from 'vite';
 import { createFilter, normalizePath } from 'vite';
-
-import { compile, type CompileResult } from '@surimi/compiler';
 
 import { VIRTUAL_CSS_SUFFIX } from './constants.js';
 import type { SharedPluginContext } from './types.js';

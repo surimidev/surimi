@@ -1,6 +1,6 @@
 import type { CssRoot } from '@surimi/ast';
-import { SurimiBase } from '@surimi/common';
 import type { CssProperties } from '@surimi/common';
+import { SurimiBase } from '@surimi/common';
 
 export class StyleBuilder extends SurimiBase<CssProperties> {
   protected _styles: CssProperties = {};

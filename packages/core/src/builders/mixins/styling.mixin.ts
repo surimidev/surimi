@@ -1,7 +1,8 @@
 import type { CssProperties } from '@surimi/common';
 import type { Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder, StyleBuilder } from '#builders';
+import { CoreBuilder } from '#builders/core.builder';
+import { StyleBuilder } from '#builders/style.builder';
 import { createDeclarationsFromProperties } from '#utils/css.utils';
 
 /**
@@ -21,7 +22,9 @@ export abstract class WithStyling<TContext extends string> extends CoreBuilder<T
     } else {
       const rule = this.getOrCreateRule();
       const declarations = createDeclarationsFromProperties(styles);
-      declarations.forEach(decl => rule.append(decl));
+      declarations.forEach(decl => {
+        rule.append(decl);
+      });
     }
 
     return this;

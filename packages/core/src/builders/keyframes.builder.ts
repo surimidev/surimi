@@ -1,6 +1,6 @@
-import { atRule, rule, type CssAtRule, type CssContainer, type CssRoot } from '@surimi/ast';
+import { atRule, type CssAtRule, type CssContainer, type CssRoot, rule } from '@surimi/ast';
 import type { CssProperties } from '@surimi/common';
-import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
+import { type TokenizeAtRule, tokenizeAtRule } from '@surimi/parsers';
 
 import { createDeclarationsFromProperties } from '#utils/css.utils';
 
@@ -40,13 +40,17 @@ export class KeyframesBuilder<T extends string> extends CoreBuilder<TokenizeAtRu
         if (!styles) return null;
         const stepRule = rule({ selector: step });
         const declarations = createDeclarationsFromProperties(styles);
-        declarations.forEach(d => stepRule.append(d));
+        declarations.forEach(d => {
+          stepRule.append(d);
+        });
         return stepRule;
       })
       .filter((r): r is NonNullable<typeof r> => r !== null);
 
     atRuleNode.nodes.length = 0;
-    stepRules.forEach(r => atRuleNode.append(r));
+    stepRules.forEach(r => {
+      atRuleNode.append(r);
+    });
 
     if (!existingRule) {
       this._cssRoot.append(atRuleNode);

@@ -10,7 +10,7 @@ const KEYFRAME_COUNT = 20;
 
 function wavyCirclePath(cx: number, cy: number, radius: number): string {
   const total = LOBES * POINTS_PER_LOBE;
-  const pts: Array<[number, number]> = [];
+  const pts: [number, number][] = [];
   for (let i = 0; i < total; i++) {
     const angle = (i / total) * Math.PI * 2;
     const lobe = Math.sin(LOBES * angle);

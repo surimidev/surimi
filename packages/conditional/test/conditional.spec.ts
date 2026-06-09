@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-
 import { SurimiContext } from '@surimi/common';
 import { createSelectorBuilderFromString } from '@surimi/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { when } from '../src';
 
@@ -590,8 +589,9 @@ describe('ConditionalBuilder', () => {
         opacity: '0.9',
       });
 
-      expect(SurimiContext.build())
-        .toBe(`:where(html):has(.modal .close-button:hover, .modal .close-button:focus) .modal .overlay {
+      expect(
+        SurimiContext.build(),
+      ).toBe(`:where(html):has(.modal .close-button:hover, .modal .close-button:focus) .modal .overlay {
     opacity: 0.9;
 }`);
     });

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { fontFace, select, Surimi } from '../../src/index';
+import { fontFace, Surimi, select } from '../../src/index';
 
 describe('FontFace Builder', () => {
   beforeEach(() => {

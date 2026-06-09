@@ -11,7 +11,7 @@
   "author": "Janis Jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -53,7 +53,8 @@
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
     "tsdown": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
   },
   "peerDependencies": {
     "@rolldown/browser": "1.0.0-rc.9",

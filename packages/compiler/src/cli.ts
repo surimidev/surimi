@@ -56,6 +56,7 @@ function logError(err: unknown) {
 }
 
 function printIntro() {
+  // biome-ignore lint/suspicious/noConsole: CLI intentionally clears the terminal before printing the intro
   console.clear();
   intro(`🍣 @surimi/compiler ${pc.bgCyan(pc.black(` v${version} `))}`);
   note('Surimi is still in early development. Please report any issues you encounter!', 'Warning: Early Development');

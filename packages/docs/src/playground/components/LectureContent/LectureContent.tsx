@@ -33,6 +33,7 @@ export default function LectureContent({
       </div>
 
       <div className="lecture-content__body">
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: rendering trusted, locally compiled lecture markdown */}
         <div className="lecture-content__markdown" dangerouslySetInnerHTML={{ __html: contentHtml }} />
       </div>
 

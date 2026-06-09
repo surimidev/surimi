@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { select, Surimi } from '../../../src/index';
+import { Surimi, select } from '../../../src/index';
 
 describe('Advanced Pseudo-selectors', () => {
   beforeEach(() => {

@@ -12,7 +12,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -38,6 +38,7 @@
     "@surimi/typescript-config": "workspace:*",
     "parsel-js": "^1.2.2",
     "tsdown": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
   }
 }

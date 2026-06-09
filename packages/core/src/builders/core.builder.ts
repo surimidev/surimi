@@ -1,4 +1,4 @@
-import { rule, type CssContainer, type CssRoot, type CssRule } from '@surimi/ast';
+import { type CssContainer, type CssRoot, type CssRule, rule } from '@surimi/ast';
 import { SurimiBase } from '@surimi/common';
 import { stringify, type Token } from '@surimi/parsers';
 

@@ -183,7 +183,7 @@ type D = typeof darkColors;
 export const colors = { light: lightColors, dark: darkColors };
 
 /** Single source of truth: var name -> { light, dark } values. Used by theme.css.ts to emit CSS. */
-const SEMANTIC_TOKENS: Array<[string, (l: L, d: D) => { light: string; dark: string }]> = [
+const SEMANTIC_TOKENS: [string, (l: L, d: D) => { light: string; dark: string }][] = [
   ['bg-app', (l, d) => ({ light: l.slate[1], dark: d.slate[1] })],
   ['bg-canvas', (l, d) => ({ light: l.slate[2], dark: d.slate[2] })],
   ['bg-subtle', (l, d) => ({ light: l.blue[1], dark: d.blue[1] })],

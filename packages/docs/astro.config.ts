@@ -1,11 +1,10 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
-import type { RolldownOutput } from '@rolldown/browser';
 import { defineConfig, passthroughImageService } from 'astro/config';
 import remarkEmoji from 'remark-emoji';
 import remarkGithub from 'remark-github';
 import blockquoteAlert from 'remark-github-blockquote-alert';
-import { build, type Plugin } from 'vite';
+import { build, type Plugin, type Rollup } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import surimiPlugin from 'vite-plugin-surimi';
 
@@ -15,7 +14,7 @@ function vitePluginBundleSurimi() {
       build: {
         write: false,
         target: 'esnext',
-        rolldownOptions: {
+        rollupOptions: {
           input: entry,
           preserveEntrySignatures: 'strict',
           treeshake: false,
@@ -29,7 +28,7 @@ function vitePluginBundleSurimi() {
       },
     });
 
-    const output = Array.isArray(result) ? result[0]?.output[0] : (result as RolldownOutput).output[0];
+    const output = Array.isArray(result) ? result[0]?.output[0] : (result as Rollup.RollupOutput).output[0];
 
     return output?.code ?? '';
   }

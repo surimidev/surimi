@@ -1,10 +1,9 @@
+import surimiCode from 'surimi?bundle';
 import { memfs } from '@rolldown/browser/experimental';
+import { type CompileResult, compile } from '@surimi/compiler/browser';
 import type { Volume } from 'memfs';
 import { useCallback, useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import surimiCode from 'surimi?bundle';
-
-import { compile, type CompileResult } from '@surimi/compiler/browser';
 
 import CodeEditor from '#playground/components/Editor/CodeEditor';
 import HtmlCssView from '#playground/components/HtmlCssView/HtmlCssView';
@@ -62,7 +61,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
   const [isReady, setIsReady] = useState(false);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(() => {
     const i = lectures.findIndex(l => l.id === initialLectureId);
-    return i >= 0 ? i : 0;
+    return Math.max(i, 0);
   });
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [fileContent, setFileContent] = useState('');
@@ -136,7 +135,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
     } else {
       setHtmlContent('');
     }
-  }, [isReady, currentLectureIndex, currentLecture, vol]);
+  }, [isReady, currentLecture]);
 
   const runCompile = useCallback(async () => {
     try {
@@ -164,7 +163,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       console.error('Compile failed:', err);
       setCompileResult(undefined);
     });
-  }, [fileContent, isReady, selectedFile, vol]);
+  }, [fileContent, isReady, selectedFile, runCompile]);
 
   const handleTabSelect = useCallback(
     (path: string) => {
@@ -174,7 +173,7 @@ export default function Playground({ lectures, initialLectureId }: PlaygroundPro
       setSelectedFile(path);
       setFileContent(vol.readFileSync(path, 'utf-8') as string);
     },
-    [selectedFile, fileContent, vol],
+    [selectedFile, fileContent],
   );
 
   const goToLecture = useCallback(

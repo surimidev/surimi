@@ -13,7 +13,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -45,7 +45,8 @@
     "source-map": "^0.7.6",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "catalog:build"
+    "vite": "catalog:build",
+    "vitest": "catalog:test"
   },
   "peerDependencies": {
     "surimi": "workspace:*",

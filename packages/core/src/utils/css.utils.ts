@@ -1,4 +1,4 @@
-import { decl, type CssDeclaration } from '@surimi/ast';
+import { type CssDeclaration, decl } from '@surimi/ast';
 import type { CamelCaseToKebabCase, CssProperties } from '@surimi/common';
 
 import { CustomPropertyBuilder } from '#builders/custom-property.builder';

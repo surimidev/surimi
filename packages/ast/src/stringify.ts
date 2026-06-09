@@ -3,7 +3,7 @@ import type { CssAtRule, CssDeclaration, CssRoot, CssRule } from './types.js';
 const DEFAULT_INDENT = '    ';
 
 function stringifyDecl(decl: CssDeclaration, indent: string, semicolon: boolean): string {
-  let out = decl.prop + ': ' + decl.value;
+  let out = `${decl.prop}: ${decl.value}`;
   if (decl.important) out += ' !important';
   if (semicolon) out += ';';
   return indent + out;
@@ -20,14 +20,14 @@ function stringifyRule(node: CssRule, indentLevel: number, baseIndent: string, s
       parts.push(stringifyNode(child, indentLevel + 1, baseIndent, semicolon));
     }
   }
-  const body = parts.length ? '\n' + parts.join('\n') + '\n' + indent : '\n';
-  return indent + node.selector + ' {' + body + '}';
+  const body = parts.length ? `\n${parts.join('\n')}\n${indent}` : '\n';
+  return `${indent}${node.selector} {${body}}`;
 }
 
 function stringifyAtRule(node: CssAtRule, indentLevel: number, baseIndent: string, semicolon: boolean): string {
   const indent = baseIndent.repeat(indentLevel);
   const innerIndent = baseIndent.repeat(indentLevel + 1);
-  const head = '@' + node.name + (node.params !== undefined && node.params !== '' ? ' ' + node.params : '');
+  const head = `@${node.name}${node.params !== undefined && node.params !== '' ? ` ${node.params}` : ''}`;
   const parts: string[] = [];
   for (const child of node.nodes) {
     if (child.type === 'decl') {
@@ -36,8 +36,8 @@ function stringifyAtRule(node: CssAtRule, indentLevel: number, baseIndent: strin
       parts.push(stringifyNode(child, indentLevel + 1, baseIndent, semicolon));
     }
   }
-  const body = parts.length ? '\n' + parts.join('\n') + '\n' + indent : '\n';
-  return indent + head + ' {' + body + '}';
+  const body = parts.length ? `\n${parts.join('\n')}\n${indent}` : '\n';
+  return `${indent}${head} {${body}}`;
 }
 
 function stringifyNode(node: CssRule | CssAtRule, indentLevel: number, baseIndent: string, semicolon: boolean): string {

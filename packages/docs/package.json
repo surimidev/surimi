@@ -32,7 +32,7 @@
     "monaco-editor-auto-typings": "^0.4.6",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-resizable-panels": "^4.11.2",
+    "react-resizable-panels": "^3.0.0",
     "sanitize.css": "catalog:docs"
   },
   "devDependencies": {

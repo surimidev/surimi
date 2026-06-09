@@ -1,6 +1,5 @@
-import type { ResolvedConfig } from 'vite';
-
 import type { CompileResult } from '@surimi/compiler';
+import type { ResolvedConfig } from 'vite';
 
 /** Shared state passed from the core plugin to framework-specific plugins (Vue, etc.) */
 export interface SharedPluginContext {
