@@ -30,6 +30,9 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -37,7 +40,6 @@
     "escape-string-regexp": "^5.0.0"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
     "source-map": "^0.7.6",

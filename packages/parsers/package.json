@@ -28,12 +28,13 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "format": "prettier . --write",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "test": "pnpm -w test --project=parsers",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "parsel-js": "^1.2.2",
     "tsdown": "catalog:build",

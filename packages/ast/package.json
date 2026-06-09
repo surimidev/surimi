@@ -22,12 +22,13 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "format": "prettier . --write",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "test": "pnpm -w test --project=ast",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",

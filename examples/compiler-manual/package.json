@@ -9,7 +9,6 @@
   },
   "devDependencies": {
     "@surimi/compiler": "workspace:*",
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "surimi": "workspace:*"
   }
