@@ -1,4 +1,4 @@
-import { select } from 'surimi';
+import { media, select } from 'surimi';
 
 import { theme } from '#styles/theme';
 
@@ -22,16 +22,27 @@ featuresSectionContainer.child('.features-section__title').style({
   marginBottom: theme.spacing[6],
 });
 
+media().maxWidth('768px').select(featuresSectionContainer.child('.features-section__title')).style({
+  fontSize: theme.font.size['3xl'],
+});
+
 featuresSectionContainer.child('.features-section__subtitle').style({
   fontSize: theme.font.size.lg,
   color: theme.text.subtle,
-  textAlign: 'center',
   maxWidth: '700px',
   margin: `0 auto ${theme.spacing[9]}`,
   lineHeight: theme.font.lineHeight.relaxed,
 });
 
-const featuresSectionGrid = featuresSectionContainer.child('.features-section__grid').style({
+media().maxWidth('768px').select(featuresSectionContainer.child('.features-section__subtitle')).style({
+  textAlign: 'left',
+});
+
+media().minWidth('768px').select(featuresSectionContainer.child('.features-section__subtitle')).style({
+  textAlign: 'center',
+});
+
+featuresSectionContainer.child('.features-section__grid').style({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
   gap: theme.spacing[6],
@@ -39,16 +50,23 @@ const featuresSectionGrid = featuresSectionContainer.child('.features-section__g
 });
 
 // Why Choose feature card
-const featuresSectionCard = featuresSectionGrid.child('.features-section-card').style({
+const featuresSectionCard = select('.features-section-card').style({
   backgroundColor: theme.bg.subtle,
   border: `1px solid ${theme.border.default}`,
   borderRadius: theme.radius.lg,
-  padding: theme.spacing[8],
   textAlign: 'left',
   transition: `all ${theme.duration.normal} ${theme.ease.out}`,
   boxShadow: theme.shadow.xs,
   position: 'relative',
   overflow: 'hidden',
+});
+
+media().minWidth('768px').select(featuresSectionCard).style({
+  padding: theme.spacing[8],
+});
+
+media().maxWidth('768px').select(featuresSectionCard).style({
+  padding: theme.spacing[6],
 });
 
 featuresSectionCard.hover().style({
