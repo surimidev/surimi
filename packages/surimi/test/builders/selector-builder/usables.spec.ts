@@ -1,8 +1,7 @@
+import type { Token } from '@surimi/parsers';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import type { Token } from '@surimi/parsers';
-
-import { mixin, select, style, Surimi } from '../../../src/index';
+import { mixin, Surimi, select, style } from '../../../src/index';
 
 describe('Usables - style() and use()', () => {
   beforeEach(() => {

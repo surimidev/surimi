@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest';
-
 import type { CssProperties } from '@surimi/common';
 import { createDeclarationsFromProperties, formatPropertyName, formatPropertyValue } from '@surimi/core';
+import { describe, expect, it } from 'vitest';
 
 import { property } from '#index';
 

@@ -1,17 +1,16 @@
 // Debounce utility for performance optimization
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: generic wrapper must accept any function signature
 export function debounce<F extends (...args: any[]) => any>(func: F, delay = 300): (...args: Parameters<F>) => void {
   let timeoutId: ReturnType<typeof setTimeout>;
 
   return (...args: Parameters<F>) => {
     clearTimeout(timeoutId);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     timeoutId = setTimeout(() => func(...args), delay);
   };
 }
 
 // Throttle utility for high-frequency events
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: generic wrapper must accept any function signature
 export function throttle<T extends (...args: any[]) => any>(func: T, delay = 100): (...args: Parameters<T>) => void {
   let lastCall = 0;
 

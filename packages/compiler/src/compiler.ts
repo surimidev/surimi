@@ -153,10 +153,7 @@ export async function execute(code: string, sourcePath?: string) {
         try {
           serialized = JSON.stringify(value);
           exports.push(`export const ${key} = ${serialized};`);
-        } catch {
-          // Potentially unserializable value, skip
-          continue;
-        }
+        } catch {}
       }
     }
 

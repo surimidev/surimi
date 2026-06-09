@@ -1,6 +1,6 @@
-import { root, type CssRoot } from '@surimi/ast';
+import { type CssRoot, root } from '@surimi/ast';
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- static context root
+// biome-ignore lint/complexity/noStaticOnlyClass: static singleton holding the global CSS context root
 export abstract class SurimiContext {
   public static root: CssRoot = root();
 

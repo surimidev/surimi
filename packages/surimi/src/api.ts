@@ -1,9 +1,10 @@
-import { SurimiContext } from '@surimi/common';
 import type { ArrayWithAtLeastOneItem, CssProperties, FontFaceProperties, ValidSelector } from '@surimi/common';
+import { SurimiContext } from '@surimi/common';
+import type { KeyframeStepConfig } from '@surimi/core';
 import {
   ContainerQueryBuilder,
-  createSelectorBuilderFromString,
   CustomPropertyBuilder,
+  createSelectorBuilderFromString,
   FontFaceBuilder,
   joinSelectors,
   KeyframesBuilder,
@@ -11,7 +12,6 @@ import {
   MixinBuilder,
   StyleBuilder,
 } from '@surimi/core';
-import type { KeyframeStepConfig } from '@surimi/core';
 import { tokenize } from '@surimi/parsers';
 
 /**
@@ -220,7 +220,6 @@ export function property<TValue = string & {}>(
   inherits = true,
 ): CustomPropertyBuilder<TValue> {
   if (typeof nameOrOptions === 'string') {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime check
     if (initialValue == null || syntax == null || inherits == null) {
       throw new Error('Missing parameter(s)');
     }

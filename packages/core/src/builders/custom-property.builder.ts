@@ -1,4 +1,4 @@
-import { atRule, decl, type CssRoot } from '@surimi/ast';
+import { atRule, type CssRoot, decl } from '@surimi/ast';
 import { SurimiBase } from '@surimi/common';
 
 export class CustomPropertyBuilder<TValue> extends SurimiBase {

@@ -13,7 +13,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -30,6 +30,9 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -37,13 +40,13 @@
     "escape-string-regexp": "^5.0.0"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
     "source-map": "^0.7.6",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "catalog:build"
+    "vite": "catalog:build",
+    "vitest": "catalog:test"
   },
   "peerDependencies": {
     "surimi": "workspace:*",

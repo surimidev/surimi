@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { container, mixin, select, Surimi } from '../../src/index';
+import { container, mixin, Surimi, select } from '../../src/index';
 
 describe('Container Queries', () => {
   beforeEach(() => {

@@ -13,7 +13,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -34,7 +34,9 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "format": "prettier . --write",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "prepack": "pnpm -c exec ../../scripts/replace-symlinks.sh",
     "test": "pnpm -w test --project=surimi",
     "type-check": "tsc --noEmit"
@@ -46,9 +48,9 @@
     "@surimi/parsers": "workspace:*"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "tsdown": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
   }
 }

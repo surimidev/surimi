@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": ["**/dist/**", "**/.astro/**", "**/.nuxt/**", "**/.output/**"],
+  "ignoreWorkspaces": ["examples/**"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.{ts,sh}"]
+    },
+    "config/*": {
+      "entry": ["*.json"]
+    },
+    "packages/*": {
+      "entry": ["src/index.ts", "*.config.ts"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/compiler": {
+      "entry": ["src/index.node.ts", "src/index.browser.ts", "src/cli.ts", "*.config.ts"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/docs": {
+      "entry": ["src/**/*.{astro,ts,tsx}", "astro.config.*"],
+      "project": ["src/**/*.{astro,ts,tsx}"]
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import type { CssContainer, CssRoot } from '@surimi/ast';
 import type { CssProperties, ValidSelector } from '@surimi/common';
-import { CoreBuilder, createDeclarationsFromProperties, StyleBuilder, type SelectorBuilder } from '@surimi/core';
+import { CoreBuilder, createDeclarationsFromProperties, type SelectorBuilder, StyleBuilder } from '@surimi/core';
 import type { Tokenize } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
@@ -68,7 +68,9 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
 
     const rule = this.getOrCreateRule();
     const declarations = createDeclarationsFromProperties(styles);
-    declarations.forEach(decl => rule.append(decl));
+    declarations.forEach(decl => {
+      rule.append(decl);
+    });
 
     return this;
   }

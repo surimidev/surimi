@@ -1,7 +1,8 @@
 import type { ArrayWithAtLeastOneItem, JoinSelectors, ValidSelector } from '@surimi/common';
 import type { Token, Tokenize } from '@surimi/parsers';
 
-import { CoreBuilder, SelectorBuilder } from '#builders';
+import { CoreBuilder } from '#builders/core.builder';
+import { SelectorBuilder } from '#builders/selector.builder';
 import { createSelectorBuilderFromContext, createSelectorBuilderFromString } from '#helpers/select.helper';
 
 /**

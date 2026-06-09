@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { mixin, select, style, Surimi } from '#index';
+import { mixin, Surimi, select, style } from '#index';
 
 describe('Selector Builder - Combinations', () => {
   beforeEach(() => {

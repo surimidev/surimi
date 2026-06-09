@@ -12,7 +12,7 @@
   "author": "Janis jansen <oss@janis.me>",
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#*": ["./src/*", "./src/*.ts", "./src/*/index.ts"]
   },
   "exports": {
     ".": {
@@ -28,15 +28,17 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "format": "prettier . --write",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
     "test": "pnpm -w test --project=parsers",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "parsel-js": "^1.2.2",
     "tsdown": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
   }
 }

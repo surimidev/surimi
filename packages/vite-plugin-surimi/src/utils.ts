@@ -25,13 +25,13 @@ const VLQ_BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 
 function vlqEncode(n: number): string {
   let encoded = '';
-  n = n < 0 ? (-n << 1) | 1 : n << 1;
+  let value = n < 0 ? (-n << 1) | 1 : n << 1;
   do {
-    let digit = n & 31;
-    n >>>= 5;
-    if (n > 0) digit |= 32;
+    let digit = value & 31;
+    value >>>= 5;
+    if (value > 0) digit |= 32;
     encoded += VLQ_BASE64[digit] ?? '';
-  } while (n > 0);
+  } while (value > 0);
   return encoded;
 }
 

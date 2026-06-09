@@ -5,11 +5,10 @@ import { tokenizeAtRule } from './at-rules/tokenize';
 import { stringifySelector } from './selectors/stringify';
 import { tokenizeSelector } from './selectors/tokenize';
 
-export { tokenizeSelector } from './selectors/tokenize';
-export { stringifySelector } from './selectors/stringify';
-
-export { tokenizeAtRule } from './at-rules/tokenize';
 export { stringifyAtRule } from './at-rules/stringify';
+export { tokenizeAtRule } from './at-rules/tokenize';
+export { stringifySelector } from './selectors/stringify';
+export { tokenizeSelector } from './selectors/tokenize';
 
 export function stringify<T extends Token[]>(tokens: T): Stringify<T> {
   const isAtRule = tokens.length > 0 && tokens[0]?.type === 'at-rule-name';

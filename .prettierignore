@@ -1,8 +1,0 @@
-node_modules/
-build/
-dist/
-.npm/
-.config/
-pnpm-lock.yaml
-pnpm-workspace.yaml
-*.mdx

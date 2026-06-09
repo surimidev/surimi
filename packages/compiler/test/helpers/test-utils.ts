@@ -34,12 +34,13 @@ export function containsAll(str: string, substrings: string[]): boolean {
 export function extractExports(js: string): string[] {
   const exportRegex = /export\s+const\s+(\w+)/g;
   const exports: string[] = [];
-  let match;
+  let match = exportRegex.exec(js);
 
-  while ((match = exportRegex.exec(js)) !== null) {
+  while (match !== null) {
     if (match[1]) {
       exports.push(match[1]);
     }
+    match = exportRegex.exec(js);
   }
 
   return exports;

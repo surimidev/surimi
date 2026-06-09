@@ -3,7 +3,6 @@ export const THEME_STORAGE_KEY = 'theme';
 export type Theme = 'light' | 'dark';
 
 function isLocalStorageAvailable(): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
   return typeof window !== 'undefined' && 'localStorage' in window && window.localStorage != null;
 }
 
@@ -13,7 +12,6 @@ export function getTheme(): Theme {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
@@ -35,7 +33,6 @@ export function toggleTheme(): Theme {
 }
 
 export function watchPreferredColorScheme(callback: (theme: Theme) => void): () => void {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- untrue. Depends on the browser/node
   if (typeof window === 'undefined' || !window.matchMedia)
     return () => {
       /* noop */

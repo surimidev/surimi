@@ -1,7 +1,0 @@
-{
-  "extends": "@surimi/typescript-config/base.json",
-  "compilerOptions": {
-    "types": ["node"]
-  },
-  "include": ["*.ts"]
-}

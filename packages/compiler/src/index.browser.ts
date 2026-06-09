@@ -6,7 +6,6 @@ import type { CompileOptions, CompileResult, WatchOptions } from './types';
 
 const { compile, compileWatch } = createCompile({ rolldown, watch } as RolldownApi);
 
-export type { CompileOptions, CompileResult, WatchOptions };
-export type { RolldownWatcher, RolldownWatcherEvent };
+export type { CompileOptions, CompileResult, RolldownWatcher, RolldownWatcherEvent, WatchOptions };
 
 export { compile, compileWatch };

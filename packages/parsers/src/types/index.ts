@@ -2,10 +2,10 @@ import type { StringifyAtRule, TokenizeAtRule } from './at-rules';
 import type { StringifySelector, TokenizeSelector } from './selector';
 import type { Token } from './tokens.types';
 
+export * from './at-rules/index';
+export * from './selector/index';
 export * from './tokens.types';
 export * from './utils.types';
-export * from './selector/index';
-export * from './at-rules/index';
 
 /**
  * Helper to tokenize either selector or at-rule tokens.

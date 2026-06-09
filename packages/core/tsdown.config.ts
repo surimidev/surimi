@@ -5,6 +5,7 @@ export default defineConfig({
   format: ['esm'],
   target: 'esnext',
   platform: 'neutral',
+  unbundle: true,
   sourcemap: true,
   clean: true,
   dts: true,

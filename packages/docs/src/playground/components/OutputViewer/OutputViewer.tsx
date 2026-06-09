@@ -1,6 +1,5 @@
-import { AnsiHtml } from 'fancy-ansi/react';
-
 import type { CompileResult } from '@surimi/compiler';
+import { AnsiHtml } from 'fancy-ansi/react';
 
 import CodeEditor from '#playground/components/Editor/CodeEditor';
 

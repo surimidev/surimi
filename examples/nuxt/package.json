@@ -9,12 +9,11 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "nuxt": "^4.4.2",
-    "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "nuxt": "^4.4.8",
+    "vue": "^3.5.35",
+    "vue-router": "^5.1.0"
   },
   "devDependencies": {
-    "@surimi/linter-config": "workspace:*",
     "@surimi/typescript-config": "workspace:*",
     "surimi": "workspace:*",
     "vite-plugin-surimi": "workspace:*"

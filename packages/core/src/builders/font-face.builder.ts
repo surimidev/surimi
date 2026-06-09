@@ -1,7 +1,7 @@
 import { atRule, type CssContainer, type CssRoot } from '@surimi/ast';
-import { SurimiBase } from '@surimi/common';
 import type { FontFaceProperties } from '@surimi/common';
-import { tokenizeAtRule, type TokenizeAtRule } from '@surimi/parsers';
+import { SurimiBase } from '@surimi/common';
+import { type TokenizeAtRule, tokenizeAtRule } from '@surimi/parsers';
 
 import { createDeclarationsFromProperties } from '#utils/css.utils';
 
@@ -22,7 +22,9 @@ export class FontFaceBuilder extends CoreBuilder<TokenizeAtRule<`@font-face`>> {
   public register() {
     const atRuleNode = atRule({ name: 'font-face' });
     const declarations = createDeclarationsFromProperties(this._properties);
-    declarations.forEach(d => atRuleNode.append(d));
+    declarations.forEach(d => {
+      atRuleNode.append(d);
+    });
     this._cssRoot.append(atRuleNode);
   }
 

@@ -3,11 +3,11 @@
  * For browser/WASM use the "browser" export: @surimi/compiler/browser
  */
 export {
-  compile,
-  compileWatch,
   type CompileOptions,
   type CompileResult,
-  type WatchOptions,
+  compile,
+  compileWatch,
   type RolldownWatcher,
   type RolldownWatcherEvent,
+  type WatchOptions,
 } from './index.node';
