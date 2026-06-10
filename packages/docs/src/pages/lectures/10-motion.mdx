@@ -1,0 +1,52 @@
+---
+title: Motion
+description: Animations with keyframes()
+orderId: 10
+files:
+  "/index.css.ts": |
+    import { select, keyframes } from 'surimi';
+
+    const fadeIn = keyframes('fade-in')
+      .from({ opacity: 0, transform: 'translateY(8px)' })
+      .to({ opacity: 1, transform: 'translateY(0)' });
+
+    const pulse = keyframes('pulse')
+      .at('0%', { transform: 'scale(1)' })
+      .at('50%', { transform: 'scale(1.05)' })
+      .at('100%', { transform: 'scale(1)' });
+
+    select('.card').style({
+      animation: `${fadeIn} 0.4s ease both`,
+    });
+
+    select('.badge').style({
+      animation: `${pulse} 1.5s ease-in-out infinite`,
+    });
+  "/index.html": |
+    <div id="root">
+      <div class="card">I fade in. <span class="badge">●</span></div>
+    </div>
+---
+
+## Define, then use
+
+`keyframes()` registers the `@keyframes` rule and returns a token whose string value is the animation name. Drop it straight into `animation`.
+
+```ts
+const fadeIn = keyframes('fade-in')
+  .from({ opacity: 0 })
+  .to({ opacity: 1 });
+
+select('.card').style({
+  animation: `${fadeIn} 0.4s ease both`,
+});
+```
+
+Use `from()` / `to()` for two-step animations, or `at()` for explicit percentages:
+
+```ts
+keyframes('pulse')
+  .at('0%', { transform: 'scale(1)' })
+  .at('50%', { transform: 'scale(1.05)' })
+  .at('100%', { transform: 'scale(1)' });
+```

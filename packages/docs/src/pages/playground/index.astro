@@ -1,42 +1,54 @@
 ---
-import { getCollection } from 'astro:content';
-import { marked } from 'marked';
-import markedShiki from 'marked-shiki';
-import { codeToHtml } from 'shiki';
+import { getCollection } from "astro:content";
+import { marked } from "marked";
+import markedShiki from "marked-shiki";
+import { codeToHtml } from "shiki";
 
-import Main from '#layouts/Main/Main.astro';
+import Main from "#layouts/Main/Main.astro";
 
-import { Playground } from '../../playground';
+import { Playground } from "../../playground";
 
 marked.setOptions({ gfm: true });
 marked.use(
   markedShiki({
     async highlight(code, lang) {
-      return await codeToHtml(code, { lang, theme: 'min-light' });
+      // Dual themes mirror the Monaco editor (VS Code light/dark). `defaultColor: false`
+      // emits --shiki-light / --shiki-dark CSS vars so we can switch on [data-theme] in CSS.
+      return await codeToHtml(code, {
+        lang,
+        themes: { light: "light-plus", dark: "dark-plus" },
+        defaultColor: false,
+      });
     },
   }),
 );
 
-const rawLectures = await getCollection('lectures');
+const rawLectures = await getCollection("lectures");
 const sorted = rawLectures.sort((a, b) => a.data.orderId - b.data.orderId);
 
 const lectures = await Promise.all(
-  sorted.map(async entry => ({
+  sorted.map(async (entry) => ({
     id: entry.id,
     title: entry.data.title,
     description: entry.data.description,
     files: entry.data.files,
-    contentHtml: await marked.parse(entry.body ?? ''),
+    contentHtml: await marked.parse(entry.body ?? ""),
   })),
 );
 
-const lectureIdFromUrl = Astro.url.searchParams.get('lecture');
+const lectureIdFromUrl = Astro.url.searchParams.get("lecture");
 const initialLectureId =
-  (lectureIdFromUrl && lectures.some(l => l.id === lectureIdFromUrl) ? lectureIdFromUrl : null) ??
+  (lectureIdFromUrl && lectures.some((l) => l.id === lectureIdFromUrl)
+    ? lectureIdFromUrl
+    : null) ??
   lectures[0]?.id ??
-  '';
+  "";
 ---
 
 <Main title="Playground">
-  <Playground client:only lectures={lectures} initialLectureId={initialLectureId} />
+  <Playground
+    client:only
+    lectures={lectures}
+    initialLectureId={initialLectureId}
+  />
 </Main>

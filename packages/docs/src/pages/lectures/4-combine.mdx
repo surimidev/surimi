@@ -1,0 +1,65 @@
+---
+title: Combine & match
+description: Selector lists, compounds, and matching state
+orderId: 4
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    // A list: style both, comma-separated
+    select('h1').and('h2').style({
+      fontFamily: 'system-ui, sans-serif',
+      color: '#333',
+    });
+
+    // A compound: one element matching all parts
+    select('.btn').join('.primary').style({
+      background: '#3498db',
+      color: 'white',
+    });
+
+    // Match on other state with is / not / has
+    select('.btn').not('.primary').style({
+      background: '#eee',
+    });
+
+    // Pseudo-elements need content
+    select('.tag').before().style({
+      content: "'#'",
+      opacity: 0.5,
+    });
+  "/index.html": |
+    <div id="root">
+      <h1>Title</h1>
+      <h2>Subtitle</h2>
+      <button class="btn primary">Primary</button>
+      <button class="btn">Secondary</button>
+      <span class="tag">surimi</span>
+    </div>
+---
+
+## Two ways to combine
+
+`and()` makes a **list** (style several selectors at once). `join()` makes a **compound** (one element matching all parts at the same time).
+
+```ts
+select('.btn').and('.link');   // .btn, .link
+select('.btn').join('.primary'); // .btn.primary
+```
+
+## Matching state
+
+`is()`, `not()`, and `has()` take a selector and narrow what you target:
+
+```ts
+select('.btn').not('.primary').style({ background: '#eee' });
+select('.card').has('img').style({ padding: 0 });
+```
+
+## Pseudo-elements
+
+`before()` and `after()` give you `::before` / `::after`. Don't forget `content`:
+
+```ts
+select('.tag').before().style({ content: "'#'" });
+```

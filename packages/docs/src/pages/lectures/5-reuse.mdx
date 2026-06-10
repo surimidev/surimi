@@ -1,0 +1,53 @@
+---
+title: Don't repeat yourself
+description: Reusable style objects with style() and use()
+orderId: 5
+files:
+  "/index.css.ts": |
+    import { select, style } from 'surimi';
+
+    const button = style({
+      padding: '0.6rem 1.2rem',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '1rem',
+    });
+
+    const primary = style({ background: '#3498db', color: 'white' });
+
+    select('.save').use(button, primary);
+    select('.cancel').use(button);
+  "/index.html": |
+    <div id="root">
+      <button class="save">Save</button>
+      <button class="cancel">Cancel</button>
+    </div>
+---
+
+## Styles as values
+
+A `style()` is just a bag of properties you can apply anywhere with `use()`. No class names generated, no duplication.
+
+```ts
+const button = style({ padding: '0.6rem 1.2rem', borderRadius: '8px' });
+
+select('.save').use(button);
+select('.cancel').use(button);
+```
+
+`use()` takes as many as you want, applied in order:
+
+```ts
+select('.save').use(button, primary);
+```
+
+## Building on top
+
+`extend()` merges one style into another:
+
+```ts
+const primary = style({ background: '#3498db' }).extend(button);
+```
+
+Because it's TypeScript, you can also keep these in their own file and import them wherever you need.

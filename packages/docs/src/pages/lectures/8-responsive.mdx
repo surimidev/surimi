@@ -1,0 +1,56 @@
+---
+title: Responsive
+description: Media queries with media()
+orderId: 8
+files:
+  "/index.css.ts": |
+    import { select, media } from 'surimi';
+
+    select('.grid').style({
+      display: 'grid',
+      gap: '1rem',
+      gridTemplateColumns: '1fr',
+    });
+
+    media().minWidth('800px').select('.grid').style({
+      gridTemplateColumns: '1fr 1fr',
+    });
+
+    media().prefersColorScheme('dark').select('body').style({
+      background: '#111',
+      color: '#eee',
+    });
+  "/index.html": |
+    <div id="root">
+      <div class="grid">
+        <div>One</div>
+        <div>Two</div>
+        <div>Three</div>
+        <div>Four</div>
+      </div>
+    </div>
+---
+
+## media() builds the query
+
+Start with `media()`, describe the condition with typed methods, then `select()` inside it.
+
+```ts
+media().minWidth('800px').select('.grid').style({
+  gridTemplateColumns: '1fr 1fr',
+});
+```
+
+Hover the result: `SelectorBuilder<'@media (min-width: 800px) ⤷ .grid'>`. Surimi shows you the whole thing.
+
+## Combining and feature queries
+
+Chain `and()` for ranges, and use the typed feature methods:
+
+```ts
+media().minWidth('800px').and().maxWidth('1024px').select('.grid').style({ /* ... */ });
+
+media().prefersColorScheme('dark').select('body').style({ background: '#111' });
+```
+
+Resize the output panel to watch the grid switch columns.

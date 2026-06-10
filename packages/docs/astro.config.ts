@@ -8,6 +8,9 @@ import surimiPlugin from 'surimi/vite';
 import { build, type Plugin, type Rollup } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
+/**
+ * We have to bundle the surimi code to a string to use it in the playground.
+ */
 function vitePluginBundleSurimi() {
   async function bundleToString(entry: string) {
     const result = await build({
@@ -61,6 +64,12 @@ export default defineConfig({
 
   markdown: {
     remarkPlugins: [[remarkGithub, { repository: 'surimidev/surimi' }], blockquoteAlert, remarkEmoji],
+    // Same dual-theme setup as the playground lectures: emit --shiki-light / --shiki-dark
+    // vars and switch on [data-theme] in code.css.ts.
+    shikiConfig: {
+      themes: { light: 'light-plus', dark: 'dark-plus' },
+      defaultColor: false,
+    },
   },
 
   server: {

@@ -1,0 +1,50 @@
+---
+title: Conditional styling
+description: Style across the tree with when()
+orderId: 11
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+    import { when } from 'surimi/conditional';
+
+    select('.target').style({
+      padding: '1rem',
+      borderRadius: '8px',
+      background: '#eee',
+      transition: 'all 0.2s ease',
+    });
+
+    // When .trigger is hovered, style a totally separate element
+    when('.trigger').hovered().select('.target').style({
+      background: '#3498db',
+      color: 'white',
+    });
+  "/index.html": |
+    <div id="root">
+      <button class="trigger">Hover me</button>
+      <div class="target">I react to the button.</div>
+    </div>
+---
+
+## Style B when A happens
+
+CSS can't normally say "style x when y is hovered" across the tree. Surimi's `when()` function can, using `:has()` under the hood.
+
+```ts
+import { when } from 'surimi/conditional';
+
+when('.trigger').hovered().select('.target').style({
+  background: '#3498db',
+});
+// -> :where(html):has(.trigger:hover) .target { background: #3498db; }
+```
+
+The condition methods read like English: `hovered()`, `focused()`, `checked()`, `disabled()`, and so on. Chain them:
+
+```ts
+when('.input').focused().and.not.disabled().select('.hint').style({ opacity: 1 });
+when('.a').hovered().or.focused().select('.b').style({ /* ... */ });
+```
+
+> [!NOTE]
+> `when()` lives in `surimi/conditional`, a separate import from the main package.

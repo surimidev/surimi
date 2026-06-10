@@ -1,0 +1,58 @@
+---
+title: Theme & variables
+description: Typed CSS custom properties with property()
+orderId: 7
+files:
+  "/index.css.ts": |
+    import { select, property } from 'surimi';
+
+    const theme = {
+      bg: property('bg', '#f5f5f5', '<color>'),
+      text: property('text', '#333', '<color>'),
+      primary: property('primary', '#3498db', '<color>'),
+    };
+
+    select('body').style({
+      background: theme.bg,
+      color: theme.text,
+      fontFamily: 'system-ui, sans-serif',
+    });
+
+    select('.btn').style({
+      background: theme.primary,
+      color: 'white',
+      padding: '0.6rem 1.2rem',
+      border: 'none',
+      borderRadius: '8px',
+    });
+  "/index.html": |
+    <div id="root">
+      <button class="btn">Themed button</button>
+    </div>
+---
+
+## Real, typed variables
+
+`property()` registers a CSS [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property) and gives you back a token you can drop in as a value. It compiles to `var(--name)`.
+
+```ts
+const primary = property('primary', '#3498db', '<color>');
+
+select('.btn').style({ background: primary });
+// -> .btn { background: var(--primary); }
+```
+
+The third argument is the [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax), so the browser knows the type (and can even animate it). Change `#3498db` above and the button follows.
+
+## The superpower: it's just TypeScript
+
+Group tokens in an object, export them from their own file, and import them anywhere — fully typed:
+
+```ts
+// theme.css.ts
+export const theme = {
+  primary: property('primary', '#3498db', '<color>'),
+};
+```
+
+(In this single-file playground we keep them inline, but in a real project each `.css.ts` emits its own CSS and shares the tokens through normal imports.)
