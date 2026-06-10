@@ -186,9 +186,6 @@ importers:
       surimi:
         specifier: workspace:*
         version: link:../../packages/surimi
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../../packages/vite-plugin-surimi
 
   examples/vite-react:
     dependencies:
@@ -220,9 +217,6 @@ importers:
       vite-bundle-analyzer:
         specifier: catalog:utils
         version: 1.3.8
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../../packages/vite-plugin-surimi
 
   examples/vite-simple:
     devDependencies:
@@ -238,9 +232,6 @@ importers:
       vite-bundle-analyzer:
         specifier: catalog:utils
         version: 1.3.8
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../../packages/vite-plugin-surimi
 
   examples/vite-vanilla:
     devDependencies:
@@ -253,9 +244,6 @@ importers:
       vite:
         specifier: catalog:build
         version: 8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../../packages/vite-plugin-surimi
 
   examples/waku:
     dependencies:
@@ -293,9 +281,6 @@ importers:
       vite:
         specifier: 8.0.16
         version: 8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../../packages/vite-plugin-surimi
 
   packages/ast:
     devDependencies:
@@ -538,9 +523,6 @@ importers:
       vite-plugin-node-polyfills:
         specifier: ^0.28.0
         version: 0.28.0(rollup@4.61.1)(vite@8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
-      vite-plugin-surimi:
-        specifier: workspace:*
-        version: link:../vite-plugin-surimi
 
   packages/parsers:
     devDependencies:
@@ -574,6 +556,12 @@ importers:
       '@surimi/parsers':
         specifier: workspace:*
         version: link:../parsers
+      vite:
+        specifier: catalog:build
+        version: 8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
+      vite-plugin-surimi:
+        specifier: workspace:*
+        version: link:../vite-plugin-surimi
     devDependencies:
       '@surimi/typescript-config':
         specifier: workspace:*

@@ -1,4 +1,4 @@
-import surimiPlugin from 'vite-plugin-surimi';
+import surimiPlugin from 'surimi/vite';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({

@@ -15,7 +15,6 @@
   },
   "devDependencies": {
     "@surimi/typescript-config": "workspace:*",
-    "surimi": "workspace:*",
-    "vite-plugin-surimi": "workspace:*"
+    "surimi": "workspace:*"
   }
 }

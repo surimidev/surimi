@@ -92,7 +92,7 @@ Let's go through how surimi works, when using the vite plugin (the recommended w
 
 1. The user writes a `.css.ts` file, using Surimi
 2. The file is imported into the project, e.g. in a component
-3. Vite resolves the file, calling `vite-plugin-surimi` to handle the import.
+3. Vite resolves the file, calling the Surimi Vite plugin (`surimi/vite`) to handle the import.
 4. Surimi determines if the file should be compiled, read from cache etc.
    4.1. It also handles SSR, inlining, cache invalidation, HMR etc.
 5. The compiler loads the file (and it's imports) using [rolldown](https://rolldown.rs/).

@@ -1,5 +1,5 @@
+import surimi from 'surimi/vite';
 import { defineConfig } from 'vite';
-import surimi from 'vite-plugin-surimi';
 
 export default defineConfig(() => {
   return {

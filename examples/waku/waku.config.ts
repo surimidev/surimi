@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import surimiPlugin from 'vite-plugin-surimi';
+import surimiPlugin from 'surimi/vite';
 import { defineConfig } from 'waku/config';
 
 export default defineConfig({

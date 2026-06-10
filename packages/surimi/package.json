@@ -23,6 +23,10 @@
     "./conditional": {
       "types": "./dist/conditional.d.ts",
       "import": "./dist/conditional.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
     }
   },
   "main": "dist/index.js",
@@ -45,12 +49,21 @@
     "@surimi/common": "workspace:*",
     "@surimi/conditional": "workspace:*",
     "@surimi/core": "workspace:*",
-    "@surimi/parsers": "workspace:*"
+    "@surimi/parsers": "workspace:*",
+    "vite-plugin-surimi": "workspace:*"
   },
   "devDependencies": {
     "@surimi/typescript-config": "workspace:*",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
+  },
+  "peerDependencies": {
+    "vite": "catalog:build"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
   }
 }
