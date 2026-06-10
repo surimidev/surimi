@@ -1,6 +1,6 @@
+import surimi from 'surimi/vite';
 import { defineConfig } from 'vite';
 import { analyzer } from 'vite-bundle-analyzer';
-import surimi from 'vite-plugin-surimi';
 
 export default defineConfig(() => {
   return {

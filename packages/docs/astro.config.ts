@@ -4,9 +4,9 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import remarkEmoji from 'remark-emoji';
 import remarkGithub from 'remark-github';
 import blockquoteAlert from 'remark-github-blockquote-alert';
+import surimiPlugin from 'surimi/vite';
 import { build, type Plugin, type Rollup } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import surimiPlugin from 'vite-plugin-surimi';
 
 function vitePluginBundleSurimi() {
   async function bundleToString(entry: string) {

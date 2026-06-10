@@ -12,7 +12,6 @@
     "@surimi/typescript-config": "workspace:*",
     "surimi": "workspace:*",
     "vite": "catalog:build",
-    "vite-bundle-analyzer": "catalog:utils",
-    "vite-plugin-surimi": "workspace:*"
+    "vite-bundle-analyzer": "catalog:utils"
   }
 }

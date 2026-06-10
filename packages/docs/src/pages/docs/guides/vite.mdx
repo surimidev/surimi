@@ -7,17 +7,17 @@ layout: "#layouts/Docs/Docs.astro"
 
 # Using Surimi with Vite
 
-To use surimi with Vite, in addition to `surimi`, you need to install the `vite-plugin-surimi` plugin and add it to your Vite configuration.
+Surimi's Vite plugin ships with `surimi`. just import it from `surimi/vite`.
 
 ```bash
-pnpm install -D surimi vite-plugin-surimi
+pnpm install -D surimi
 ```
 
 Then, update your `vite.config.ts` file to include the plugin:
 
 ```ts title="vite.config.ts"
 import { defineConfig } from 'vite';
-import surimi from 'vite-plugin-surimi';
+import surimi from 'surimi/vite';
 
 export default defineConfig({
   plugins: [surimi()],

@@ -35,28 +35,20 @@ If you use any vite based tool like Astro, Vue, Nuxt or use Vite with React etc.
 For more options, have a look at our [Guides Overview](/docs/guides/overview). Vite is NOT required for Surimi, but it's the easiest way to get started.
 More on that in a bit.
 
-### Installation of the Vite plugin
+### Adding the Vite plugin
 
-```bash
-npm install -D vite-plugin-surimi
-# or
-yarn add -D vite-plugin-surimi
-# or
-pnpm add -D vite-plugin-surimi
-```
-
-Note that both `surimi` and the vite plugin are installed as dev dependencies, as they have zero runtime.
-
-Now, add the plugin to your `vite.config.ts`:
+The Vite plugin ships with `surimi` itself, so there's nothing extra to install. Just import it from `surimi/vite` and add it to your `vite.config.ts`:
 
 ```ts
 import { defineConfig } from 'vite';
-import surimi from 'vite-plugin-surimi';
+import surimi from 'surimi/vite';
 
 export default defineConfig({
   plugins: [surimi()],
 });
 ```
+
+Note that `surimi` is installed as a dev dependency, as it has zero runtime.
 
 For more details on the vite plugin see [Using Surimi with Vite](/docs/guides/vite).
 
