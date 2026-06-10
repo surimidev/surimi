@@ -1,0 +1,70 @@
+---
+title: Container queries
+description: Style by parent size with container()
+orderId: 9
+files:
+  "/index.css.ts": |
+    import { select, container } from 'surimi';
+
+    select('.panel').style({
+      containerType: 'inline-size',
+      containerName: 'panel',
+      // Drag the bottom-right corner to resize the container
+      resize: 'horizontal',
+      overflow: 'auto',
+      width: '250px',
+      minWidth: '150px',
+      maxWidth: '100%',
+      padding: '1rem',
+      border: '2px dashed #ccc',
+      borderRadius: '12px',
+    });
+
+    select('.card').style({
+      display: 'grid',
+      gap: '0.5rem',
+    });
+
+    select('.thumb').style({
+      width: '80px',
+      height: '80px',
+      borderRadius: '8px',
+      background: '#3498db',
+    });
+
+    container().name('panel').minWidth('400px').select('.card').style({
+      gridTemplateColumns: '80px 1fr',
+    });
+  "/index.html": |
+    <div id="root">
+      <div class="panel">
+        <div class="card">
+          <div class="thumb"></div>
+          <p>Drag my bottom-right corner. Past 400px, the layout switches.</p>
+        </div>
+      </div>
+    </div>
+---
+
+## Like media queries, but for a parent
+
+Container queries react to the size of an **ancestor**, not the viewport. First mark the container:
+
+```ts
+select('.panel').style({
+  containerType: 'inline-size',
+  containerName: 'panel',
+});
+```
+
+Then query it:
+
+```ts
+container().name('panel').minWidth('400px').select('.card').style({
+  gridTemplateColumns: '80px 1fr',
+});
+```
+
+Same builder shape as `media()` — `name()`, `minWidth()`, `select()`, and the type hint shows the full `@container` rule.
+
+The panel here uses `resize: horizontal`, so you can **drag its corner** in the preview and watch the card reflow once it crosses 400px — no window resizing needed.

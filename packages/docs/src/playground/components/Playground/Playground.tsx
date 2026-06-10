@@ -1,14 +1,13 @@
-import surimiCode from 'surimi?bundle';
 import { memfs } from '@rolldown/browser/experimental';
 import { type CompileResult, compile } from '@surimi/compiler/browser';
 import type { Volume } from 'memfs';
 import { useCallback, useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-
 import CodeEditor from '#playground/components/Editor/CodeEditor';
 import HtmlCssView from '#playground/components/HtmlCssView/HtmlCssView';
 import LectureContent from '#playground/components/LectureContent/LectureContent';
 import OutputViewer from '#playground/components/OutputViewer/OutputViewer';
+import surimiCode from '../../surimiBundleEntry.ts?bundle';
 
 import './playground.css';
 
@@ -38,8 +37,14 @@ function initFs() {
       version: '1.0.0',
       main: 'index.js',
       module: 'index.js',
+      exports: {
+        '.': './index.js',
+        './conditional': './conditional.js',
+      },
     }),
     '/node_modules/surimi/index.js': surimiCode,
+    // Re-export from the same bundled module so `when()` shares the SurimiContext singleton.
+    '/node_modules/surimi/conditional.js': "export { when } from './index.js';",
   });
 }
 

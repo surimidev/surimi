@@ -1,0 +1,64 @@
+---
+title: Real-world selectors
+description: Selecting things properly, like in the real world
+orderId: 3
+files:
+  "/index.css.ts": |
+    import { select } from 'surimi';
+
+    const card = select('.card');
+
+    card.style({
+      padding: '1.5rem',
+      borderRadius: '12px',
+      background: 'white',
+      boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+    });
+
+    card.child('.title').style({
+      margin: 0,
+      color: '#3498db',
+    });
+
+    card.descendant('button').hover().style({
+      opacity: 0.8,
+    });
+  "/index.html": |
+    <div id="root">
+      <div class="card">
+        <h2 class="title">A card</h2>
+        <p>Selected by class, not by tag.</p>
+        <button>Action</button>
+      </div>
+    </div>
+---
+
+## Selecting by tag is fun...
+
+...but not how the real world works. You select things by class, id, or attribute, and you combine selectors into hierarchies. In plain CSS you'd reach for [BEM](https://getbem.com/) or [CUBE](https://cube.fyi/).
+
+Surimi lets you just **reuse your selectors as variables**, so you don't have to invent naming systems.
+
+```ts
+const card = select('.card');
+const title = card.child('.title');
+```
+
+Hover the `title` type: it's `SelectorBuilder<'.card > .title'>`. Surimi tracks the whole path for you.
+
+## Navigating the DOM
+
+You have one method per CSS combinator:
+
+```ts
+card.child('.title');       // .card > .title
+card.descendant('button');  // .card button
+card.adjacent('.card');     // .card + .card
+card.sibling('.card');      // .card ~ .card
+```
+
+And you can keep chaining pseudo-classes on the result:
+
+```ts
+card.descendant('button').hover().style({ opacity: 0.8 });
+```

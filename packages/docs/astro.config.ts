@@ -8,6 +8,9 @@ import surimiPlugin from 'surimi/vite';
 import { build, type Plugin, type Rollup } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
+/**
+ * We have to bundle the surimi code to a string to use it in the playground.
+ */
 function vitePluginBundleSurimi() {
   async function bundleToString(entry: string) {
     const result = await build({

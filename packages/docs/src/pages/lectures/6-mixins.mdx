@@ -1,0 +1,46 @@
+---
+title: Mixins
+description: Reusable selector fragments with mixin()
+orderId: 6
+files:
+  "/index.css.ts": |
+    import { select, mixin } from 'surimi';
+
+    // A mixin carries its own selector fragment + styles
+    const underlineOnHover = mixin(':hover').style({
+      textDecoration: 'underline',
+    });
+
+    const focusRing = mixin(':focus-visible').style({
+      outline: '2px solid #3498db',
+      outlineOffset: '2px',
+    });
+
+    select('a').use(underlineOnHover, focusRing);
+    select('button').use(focusRing);
+  "/index.html": |
+    <div id="root">
+      <a href="#">A link</a>
+      <button>A button</button>
+    </div>
+---
+
+## style() vs mixin()
+
+A `style()` is just properties. A `mixin()` also carries a **selector fragment** — like `:hover` or `::before` — so it can apply state-based styles when you `use()` it.
+
+```ts
+const underlineOnHover = mixin(':hover').style({
+  textDecoration: 'underline',
+});
+
+select('a').use(underlineOnHover);
+// -> a:hover { text-decoration: underline; }
+```
+
+The fragment is glued onto whatever you apply it to, so the same mixin works on a link, a button, anything:
+
+```ts
+select('button').use(underlineOnHover);
+// -> button:hover { ... }
+```
