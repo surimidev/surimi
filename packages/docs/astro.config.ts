@@ -64,6 +64,12 @@ export default defineConfig({
 
   markdown: {
     remarkPlugins: [[remarkGithub, { repository: 'surimidev/surimi' }], blockquoteAlert, remarkEmoji],
+    // Same dual-theme setup as the playground lectures: emit --shiki-light / --shiki-dark
+    // vars and switch on [data-theme] in code.css.ts.
+    shikiConfig: {
+      themes: { light: 'light-plus', dark: 'dark-plus' },
+      defaultColor: false,
+    },
   },
 
   server: {

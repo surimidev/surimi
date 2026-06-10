@@ -77,11 +77,8 @@ markdown.child('code').style({
   fontFamily: 'monospace',
 });
 
+// Box styling (bg/border/radius/padding) is owned by the shared `.shiki` rule in code.css.ts.
 markdown.child('pre').style({
-  padding: theme.spacing[4],
-  outline: `1px solid ${theme.border.default}`,
-  backgroundColor: theme.bg.active,
-  borderRadius: '6px',
   overflow: 'auto',
   marginBottom: '1em',
 });
