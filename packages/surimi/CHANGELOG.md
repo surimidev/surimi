@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.7.0...v0.8.0
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.7.0...v0.8.0)
+
+### 🚀 Enhancements
+
+- Rip out postcss and replace with tiny AST-builder package ([#79](https://github.com/surimidev/surimi/pull/79))
+- Rolldown playground ([#80](https://github.com/surimidev/surimi/pull/80))
+- Export vite plugin from surimi package ([#88](https://github.com/surimidev/surimi/pull/88))
+
+  This simply adds the vite plugin as a dependency of surimi, so users can use it directly without another install. A bit inspired by how easy it is to use stuff with waku.
+  We might want to make it clear that this does not blow up the surimi package in size? Not a build dep of course.
+
+- Update playground lectures ([#89](https://github.com/surimidev/surimi/pull/89))
+
+  Add a bit more content to the lectures. Now covers some of the more "advanced" topics. All still very brief.
+  This also makes `surimi/conditional` work in the playground.
+
+
+### 🏡 Chore
+
+- Update deps, switch to biome ([#87](https://github.com/surimidev/surimi/pull/87))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
+
 ## @surimi/compiler@0.4.0...v0.7.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/@surimi/compiler@0.4.0...v0.7.0)
