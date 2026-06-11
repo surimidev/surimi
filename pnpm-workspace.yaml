@@ -46,7 +46,7 @@ catalogs:
   types:
     "@types/node": ^25.9.2
   utils:
-    relizy: ^1.4.6
+    relizy: ^1.4.8-beta.0
     vite-bundle-analyzer: ^1.3.8
 
 ignoredBuiltDependencies:
