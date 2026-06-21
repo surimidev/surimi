@@ -61,7 +61,7 @@ describe('defineVars', () => {
       defineVars({
         text: { default: { syntax: '<color>' } },
       }),
-    ).toThrow(/requires an initial value/);
+    ).toThrow(/requires an initial-value/);
   });
 
   it('should not register @property when registerProperties is false', () => {
