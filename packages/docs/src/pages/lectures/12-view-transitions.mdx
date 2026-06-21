@@ -89,7 +89,7 @@ Share a `view-transition-class` across elements and style the whole bucket with 
 select('.a', '.b').style({ viewTransitionClass: 'card' });
 
 viewTransitionClass('card').group({ animationDuration: '0.4s' }); // ::view-transition-group(*.card)
-viewTransition.all().old({ animation: 'none' });                  // ::view-transition-group(*)
+viewTransition.all().old({ animation: 'none' });                  // ::view-transition-old(*)
 ```
 
 ## CSS only
