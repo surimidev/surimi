@@ -12,3 +12,4 @@ export * from './mixin.builder';
 // Then selector builder (depends on mixins, but mixins will be tree-shaken properly)
 export * from './selector.builder';
 export * from './style.builder';
+export * from './view-transition.builder';

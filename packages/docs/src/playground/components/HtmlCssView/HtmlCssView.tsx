@@ -23,7 +23,14 @@ export default function HtmlCssView({ html, css }: HtmlCssViewProps) {
         <h3>Preview</h3>
       </div>
       <div className="surimi-playground__view-content">
-        <iframe className="surimi-playground__view-iframe" title="Preview" srcDoc={doc} sandbox="allow-same-origin" />
+        <iframe
+          className="surimi-playground__view-iframe"
+          title="Preview"
+          srcDoc={doc}
+          // Intentionally NO `allow-same-origin`. "allow-scripts" is enough for the iframe to run some JS.
+          // while not being a security risk... I think?
+          sandbox="allow-scripts"
+        />
       </div>
     </div>
   );

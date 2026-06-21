@@ -1,0 +1,97 @@
+---
+title: View transitions
+description: Animate between states with viewTransition()
+orderId: 12
+files:
+  "/index.css.ts": |
+    import { select, keyframes, viewTransition } from 'surimi';
+
+    const slideOut = keyframes('vt-out')
+      .from({ opacity: 1, transform: 'translateY(0)' })
+      .to({ opacity: 0, transform: 'translateY(-8px)' });
+
+    const slideIn = keyframes('vt-in')
+      .from({ opacity: 0, transform: 'translateY(8px)' })
+      .to({ opacity: 1, transform: 'translateY(0)' });
+
+    const card = viewTransition('card');
+
+    // Assign the name to the element...
+    select('.card').use(card);
+
+    select('.card').style({
+      padding: '2rem',
+      borderRadius: '12px',
+      font: '600 1.25rem system-ui, sans-serif',
+      textAlign: 'center',
+    });
+
+    // ...then style the snapshots the browser generates on the :root overlay.
+    card
+      .old({ animation: `${slideOut} 0.3s ease both` })
+      .new({ animation: `${slideIn} 0.3s ease both` })
+      .group({ animationDuration: '0.4s' });
+
+    // Opt cross-document (MPA) navigations in — no JS required.
+    viewTransition.navigation('auto');
+  "/index.html": |
+    <div id="root">
+      <div class="card">I morph between states.</div>
+    </div>
+    <script>
+      // SPA transitions need a JS trigger. Surimi only writes the CSS above.
+      const card = document.querySelector('.card');
+      let alt = false;
+      function swap() {
+        alt = !alt;
+        const apply = () => {
+          card.textContent = alt ? 'New state!' : 'I morph between states.';
+          card.style.background = alt ? '#3498db' : '#eee';
+          card.style.color = alt ? 'white' : 'black';
+        };
+        if (document.startViewTransition) {
+          document.startViewTransition(apply);
+        } else {
+          apply();
+        }
+      }
+      swap();
+      setInterval(swap, 1500);
+    </script>
+---
+
+## Name once, style the snapshots
+
+`viewTransition('card')` returns a token that is the view transition name. Assign it to an element with `use()` (or `style({ viewTransitionName: card })`), then style the four snapshot pseudo-elements the browser creates:
+
+```ts
+const card = viewTransition('card');
+
+select('.card').use(card); // .card { view-transition-name: card }
+
+card
+  .old({ animation: `${fadeOut} 0.3s` })   // ::view-transition-old(card)
+  .new({ animation: `${fadeIn} 0.3s` })    // ::view-transition-new(card)
+  .group({ animationDuration: '0.4s' });   // ::view-transition-group(card)
+```
+
+The big gotcha this hides: those `::view-transition-*` rules live on the document `:root` overlay, **not** on `.card`. The builder always emits them at the top level and keeps the `(card)` name in sync for you.
+
+## Old vs new
+
+The default browser animation is a cross-fade. To make enter and exit differ, put the exit on `old()` and the entrance on `new()` — they map to the outgoing and incoming snapshots. Animate `group()` for the size/position morph between the two.
+
+## Targeting many at once
+
+Share a `view-transition-class` across elements and style the whole bucket with one rule:
+
+```ts
+select('.a', '.b').style({ viewTransitionClass: 'card' });
+
+viewTransitionClass('card').group({ animationDuration: '0.4s' }); // ::view-transition-group(*.card)
+viewTransition.all().old({ animation: 'none' });                  // ::view-transition-group(*)
+```
+
+## CSS only
+
+Surimi emits CSS, never JavaScript. Cross-document (MPA) transitions work from CSS alone via `viewTransition.navigation('auto')`. Same-document (SPA) transitions still need a `document.startViewTransition(() => { ... })` call in your own code to trigger the snapshot — the CSS here just defines how it animates.
