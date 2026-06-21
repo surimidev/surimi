@@ -1,7 +1,7 @@
 import { SurimiContext } from '@surimi/common';
 import { CustomPropertyBuilder } from '@surimi/core';
 
-import type { VarLeafMeta, VarToken, VarsFromShape } from '#types';
+import type { VarLeafMeta, VarsFromShape, VarToken } from '#types';
 import { buildVarName, extractVarLeafMeta, getValueAtPath, isContractLeaf } from '#utils';
 
 /** Optional plain contract leaf. Equivalent to `null`; avoids bare `{}`, which TypeScript widens. */
@@ -13,19 +13,22 @@ export interface DefineVarsOptions {
   initialValues?: Record<string, unknown>;
 }
 
-function createVarToken(
-  name: string,
-  meta: VarLeafMeta,
-  registerProperties: boolean,
-  initialValue: unknown,
-): VarToken {
+function createVarToken(name: string, meta: VarLeafMeta, registerProperties: boolean, initialValue: unknown): VarToken {
+  const syntax = meta.syntax ?? '*';
+
+  if (registerProperties && syntax !== '*' && initialValue === undefined) {
+    throw new Error(
+      `@property ${name} requires an initial value when syntax is '${syntax}'. Pass initialValues to defineVars, use createTheme with mode values, or set registerProperties: false.`,
+    );
+  }
+
   const options: {
     syntax: string;
     inherits: boolean;
     initialValue?: string;
     register: boolean;
   } = {
-    syntax: meta.syntax ?? '*',
+    syntax,
     inherits: meta.inherits ?? true,
     register: registerProperties,
   };
@@ -53,21 +56,12 @@ function buildVarsFromShape<TShape extends Record<string, unknown>>(
       const name = buildVarName(options.prefix, nextPath);
       const initialValue = getValueAtPath(options.initialValues, nextPath);
 
-      (refs as Record<string, unknown>)[key] = createVarToken(
-        name,
-        meta,
-        options.registerProperties,
-        initialValue,
-      );
+      (refs as Record<string, unknown>)[key] = createVarToken(name, meta, options.registerProperties, initialValue);
       continue;
     }
 
     if (typeof value === 'object' && value !== null) {
-      (refs as Record<string, unknown>)[key] = buildVarsFromShape(
-        value as Record<string, unknown>,
-        nextPath,
-        options,
-      );
+      (refs as Record<string, unknown>)[key] = buildVarsFromShape(value as Record<string, unknown>, nextPath, options);
     }
   }
 
@@ -77,6 +71,8 @@ function buildVarsFromShape<TShape extends Record<string, unknown>>(
 /**
  * Declare a token contract: nested shape of `null` leaves (optionally with `{ syntax?, inherits? }`).
  * Returns typed `var(--…)` refs; emits `@property` rules when `registerProperties` is true (default).
+ * Typed syntax (anything other than `*`) requires an initial value at registration time — use
+ * `initialValues`, `createTheme`, or `assignVars` after disabling registration.
  *
  * @example
  * ```ts

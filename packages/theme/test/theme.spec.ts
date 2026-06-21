@@ -42,14 +42,26 @@ describe('defineVars', () => {
   });
 
   it('should register @property for each token by default', () => {
-    defineVars({
-      bg: { app: null },
-      text: { default: { syntax: '<color>' } },
-    });
+    defineVars(
+      {
+        bg: { app: null },
+        text: { default: { syntax: '<color>' } },
+      },
+      { initialValues: { text: { default: '#111' } } },
+    );
 
     expect(Surimi.build()).toContain('@property --bg-app');
     expect(Surimi.build()).toContain('@property --text-default');
     expect(Surimi.build()).toContain("syntax: '<color>'");
+    expect(Surimi.build()).toContain('initial-value: #111');
+  });
+
+  it('should throw when registering typed syntax without an initial value', () => {
+    expect(() =>
+      defineVars({
+        text: { default: { syntax: '<color>' } },
+      }),
+    ).toThrow(/requires an initial value/);
   });
 
   it('should not register @property when registerProperties is false', () => {

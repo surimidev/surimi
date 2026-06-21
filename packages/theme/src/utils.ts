@@ -1,8 +1,8 @@
-export const RESERVED_VAR_META_KEYS = new Set(['syntax', 'inherits']);
-
 import type { VarLeafMeta } from '#types';
 
 export type { VarLeafMeta } from '#types';
+
+export const RESERVED_VAR_META_KEYS = new Set(['syntax', 'inherits']);
 
 export function buildVarName(prefix: string, path: string[]): string {
   const parts = prefix ? [prefix, ...path] : path;
