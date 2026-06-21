@@ -40,11 +40,14 @@ function initFs() {
       exports: {
         '.': './index.js',
         './conditional': './conditional.js',
+        './theme': './theme.js',
       },
     }),
     '/node_modules/surimi/index.js': surimiCode,
-    // Re-export from the same bundled module so `when()` shares the SurimiContext singleton.
+    // Re-export from the same bundled module so subpaths share the SurimiContext singleton.
     '/node_modules/surimi/conditional.js': "export { when } from './index.js';",
+    '/node_modules/surimi/theme.js':
+      "export { assignVars, createTheme, defineVars, resolveStyleTarget, token } from './index.js';",
   });
 }
 

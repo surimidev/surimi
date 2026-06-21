@@ -16,6 +16,24 @@ export function formatPropertyValue(value: unknown): string {
   return String(value);
 }
 
+/**
+ * Normalize a computed-property key or raw name to a dashed custom property name (`--name`).
+ */
+export function normalizeVarName(key: PropertyKey): string {
+  const keyStr = typeof key === 'string' ? key : String(key);
+  const varMatch = keyStr.match(/^var\((--[^)]+)\)$/);
+
+  if (varMatch?.[1]) {
+    return varMatch[1];
+  }
+
+  if (keyStr.startsWith('--')) {
+    return keyStr;
+  }
+
+  return `--${keyStr}`;
+}
+
 export function createDeclarationsFromProperties(properties: CssProperties): CssDeclaration[] {
   const declarations: CssDeclaration[] = [];
 

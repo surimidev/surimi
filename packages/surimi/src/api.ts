@@ -279,6 +279,7 @@ export function property<TValue = string & {}>(options: {
   initialValue: TValue;
   syntax?: string;
   inherits?: boolean;
+  register?: boolean;
 }): CustomPropertyBuilder<TValue>;
 export function property<TValue = string & {}>(
   nameOrOptions:
@@ -288,6 +289,7 @@ export function property<TValue = string & {}>(
         initialValue: TValue;
         syntax?: string;
         inherits?: boolean;
+        register?: boolean;
       },
   initialValue?: TValue,
   syntax = '*',
@@ -298,10 +300,25 @@ export function property<TValue = string & {}>(
       throw new Error('Missing parameter(s)');
     }
 
-    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, syntax, inherits, initialValue);
+    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, {
+      syntax,
+      inherits,
+      initialValue,
+    });
   } else {
-    const { name, syntax = '*', inherits = true, initialValue } = nameOrOptions;
-    return new CustomPropertyBuilder(SurimiContext.root, name, syntax, inherits, initialValue);
+    const { name, syntax = '*', inherits = true, initialValue, register } = nameOrOptions;
+    const options: {
+      syntax: string;
+      inherits: boolean;
+      initialValue: TValue;
+      register?: boolean;
+    } = { syntax, inherits, initialValue };
+
+    if (register !== undefined) {
+      options.register = register;
+    }
+
+    return new CustomPropertyBuilder(SurimiContext.root, name, options);
   }
 }
 

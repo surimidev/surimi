@@ -1,0 +1,5 @@
+{
+  "extends": "@surimi/typescript-config/base.json",
+  "include": ["*.config.ts", "src", "test"],
+  "exclude": ["node_modules", "dist"]
+}
