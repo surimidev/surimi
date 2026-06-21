@@ -34,6 +34,12 @@ export class CustomPropertyBuilder<TValue = string> extends SurimiBase {
   }
 
   protected registerProperty() {
+    if (this.syntax !== '*' && this.initialValue === undefined) {
+      throw new Error(
+        `@property ${this.name} requires an initial-value when syntax is '${this.syntax}'. Provide initialValue or use syntax: '*'.`,
+      );
+    }
+
     const existing = this.findExistingPropertyRule();
 
     if (existing) {

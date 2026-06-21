@@ -259,14 +259,19 @@ export function fontFace(properties: FontFaceProperties) {
  * Create and register a custom CSS property.
  * You can pass either individual parameters or an options object.
  *
- * If not specified, `syntax` will default to `*` and `inherits` to `true`.
+ * If not specified, `syntax` defaults to `*` and `inherits` to `true`.
+ *
+ * The options-object form accepts an optional `register` flag. When `register: false`
+ * the token is created and can be used as a value reference (`var(--name)`), but no
+ * `@property` rule is emitted. Useful when you want to defer registration or share a
+ * token reference across files without re-registering it.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/@property
  *
- * @param name The name to use for the custom property (a [dashed-indent](https://developer.mozilla.org/en-US/docs/Web/CSS/dashed-ident))
+ * @param name The name to use for the custom property (a [dashed-ident](https://developer.mozilla.org/en-US/docs/Web/CSS/dashed-ident))
+ * @param initialValue The initial value of the property, see ([initial-value](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/initial-value))
  * @param syntax Any supported syntax value, see ([syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax))
  * @param inherits Whether the property inherits its value from its parent, see ([inherits](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/inherits))
- * @param initialValue The initial value of the property, see ([initial-value](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/initial-value))
  */
 export function property<TValue = string & {}>(
   name: string,

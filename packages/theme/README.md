@@ -3,7 +3,7 @@
 CSS-only theming utilities for Surimi: define token contracts, assign values per mode, and wire light/dark (or arbitrary modes) without boilerplate.
 
 ```ts
-import { createTheme } from 'surimi/theme';
+import { createTheme } from '@surimi/theme';
 
 const theme = createTheme({
   modes: {

@@ -14,21 +14,13 @@ export interface DefineVarsOptions {
 }
 
 function createVarToken(name: string, meta: VarLeafMeta, registerProperties: boolean, initialValue: unknown): VarToken {
-  const syntax = meta.syntax ?? '*';
-
-  if (registerProperties && syntax !== '*' && initialValue === undefined) {
-    throw new Error(
-      `@property ${name} requires an initial value when syntax is '${syntax}'. Pass initialValues to defineVars, use createTheme with mode values, or set registerProperties: false.`,
-    );
-  }
-
   const options: {
     syntax: string;
     inherits: boolean;
     initialValue?: string;
     register: boolean;
   } = {
-    syntax,
+    syntax: meta.syntax ?? '*',
     inherits: meta.inherits ?? true,
     register: registerProperties,
   };
