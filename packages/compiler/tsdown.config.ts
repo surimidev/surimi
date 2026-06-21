@@ -10,10 +10,10 @@ export default defineConfig({
   platform: 'neutral',
   target: 'esnext',
   clean: true,
-  dts: true,
+  dts: { sourcemap: false },
   outputOptions: {
     legalComments: 'inline',
   },
   // Node entry uses 'rolldown'; browser entry uses '@rolldown/browser'. Each consumer loads only one.
-  external: ['rolldown', '@rolldown/browser'],
+  deps: { neverBundle: ['rolldown', '@rolldown/browser', /^node:/] },
 });
