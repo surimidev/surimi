@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createTheme > should assign values through media query targets 1`] = `
+"@property --bg-app {
+    syntax: '*';
+    inherits: true;
+    initial-value: #fff;
+}
+:root {
+    --bg-app: #fff;
+}
+@media ( prefers-color-scheme : dark ) {
+    :root {
+        --bg-app: #111;
+    }
+}"
+`;
+
+exports[`createTheme > should emit base mode on :root and dark mode on attribute selector 1`] = `
+"@property --bg-app {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #fff;
+}
+@property --text-default {
+    syntax: '*';
+    inherits: true;
+    initial-value: #111;
+}
+:root {
+    --bg-app: #fff;
+    --text-default: #111;
+}
+[data-theme="dark"] {
+    --bg-app: #111;
+    --text-default: #eee;
+}"
+`;
+
+exports[`createTheme > should support partial mode overrides 1`] = `
+"@property --bg-app {
+    syntax: '*';
+    inherits: true;
+    initial-value: #fff;
+}
+@property --bg-canvas {
+    syntax: '*';
+    inherits: true;
+    initial-value: #eee;
+}
+:root {
+    --bg-app: #fff;
+    --bg-canvas: #eee;
+}
+[data-theme="dark"] {
+    --bg-app: #111;
+}"
+`;

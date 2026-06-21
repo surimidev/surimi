@@ -49,4 +49,28 @@ describe('Custom Property Builder', () => {
     initial-value: #3498db;
 }`);
   });
+
+  it('should not emit @property when register is false', () => {
+    property({ name: 'quiet', initialValue: '#000', register: false });
+
+    expect(Surimi.build()).toBe('');
+  });
+
+  it('should dedupe identical @property registrations', () => {
+    property('accent', '#3498db');
+    property('accent', '#3498db');
+
+    expect(Surimi.build()).toBe(`\
+@property --accent {
+    syntax: '*';
+    inherits: true;
+    initial-value: #3498db;
+}`);
+  });
+
+  it('should throw on conflicting @property registrations', () => {
+    property('accent', '#3498db', '<color>');
+
+    expect(() => property('accent', '#000', '*')).toThrow(/Conflicting @property definition/);
+  });
 });

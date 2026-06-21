@@ -1,34 +1,65 @@
 ---
 title: Theme & variables
-description: Typed CSS custom properties with property()
+description: Typed CSS custom properties with property() and createTheme()
 orderId: 7
 files:
   "/index.css.ts": |
-    import { select, property } from 'surimi';
+    import { select } from 'surimi';
+    import { createTheme } from 'surimi/theme';
 
-    const theme = {
-      bg: property('bg', '#f5f5f5', '<color>'),
-      text: property('text', '#333', '<color>'),
-      primary: property('primary', '#3498db', '<color>'),
-    };
+    const theme = createTheme({
+      modes: {
+        light: ':root',
+        dark: '[data-theme="dark"]',
+      },
+      tokens: {
+        bg: { app: { light: '#f5f5f5', dark: '#16171d', syntax: '<color>' } },
+        text: { default: { light: '#333', dark: '#eee', syntax: '<color>' } },
+        primary: {
+          default: { light: '#3498db', dark: '#58a6ff', syntax: '<color>' },
+          hover: { light: '#2980b9', dark: '#3995ff', syntax: '<color>' },
+        },
+      },
+    });
 
     select('body').style({
-      background: theme.bg,
-      color: theme.text,
+      background: theme.bg.app,
+      color: theme.text.default,
       fontFamily: 'system-ui, sans-serif',
     });
 
     select('.btn').style({
-      background: theme.primary,
+      background: theme.primary.default,
       color: 'white',
       padding: '0.6rem 1.2rem',
       border: 'none',
       borderRadius: '8px',
+      cursor: 'pointer',
+    }).hover().style({
+      background: theme.primary.hover,
+    });
+
+    select('#theme-toggle').style({
+      background: 'transparent',
+      border: `1px solid ${theme.primary.default}`,
+      color: theme.primary.default,
+    }).hover().style({
+      color: theme.primary.hover,
+      borderColor: theme.primary.hover,
     });
   "/index.html": |
     <div id="root">
-      <button class="btn">Themed button</button>
+      <button type="button" class="btn">Themed button</button>
+      <button type="button" class="btn" id="theme-toggle">Toggle dark mode</button>
     </div>
+    <script>
+      const root = document.documentElement;
+
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const isDark = root.getAttribute('data-theme') === 'dark';
+        root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      });
+    </script>
 ---
 
 ## Real, typed variables
@@ -44,15 +75,46 @@ select('.btn').style({ background: primary });
 
 The third argument is the [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax), so the browser knows the type (and can even animate it). Change `#3498db` above and the button follows.
 
+## Theming with modes
+
+For light/dark (or any named modes), use `createTheme` from `surimi/theme`. It registers tokens once, assigns values per mode, and returns typed refs:
+
+```ts
+import { createTheme } from 'surimi/theme';
+
+const theme = createTheme({
+  modes: {
+    light: ':root',
+    dark: '[data-theme="dark"]',
+  },
+  tokens: {
+    bg: { app: { light: '#fff', dark: '#111', syntax: '<color>' } },
+    text: { default: { light: '#111', dark: '#eee' } },
+  },
+});
+
+select('body').style({ background: theme.bg.app, color: theme.text.default });
+```
+
+Targets can be selectors, attribute toggles, or media queries — fully configurable per mode.
+
+In the preview iframe, flip modes by setting `data-theme` on the document root:
+
+```html
+<script>
+  document.documentElement.setAttribute('data-theme', 'dark');
+</script>
+```
+
+The example above wires that to a **Toggle dark mode** button so you can see light/dark tokens swap live.
+
 ## The superpower: it's just TypeScript
 
 Group tokens in an object, export them from their own file, and import them anywhere — fully typed:
 
 ```ts
 // theme.css.ts
-export const theme = {
-  primary: property('primary', '#3498db', '<color>'),
-};
+export const theme = createTheme({ modes: { light: ':root' }, tokens: { ... } });
 ```
 
 (In this single-file playground we keep them inline, but in a real project each `.css.ts` emits its own CSS and shares the tokens through normal imports.)

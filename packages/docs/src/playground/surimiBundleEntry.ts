@@ -1,5 +1,6 @@
 // Combined entry bundled into the playground's virtual `surimi` package.
-// Bundling main + conditional together keeps a single `@surimi/common`
-// `SurimiContext` instance, so `select()` and `when()` write to the same AST root.
+// Bundling main + conditional + theme together keeps a single `@surimi/common`
+// `SurimiContext` instance, so `select()`, `when()`, and theme tokens share one AST root.
 export * from 'surimi';
-export { when } from 'surimi/conditional';
+export * from 'surimi/conditional';
+export * from 'surimi/theme';

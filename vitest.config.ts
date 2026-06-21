@@ -24,6 +24,12 @@ export default defineConfig({
       },
       {
         test: {
+          name: 'theme',
+          include: ['./packages/theme/test/**/*.spec.ts'],
+        },
+      },
+      {
+        test: {
           name: 'surimi',
           include: ['./packages/surimi/test/**/*.spec.ts'],
         },

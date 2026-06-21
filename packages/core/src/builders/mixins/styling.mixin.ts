@@ -1,9 +1,10 @@
 import type { CssProperties } from '@surimi/common';
+import type { SurimiBase } from '@surimi/common';
 import type { Tokenize } from '@surimi/parsers';
 
 import { CoreBuilder } from '#builders/core.builder';
 import { StyleBuilder } from '#builders/style.builder';
-import { createDeclarationsFromProperties } from '#utils/css.utils';
+import { createDeclarationsFromProperties, normalizeVarName } from '#utils/css.utils';
 
 /**
  * Mixin class for builders that support styling with CSS properties.
@@ -28,5 +29,22 @@ export abstract class WithStyling<TContext extends string> extends CoreBuilder<T
     }
 
     return this;
+  }
+
+  /**
+   * Set custom property values on the current selector context.
+   * Pass token refs as tuples for full typing: `.setVars([[myToken, '#123']])`.
+   * Raw `--name` keys also work in the record form.
+   */
+  public setVars(pairs: readonly (readonly [SurimiBase, string | number])[]): this;
+  public setVars(vars: Record<PropertyKey, string | number | SurimiBase>): this;
+  public setVars(
+    input: Record<PropertyKey, string | number | SurimiBase> | readonly (readonly [SurimiBase, string | number])[],
+  ) {
+    const styles = Array.isArray(input)
+      ? Object.fromEntries(input.map(([key, value]) => [normalizeVarName(key), value]))
+      : Object.fromEntries(Object.entries(input).map(([key, value]) => [normalizeVarName(key), value]));
+
+    return this.style(styles as CssProperties);
   }
 }

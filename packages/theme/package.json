@@ -1,0 +1,48 @@
+{
+  "name": "@surimi/theme",
+  "version": "0.8.0",
+  "private": false,
+  "author": "Janis jansen <oss@janis.me>",
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "check": "biome check .",
+    "type-check": "pnpm build && tsc --noEmit",
+    "test": "pnpm build && pnpm -w test --project=theme"
+  },
+  "dependencies": {
+    "@surimi/ast": "workspace:*",
+    "@surimi/common": "workspace:*",
+    "@surimi/core": "workspace:*",
+    "@surimi/parsers": "workspace:*"
+  },
+  "devDependencies": {
+    "@surimi/typescript-config": "workspace:*",
+    "surimi": "workspace:*",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
+  }
+}

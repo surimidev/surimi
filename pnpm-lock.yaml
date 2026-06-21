@@ -559,6 +559,9 @@ importers:
       '@surimi/parsers':
         specifier: workspace:*
         version: link:../parsers
+      '@surimi/theme':
+        specifier: workspace:*
+        version: link:../theme
       vite:
         specifier: catalog:build
         version: 8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
@@ -569,6 +572,37 @@ importers:
       '@surimi/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript-config
+      tsdown:
+        specifier: catalog:build
+        version: 0.22.2(oxc-resolver@11.20.0)(typescript@6.0.3)
+      typescript:
+        specifier: catalog:build
+        version: 6.0.3
+      vitest:
+        specifier: catalog:test
+        version: 4.1.8(@types/node@25.9.2)(@vitest/coverage-v8@4.1.8)(@vitest/ui@4.1.8)(vite@8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
+
+  packages/theme:
+    dependencies:
+      '@surimi/ast':
+        specifier: workspace:*
+        version: link:../ast
+      '@surimi/common':
+        specifier: workspace:*
+        version: link:../common
+      '@surimi/core':
+        specifier: workspace:*
+        version: link:../core
+      '@surimi/parsers':
+        specifier: workspace:*
+        version: link:../parsers
+    devDependencies:
+      '@surimi/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      surimi:
+        specifier: workspace:*
+        version: link:../surimi
       tsdown:
         specifier: catalog:build
         version: 0.22.2(oxc-resolver@11.20.0)(typescript@6.0.3)
