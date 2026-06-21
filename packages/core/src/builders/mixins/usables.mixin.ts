@@ -1,6 +1,7 @@
 import { MixinBuilder } from '#builders/mixin.builder';
-import { StyleBuilder } from '#builders/style.builder';
 import { WithStyling } from '#builders/mixins';
+import { StyleBuilder } from '#builders/style.builder';
+import { ViewTransitionBuilder } from '#builders/view-transition.builder';
 import { createSelectorBuilderFromContext } from '#helpers/select.helper';
 
 /**
@@ -30,7 +31,7 @@ export abstract class WithUsables<TContext extends string> extends WithStyling<T
    * select('.button').use(buttonStyle);
    * ```
    */
-  public use(...usables: Array<StyleBuilder | MixinBuilder<string>>): this {
+  public use(...usables: Array<StyleBuilder | MixinBuilder<string> | ViewTransitionBuilder<string>>): this {
     for (const usable of usables) {
       if (usable instanceof StyleBuilder) {
         const styles = usable.build();
@@ -45,6 +46,8 @@ export abstract class WithUsables<TContext extends string> extends WithStyling<T
             styles,
           );
         }
+      } else if (usable instanceof ViewTransitionBuilder) {
+        this.style({ viewTransitionName: usable.build() });
       }
     }
 

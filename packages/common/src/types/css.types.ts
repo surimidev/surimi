@@ -128,6 +128,30 @@ export type FontFaceProperties = {
 };
 
 /**
+ * Descriptors available within a \@view-transition rule (e.g. `navigation`, `types`).
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/@view-transition
+ */
+export type ViewTransitionProperties = {
+  [K in keyof (csstype.AtRule.ViewTransition & csstype.AtRule.ViewTransitionHyphen)]:
+    | (csstype.AtRule.ViewTransition & csstype.AtRule.ViewTransitionHyphen)[K]
+    | SurimiBase;
+};
+
+/**
+ * Allowed values for the `navigation` descriptor of the \@view-transition rule.
+ */
+export type ViewTransitionNavigation = NonNullable<csstype.AtRule.ViewTransition['navigation']>;
+
+/**
+ * The `<pt-name-selector>` grammar used inside view-transition snapshot pseudo-elements,
+ * e.g. `::view-transition-group(<pt-name-selector>)`. Either the universal `*` or a name/class target.
+ *
+ * @see https://drafts.csswg.org/css-view-transitions-1/#typedef-pt-name-selector
+ */
+export type PtNameSelector = '*' | (string & {});
+
+/**
  * All known pseudo-elements, including with browser-specific prefixes.
  */
 export type AllPseudoElements = IncludeByPattern<csstype.Pseudos, `::${string}`>;

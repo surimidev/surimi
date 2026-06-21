@@ -1,4 +1,10 @@
-import type { ArrayWithAtLeastOneItem, CssProperties, FontFaceProperties, ValidSelector } from '@surimi/common';
+import type {
+  ArrayWithAtLeastOneItem,
+  CssProperties,
+  FontFaceProperties,
+  ValidSelector,
+  ViewTransitionNavigation,
+} from '@surimi/common';
 import { SurimiContext } from '@surimi/common';
 import type { KeyframeStepConfig } from '@surimi/core';
 import {
@@ -11,6 +17,10 @@ import {
   MediaQueryBuilder,
   MixinBuilder,
   StyleBuilder,
+  ViewTransitionAtRuleBuilder,
+  ViewTransitionBuilder,
+  ViewTransitionClassBuilder,
+  ViewTransitionTargetBuilder,
 } from '@surimi/core';
 import { tokenize } from '@surimi/parsers';
 
@@ -150,6 +160,70 @@ export function media() {
  */
 export function keyframes(name: string, steps: KeyframeStepConfig = {}) {
   return new KeyframesBuilder(name, steps, SurimiContext.root, SurimiContext.root);
+}
+
+/**
+ * Define a named CSS view transition.
+ *
+ * Ties together the element side (`view-transition-name`) and the four snapshot pseudo-elements
+ * the browser generates on the document overlay (`::view-transition-old/new/group/image-pair`).
+ * Those snapshots live on `:root`, not on your element - this builder hides that and keeps the
+ * name in sync. The returned builder is also a value token that stringifies to the name.
+ *
+ * Note: surimi only emits CSS. Same-document (SPA) transitions still require a JS
+ * `document.startViewTransition()` trigger; cross-document (MPA) transitions need
+ * `viewTransition.navigation('auto')` and nothing else.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API
+ *
+ * @example
+ * ```ts
+ * const cardTransition = viewTransition('cardTransition');
+ *
+ * select('.card').use(cardTransition); // .card { view-transition-name: cardTransition }
+ *
+ * cardTransition
+ *   .old({ animation: `${fadeOut} .3s ease both` })
+ *   .new({ animation: `${fadeIn} .3s ease both` })
+ *   .group({ animationDuration: '.5s' });
+ * ```
+ */
+export function viewTransition<T extends string>(name: T) {
+  return new ViewTransitionBuilder(name, SurimiContext.root, SurimiContext.root);
+}
+
+/**
+ * Opt the current and destination documents into cross-document (MPA) view transitions
+ * by emitting `@view-transition { navigation: auto }`.
+ */
+viewTransition.navigation = (navigation: ViewTransitionNavigation) =>
+  new ViewTransitionAtRuleBuilder({ navigation }, SurimiContext.root, SurimiContext.root);
+
+/**
+ * Target every view-transition snapshot on the page via the universal `*` selector,
+ * e.g. `::view-transition-group(*)`. Useful for global tweaks like disabling the default cross-fade.
+ *
+ * @example
+ * ```ts
+ * viewTransition.all().old({ animation: 'none' }).new({ animation: 'none' });
+ * ```
+ */
+viewTransition.all = () => new ViewTransitionTargetBuilder('*', SurimiContext.root, SurimiContext.root);
+
+/**
+ * Target all snapshots that share a `view-transition-class`, e.g. `::view-transition-group(*.card)`.
+ * Set the matching class on elements via `style({ viewTransitionClass: 'card' })`.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/view-transition-class
+ *
+ * @example
+ * ```ts
+ * select('.a', '.b').style({ viewTransitionClass: 'card' });
+ * viewTransitionClass('card').group({ animationDuration: '.4s' });
+ * ```
+ */
+export function viewTransitionClass(className: string) {
+  return new ViewTransitionClassBuilder(className, SurimiContext.root, SurimiContext.root);
 }
 
 /**
