@@ -120,8 +120,8 @@ describe('css.utils', () => {
     });
 
     it('should handle custom properties', () => {
-      const primaryColor = property('primary-color', '#3498db', 'color', false);
-      const spacing = property('spacing-unit', '8px', 'length', true);
+      const primaryColor = property('primary-color', '#3498db', '<color>', false);
+      const spacing = property('spacing-unit', '8px', '<length>', true);
 
       const properties: CssProperties = {
         color: primaryColor,

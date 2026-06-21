@@ -10,10 +10,8 @@ export class CustomPropertyBuilder<TValue> extends SurimiBase {
   constructor(root: CssRoot, name: string, syntax: string, inherits: boolean, initialValue: TValue) {
     super(root);
 
-    const angleWrappedSyntax = syntax.startsWith('<') && syntax.endsWith('>') ? syntax : `<${syntax}>`;
-
     this.name = name.startsWith('--') ? name : `--${name}`;
-    this.syntax = angleWrappedSyntax;
+    this.syntax = syntax;
     this.inherits = inherits;
     this.initialValue = initialValue;
 
