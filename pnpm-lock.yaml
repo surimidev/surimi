@@ -448,7 +448,7 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
       react-resizable-panels:
-        specifier: ^3.0.6
+        specifier: ^3.0.0
         version: 3.0.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       sanitize.css:
         specifier: catalog:docs
