@@ -1,11 +1,9 @@
-import type { CompileOptions, CompileResult } from './types';
+import { COMPILER_PLUGIN_NAME, SURIMI_CSS_EXPORT_NAME } from './constants';
+import { extractSurimiResult, type SurimiModule } from './extract';
+import type { CompileOptions } from './types';
 
-/** Minimal rolldown input shape; compatible with both 'rolldown' and '@rolldown/browser'. */
-export interface RolldownInput {
-  input: string;
-  cwd: string;
-  plugins: unknown[];
-}
+export { COMPILER_PLUGIN_NAME, SURIMI_CSS_EXPORT_NAME } from './constants';
+export { extractSurimiResult, isSerializable, type SurimiModule } from './extract';
 
 /** Base64-encode UTF-8 string; works in Node (Buffer) and browser (TextEncoder + btoa). */
 function toBase64Utf8(str: string): string {
@@ -20,9 +18,6 @@ function toBase64Utf8(str: string): string {
   return btoa(binary);
 }
 
-export const SURIMI_CSS_EXPORT_NAME = '__SURIMI_GENERATED_CSS__';
-export const COMPILER_PLUGIN_NAME = 'surimi:compiler-transform';
-
 const DEV_SURIMI_PACKAGES = [
   '/packages/surimi',
   '/packages/common',
@@ -31,12 +26,7 @@ const DEV_SURIMI_PACKAGES = [
   '/packages/conditional',
 ];
 
-interface SurimiModule extends Record<string, unknown> {
-  default?: unknown;
-  [SURIMI_CSS_EXPORT_NAME]?: unknown;
-}
-
-function createSurimiTransformPlugin(include: CompileOptions['include'], exclude: CompileOptions['exclude']) {
+export function createSurimiTransformPlugin(include: CompileOptions['include'], exclude: CompileOptions['exclude']) {
   return {
     name: COMPILER_PLUGIN_NAME,
     transform: {
@@ -53,7 +43,7 @@ export const ${SURIMI_CSS_EXPORT_NAME} = __surimi__instance__.build();
   };
 }
 
-function createVirtualSourcePlugin(input: string, source: string) {
+export function createVirtualSourcePlugin(input: string, source: string) {
   return {
     name: 'surimi:virtual-source',
     resolveId(id: string) {
@@ -70,8 +60,6 @@ export function getRolldownInput(options: CompileOptions) {
 
   const { input, cwd, source } = options;
 
-  // When compiling inline source, the entry path may not match the user's include globs
-  // (e.g. a Vue SFC virtual path vs '**/*.css.ts'). Adding it ensures the surimi wrapper is applied.
   const effectiveInclude = source != null ? [...options.include, input] : options.include;
   const virtualSourcePlugin = source != null ? [createVirtualSourcePlugin(input, source)] : [];
 
@@ -96,21 +84,14 @@ function rewriteDataUrlInError(error: Error, sourcePath: string): Error {
   return rewritten;
 }
 
-/**
- * Execute the compiled Surimi code and extract the CSS and preserved exports.
- *
- * Code, imports etc. are passed individually to support `BindingOutput` chunks from Rolldown watch mode
- */
 export async function getCompileResult(
   code: string,
   imports: string[],
   dynamicImports: string[],
   moduleIds: string[],
   sourcePath?: string,
-): Promise<CompileResult | undefined> {
+) {
   const { css, js } = await execute(code, sourcePath);
-
-  // Extract all imported modules as watch files
   const watchFiles = getModuleDependencies(imports, dynamicImports, moduleIds);
 
   return {
@@ -121,46 +102,15 @@ export async function getCompileResult(
   };
 }
 
-/**
- * Executes the compiled Surimi code in a data URL module context
- * and extracts the generated CSS and preserved exports.
- * When sourcePath is provided, errors are rewritten to show it instead of the data: URL.
- */
 export async function execute(code: string, sourcePath?: string) {
   try {
-    // Dynamic import with variable URL so Vite (and other bundlers) don't try to pre-bundle this data URL
     const dataUrl = `data:text/javascript;base64,${toBase64Utf8(code)}`;
     const module = (await import(
-      // TODO: Fix this. We need to preserve the vite-ignore comment so this import isn't flagged
-      // by vite, as it cannot be analyzed. @preserve doesn't work for some reason.
       //! @vite-ignore
       dataUrl
     )) as SurimiModule;
 
-    // Get the generated CSS
-    const cssValue = module[SURIMI_CSS_EXPORT_NAME] ?? '';
-    const css = typeof cssValue === 'string' ? cssValue : '';
-
-    // Collect all exports except the special CSS export and default.
-    // We only re-export values that can be JSON-serialized (so they can be inlined in the output).
-    const exports: string[] = [];
-    for (const [key, value] of Object.entries(module)) {
-      if (key !== 'default' && key !== SURIMI_CSS_EXPORT_NAME) {
-        if (!isSerializable(value)) {
-          continue;
-        }
-        let serialized: string;
-        try {
-          serialized = JSON.stringify(value);
-          exports.push(`export const ${key} = ${serialized};`);
-        } catch {}
-      }
-    }
-
-    // Generate the transformed JS
-    const js = exports.length > 0 ? exports.join('\n') : '';
-
-    return { css, js };
+    return extractSurimiResult(module);
   } catch (error) {
     if (error instanceof Error) {
       if (sourcePath) {
@@ -183,13 +133,6 @@ export async function execute(code: string, sourcePath?: string) {
   }
 }
 
-// Type guard to check if a value is serializable to JSON
-function isSerializable(value: unknown): value is string | number | boolean | null | object {
-  const type = typeof value;
-  return type === 'string' || type === 'number' || type === 'boolean' || value === null || type === 'object';
-}
-
-// Validates compilation options - throws Error if options are invalid
 function validateCompileOptions(options: CompileOptions): void {
   if (!options.input || typeof options.input !== 'string') {
     throw new Error('input must be a non-empty string');
@@ -209,21 +152,13 @@ function validateCompileOptions(options: CompileOptions): void {
   }
 }
 
-/**
- * Extracts module dependencies from the Rolldown output chunk.
- *
- * Will exclude dependencies from `node_modules`, rolldown runtime modules
- * and development Surimi packages (only relevant in development).
- */
 function getModuleDependencies(imports: string[], dynamicImports: string[], moduleIds: string[]): string[] {
   const watchFiles: string[] = [];
 
-  // Add all imports from the rolldown output
   if (imports.length > 0) {
     watchFiles.push(...imports);
   }
 
-  // Add dynamic imports if any
   if (dynamicImports.length > 0) {
     watchFiles.push(...dynamicImports);
   }
@@ -241,8 +176,6 @@ function getModuleDependencies(imports: string[], dynamicImports: string[], modu
   return watchFiles;
 }
 
-// Checks if a module ID is from the development surimi or parsers packages
-// Development files are not tracked in watch mode as they're part of the library itself
 function isDevelopmentSurimiFile(id: string): boolean {
   return DEV_SURIMI_PACKAGES.some(pkgPath => id.includes(pkgPath));
 }
