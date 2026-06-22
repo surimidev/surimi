@@ -162,7 +162,7 @@ export async function serveTransform(
       throw new Error(`transform returned no code for ${requestId}`);
     }
 
-    const absoluteId = normalizeModuleId(path.join(fixture.root, moduleId), { root: fixture.root } as never);
+    const absoluteId = normalizeModuleId(path.join(fixture.root, moduleId), fixture.root);
     const virtualCssId = `${absoluteId}${VIRTUAL_CSS_SUFFIX}`;
     const cssLoadResult = await server.pluginContainer.load(virtualCssId);
     const virtualCss =

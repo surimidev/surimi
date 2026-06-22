@@ -100,6 +100,53 @@ export const importedRaw = rawCss;
 
     expect(result.css).toContain('.probe');
     expect(result.js).toContain('.raw');
+    // A ?raw import is a value import: its content is baked into js, never re-emitted as CSS.
+    expect(result.sideEffectDependencies ?? []).toHaveLength(0);
+  });
+
+  it('does not emit a ?raw css import as bundled CSS', async () => {
+    const result = await buildApp({
+      'src/snippet.css': `.raw-leak { opacity: 0.5; }`,
+      'src/styles.css.ts': `import { select } from 'surimi';
+import rawCss from './snippet.css?raw';
+
+select('.probe').style({ color: 'green' });
+export const importedRaw = rawCss;
+`,
+      'src/main.ts': `import { importedRaw } from './styles.css.ts';
+console.log(importedRaw);
+export {};
+`,
+    });
+    onTestFinished(() => result.cleanup());
+
+    const allCss = result.cssAssets.join('\n');
+    expect(allCss).toContain('.probe');
+    // The ?raw content must NOT leak into a CSS asset (it's a value, captured in JS).
+    expect(allCss).not.toContain('.raw-leak');
+    expect(result.jsAssets.join('\n')).toContain('.raw-leak');
+  });
+
+  it('resolves `import { x } from "./theme.css"` to the authored theme.css.ts', async () => {
+    const result = await buildApp({
+      'src/theme.css.ts': `import { select } from 'surimi';
+export const accent = '#0ff';
+select('.themed').style({ color: accent });
+`,
+      'src/styles.css.ts': `import { select } from 'surimi';
+import { accent } from './theme.css';
+select('.consumer').style({ borderColor: accent });
+`,
+      'src/main.ts': `import './styles.css.ts';
+export {};
+`,
+    });
+    onTestFinished(() => result.cleanup());
+
+    const allCss = result.cssAssets.join('\n');
+    expect(allCss).toContain('.consumer');
+    expect(allCss).toContain('#0ff');
+    expect(allCss).toContain('.themed');
   });
 
   it('supports transitive .css.ts -> .ts -> .css imports', async () => {

@@ -82,8 +82,12 @@ function createSurimiCssTsResolvePlugin(): Plugin {
         const absoluteCss = normalizePath(path.resolve(path.dirname(importer), cleanSource));
         if (existsSync(absoluteCss)) return null;
 
-        const cssTsCandidate = `${absoluteCss.slice(0, -4)}.ts`;
-        if (existsSync(cssTsCandidate)) return cssTsCandidate;
+        // Surimi convention: `import { theme } from './theme.css'` authors `theme.css.ts`.
+        // Append the source extension (`theme.css` -> `theme.css.ts`); do NOT drop `.css`.
+        for (const ext of ['.ts', '.js']) {
+          const candidate = `${absoluteCss}${ext}`;
+          if (existsSync(candidate)) return candidate;
+        }
 
         return null;
       },
@@ -103,8 +107,26 @@ function createVirtualSourcesPlugin(virtualSources: Map<string, string>): Plugin
   };
 }
 
-function collectDependencies(server: ViteDevServer, entryId: string, root: string): string[] {
+const SIDE_EFFECT_ASSET_REGEX = /\.(css|scss|sass|less)$/i;
+
+interface CollectedDependencies {
+  /** Canonical, query-stripped absolute paths (watch / HMR / module-graph / style-dep detection). */
+  dependencies: string[];
+  /** Canonical paths of bare (query-less) side-effect asset imports to re-emit in client output. */
+  sideEffectDependencies: string[];
+}
+
+/**
+ * Walk the evaluated module graph once. Classification that depends on the import *query*
+ * (`?raw`/`?url`/`?inline` are value imports, a bare `./reset.css` is a side effect) happens here,
+ * where the original specifier is still intact, so no downstream layer has to reconstruct it from a
+ * lossy canonical path.
+ */
+function collectDependencies(server: ViteDevServer, entryId: string, root: string): CollectedDependencies {
   const deps = new Set<string>();
+  // A path imported bare (query-less) anywhere is a side effect; a value import (`?raw`/`?url`/
+  // `?inline`) never is — its content is already baked into the extracted css/js.
+  const sideEffects = new Set<string>();
   const moduleGraph = server.environments.ssr.moduleGraph;
   const visited = new Set<string>();
 
@@ -120,6 +142,7 @@ function collectDependencies(server: ViteDevServer, entryId: string, root: strin
       const importedId = imported.id ?? imported.url;
       if (!importedId) continue;
 
+      const hadQuery = importedId.includes('?');
       const cleanId = importedId.split('?')[0] ?? importedId;
       if (cleanId.includes('node_modules')) continue;
       if (isDevelopmentSurimiFile(cleanId)) continue;
@@ -127,18 +150,25 @@ function collectDependencies(server: ViteDevServer, entryId: string, root: strin
 
       const normalizedImport = normalizeModuleId(cleanId, root);
       deps.add(normalizedImport);
+
+      if (!hadQuery && SIDE_EFFECT_ASSET_REGEX.test(cleanId)) {
+        sideEffects.add(normalizedImport);
+      }
+
       visit(normalizedImport);
     }
   };
 
   visit(entryId);
   deps.add(normalizeModuleId(entryId.split('?')[0] ?? entryId, root));
-  return [...deps];
+
+  return { dependencies: [...deps], sideEffectDependencies: [...sideEffects] };
 }
 
 export class SurimiEvaluator {
   private server: ViteDevServer | null = null;
   private runner: ModuleRunner | null = null;
+  private serverInit: Promise<{ server: ViteDevServer; runner: ModuleRunner }> | null = null;
   private readonly virtualSources = new Map<string, string>();
   private readonly normalizedRoot: string;
   private readonly harnessInclude: string[];
@@ -154,7 +184,23 @@ export class SurimiEvaluator {
     if (this.server && this.runner) {
       return { server: this.server, runner: this.runner };
     }
+    // Single-flight: concurrent evaluate() calls must share one owned server, not race to create
+    // (and leak) several. The first caller installs the init promise; the rest await it.
+    if (this.serverInit) return this.serverInit;
 
+    this.serverInit = this.createOwnedServer();
+    try {
+      const created = await this.serverInit;
+      this.server = created.server;
+      this.runner = created.runner;
+      return created;
+    } catch (error) {
+      this.serverInit = null;
+      throw error;
+    }
+  }
+
+  private async createOwnedServer(): Promise<{ server: ViteDevServer; runner: ModuleRunner }> {
     const hostConfig = this.options.resolvedConfig;
     const prefixAliases = this.options.prefixAliases;
     const plugins: Plugin[] = [
@@ -167,7 +213,7 @@ export class SurimiEvaluator {
 
     const baseResolve = this.options.resolve ?? hostConfig?.resolve;
 
-    this.server = await createServer({
+    const server = await createServer({
       configFile: false,
       root: this.normalizedRoot,
       logLevel: 'silent',
@@ -176,9 +222,9 @@ export class SurimiEvaluator {
       server: { middlewareMode: true, ws: false },
     });
 
-    this.runner = createServerModuleRunner(this.server.environments.ssr, { hmr: false });
+    const runner = createServerModuleRunner(server.environments.ssr, { hmr: false });
 
-    return { server: this.server, runner: this.runner };
+    return { server, runner };
   }
 
   async evaluate(id: string, options: { source?: string } = {}): Promise<CompileResult> {
@@ -194,12 +240,13 @@ export class SurimiEvaluator {
     try {
       const mod = (await runner.import(normalizedId)) as SurimiModule;
       const { css, js } = extractSurimiResult(mod);
-      const dependencies = collectDependencies(server, normalizedId, this.normalizedRoot);
+      const { dependencies, sideEffectDependencies } = collectDependencies(server, normalizedId, this.normalizedRoot);
 
       return {
         css,
         js,
         dependencies,
+        sideEffectDependencies,
         duration: Date.now() - start,
       };
     } catch (error) {
@@ -226,6 +273,7 @@ export class SurimiEvaluator {
     }
     this.server = null;
     this.runner = null;
+    this.serverInit = null;
     this.virtualSources.clear();
   }
 }
@@ -239,23 +287,4 @@ export async function evaluateSurimiFile(id: string, options: EvaluateSurimiFile
   } finally {
     await evaluator.close();
   }
-}
-
-export function isSideEffectAssetDependency(
-  dependencyId: string,
-  ownerId: string,
-  isSurimiStyleFile: (id: string) => boolean,
-): boolean {
-  const cleanId = dependencyId.split('?')[0] ?? dependencyId;
-  if (cleanId === ownerId) return false;
-  if (isSurimiStyleFile(cleanId)) return false;
-  if (cleanId.endsWith('.surimi.css')) return false;
-  if (cleanId.includes('node_modules')) return false;
-
-  return (
-    /\.(css|scss|sass|less)$/i.test(cleanId) ||
-    dependencyId.includes('?raw') ||
-    dependencyId.includes('?url') ||
-    dependencyId.includes('?inline')
-  );
 }

@@ -1,9 +1,8 @@
 import path from 'node:path';
-import { describe, expect, it, onTestFinished } from 'vitest';
 import { normalizePath } from 'vite';
-
-import { mergeTestResolve, writeFixture } from './helpers/vite.js';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { evaluateSurimiFile, SurimiEvaluator } from '../src/runner.js';
+import { mergeTestResolve, writeFixture } from './helpers/vite.js';
 
 async function evaluateVueBlock(
   files: Record<string, string>,
@@ -91,6 +90,40 @@ select('.block-b').style({ color: 'blue' });`,
       expect(block0.css).toContain('.block-a');
       expect(block1.css).toContain('.block-b');
     } finally {
+      await evaluator.close();
+      await fixture.cleanup();
+    }
+  });
+
+  it('creates the owned server once under concurrent evaluations (single-flight)', async () => {
+    const fixture = await writeFixture({ 'src/App.vue': '<template><div /></template>' });
+    const absoluteVuePath = normalizePath(path.join(fixture.root, 'src/App.vue'));
+
+    const evaluator = new SurimiEvaluator({
+      root: fixture.root,
+      include: ['**/*.css.{ts,js}'],
+      exclude: ['node_modules/**', '**/*.d.ts'],
+      resolve: mergeTestResolve(),
+    });
+
+    const createSpy = vi.spyOn(
+      evaluator as unknown as { createOwnedServer: () => Promise<unknown> },
+      'createOwnedServer',
+    );
+
+    try {
+      const results = await Promise.all(
+        Array.from({ length: 5 }, (_, i) =>
+          evaluator.evaluate(normalizePath(`${absoluteVuePath}.__surimi_${i}.css.ts`), {
+            source: `import { select } from 'surimi';\nselect('.race-${i}').style({ color: 'red' });`,
+          }),
+        ),
+      );
+
+      expect(createSpy).toHaveBeenCalledTimes(1);
+      results.forEach((result, i) => expect(result.css).toContain(`.race-${i}`));
+    } finally {
+      createSpy.mockRestore();
       await evaluator.close();
       await fixture.cleanup();
     }

@@ -12,7 +12,7 @@ import {
   toVirtualCssId,
   toVirtualCssImportPath,
 } from './normalize-module-id.js';
-import { isSideEffectAssetDependency, SurimiEvaluator } from './runner.js';
+import { SurimiEvaluator } from './runner.js';
 import type { SharedPluginContext, SurimiOptions } from './types.js';
 import { addWatchFilesForDeps, createSourceMap, injectCssChunk } from './utils.js';
 import {
@@ -91,6 +91,13 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         dependencies: compileResult.dependencies.map((dependencyId: string) =>
           normalizeDependencyId(dependencyId, normalizedId),
         ),
+        ...(compileResult.sideEffectDependencies
+          ? {
+              sideEffectDependencies: compileResult.sideEffectDependencies.map((dependencyId: string) =>
+                normalizeDependencyId(dependencyId, normalizedId),
+              ),
+            }
+          : {}),
       };
 
       ctx.compilationCache.set(normalizedId, normalizedResult);
@@ -130,12 +137,12 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
     css: string,
     id: string,
     styleDependencies: string[],
-    dependencies: string[],
+    sideEffectDependencies: string[],
   ): string => {
     const root = ctx.resolvedConfig?.root;
-    const sideEffectImports = dependencies
-      .filter(dependencyId => isSideEffectAssetDependency(dependencyId, id, tsFileFilter))
-      .map(dependencyId => `import "${toImportPath(dependencyId, id, root)}";`);
+    const sideEffectImports = sideEffectDependencies.map(
+      dependencyId => `import "${toImportPath(dependencyId, id, root)}";`,
+    );
 
     let jsCode: string;
 
@@ -306,7 +313,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         const normalizedId = normalizeModuleId(id, ctx.resolvedConfig?.root);
 
         try {
-          const { css, js, dependencies } = await getCompilationResult(normalizedId);
+          const { css, js, dependencies, sideEffectDependencies } = await getCompilationResult(normalizedId);
 
           const styleDependencies = dependencies.filter(
             dependencyId => dependencyId !== normalizedId && tsFileFilter(dependencyId),
@@ -316,7 +323,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
             await getCompilationResult(dependencyId);
           }
 
-          const jsCode = generateJsWithHmr(js, css, normalizedId, styleDependencies, dependencies);
+          const jsCode = generateJsWithHmr(js, css, normalizedId, styleDependencies, sideEffectDependencies ?? []);
 
           if (ctx.isDev && !options?.ssr) {
             const addWatch = this.addWatchFile.bind(this);

@@ -4,7 +4,6 @@ import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin } from 'vite
 import { createFilter, normalizePath } from 'vite';
 
 import { toImportPath, toVirtualCssImportPath } from './normalize-module-id.js';
-import { isSideEffectAssetDependency } from './runner.js';
 import type { SharedPluginContext } from './types.js';
 import { addWatchFilesForDeps, createSourceMap, injectCssChunk } from './utils.js';
 
@@ -141,6 +140,13 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
             ? {
                 ...compileResult,
                 dependencies: compileResult.dependencies.map((dep: string): string => normalizer(dep, virtualInput)),
+                ...(compileResult.sideEffectDependencies
+                  ? {
+                      sideEffectDependencies: compileResult.sideEffectDependencies.map((dep: string): string =>
+                        normalizer(dep, virtualInput),
+                      ),
+                    }
+                  : {}),
               }
             : compileResult;
           ctx.compilationCache.set(virtualInput, resultToCache);
@@ -157,9 +163,9 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
           const cssImportLines = styleDependencies.map(
             (dep: string) => `import "${toVirtualCssImportPath(dep, virtualInput, root)}";`,
           );
-          const sideEffectImports = resultToCache.dependencies
-            .filter((dep: string) => isSideEffectAssetDependency(dep, virtualInput, tsFileFilter))
-            .map((dep: string) => `import "${toImportPath(dep, virtualInput, root)}";`);
+          const sideEffectImports = (resultToCache.sideEffectDependencies ?? []).map(
+            (dep: string) => `import "${toImportPath(dep, virtualInput, root)}";`,
+          );
           const sideEffectImportBlock =
             sideEffectImports.length > 0 ? `\n${Array.from(new Set(sideEffectImports)).join('\n')}` : '';
 
