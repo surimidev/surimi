@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { type CompileResult, compile } from '@surimi/compiler';
+import type { CompileResult } from '@surimi/compiler';
 import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin } from 'vite';
 import { createFilter, normalizePath } from 'vite';
 
-import { VIRTUAL_CSS_SUFFIX } from './constants.js';
+import { toImportPath, toVirtualCssImportPath } from './normalize-module-id.js';
 import type { SharedPluginContext } from './types.js';
 import { addWatchFilesForDeps, createSourceMap, injectCssChunk } from './utils.js';
 
@@ -129,21 +129,24 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
 
           const virtualInput = normalizePath(`${filePath}.__surimi_${blockIndex}.css.ts`);
 
-          const compileResult = await compile({
-            input: virtualInput,
-            source: code,
-            cwd: ctx.resolvedConfig?.root ?? process.cwd(),
-            include: ctx.include,
-            exclude: ctx.exclude,
-          });
+          if (!ctx.getCompilationResult) {
+            throw new Error('getCompilationResult is not available on shared plugin context');
+          }
 
-          if (!compileResult) return;
+          const compileResult = await ctx.getCompilationResult(virtualInput, { source: code });
 
           const normalizer = ctx.normalizeDependencyId;
           const resultToCache: CompileResult = normalizer
             ? {
                 ...compileResult,
                 dependencies: compileResult.dependencies.map((dep: string): string => normalizer(dep, virtualInput)),
+                ...(compileResult.sideEffectDependencies
+                  ? {
+                      sideEffectDependencies: compileResult.sideEffectDependencies.map((dep: string): string =>
+                        normalizer(dep, virtualInput),
+                      ),
+                    }
+                  : {}),
               }
             : compileResult;
           ctx.compilationCache.set(virtualInput, resultToCache);
@@ -153,15 +156,24 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
             addWatchFilesForDeps(resultToCache.dependencies, filesWatched, addWatch, (p: string) => path.isAbsolute(p));
           }
 
+          const root = ctx.resolvedConfig?.root;
           const styleDependencies = resultToCache.dependencies.filter(
             (dep: string) => dep !== virtualInput && tsFileFilter(dep),
           );
-          const cssImportLines = styleDependencies.map((dep: string) => `import "${dep}${VIRTUAL_CSS_SUFFIX}";`);
+          const cssImportLines = styleDependencies.map(
+            (dep: string) => `import "${toVirtualCssImportPath(dep, virtualInput, root)}";`,
+          );
+          const sideEffectImports = (resultToCache.sideEffectDependencies ?? []).map(
+            (dep: string) => `import "${toImportPath(dep, virtualInput, root)}";`,
+          );
+          const sideEffectImportBlock =
+            sideEffectImports.length > 0 ? `\n${Array.from(new Set(sideEffectImports)).join('\n')}` : '';
 
           if (options?.ssr) {
             let ssrCode = compileResult.js;
+            if (sideEffectImportBlock) ssrCode += sideEffectImportBlock;
             if (cssImportLines.length > 0) ssrCode += `\n${cssImportLines.join('\n')}`;
-            ssrCode += `\nimport "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
+            ssrCode += `\nimport "${toVirtualCssImportPath(virtualInput, virtualInput, root)}";`;
             ssrCode += `\nexport default () => {};`;
             const lineCount = (ssrCode.match(/\n/g)?.length ?? 0) + 1;
             return {
@@ -171,12 +183,12 @@ export function createVuePlugin(ctx: SharedPluginContext): Plugin {
           }
 
           let jsCode: string;
-          const selfCssImport = `import "${virtualInput}${VIRTUAL_CSS_SUFFIX}";`;
+          const selfCssImport = `import "${toVirtualCssImportPath(virtualInput, virtualInput, root)}";`;
           const dependencyImports = cssImportLines.length > 0 ? `\n${cssImportLines.join('\n')}` : '';
           if (ctx.isDev || ctx.inlineCss) {
-            jsCode = `${compileResult.js}${dependencyImports}\n${injectCssChunk(compileResult.css, virtualInput, !!ctx.isDev)}`;
+            jsCode = `${compileResult.js}${sideEffectImportBlock}${dependencyImports}\n${injectCssChunk(compileResult.css, virtualInput, !!ctx.isDev)}`;
           } else {
-            jsCode = `${compileResult.js}${dependencyImports}\n${selfCssImport}`;
+            jsCode = `${compileResult.js}${sideEffectImportBlock}${dependencyImports}\n${selfCssImport}`;
           }
 
           if (ctx.isDev) {
