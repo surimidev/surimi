@@ -1,5 +1,7 @@
 import type { CompileResult } from '@surimi/compiler';
-import type { ResolvedConfig } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
+
+import type { SurimiEvaluator } from './runner.js';
 
 /** Shared state passed from the core plugin to framework-specific plugins (Vue, etc.) */
 export interface SharedPluginContext {
@@ -9,8 +11,10 @@ export interface SharedPluginContext {
   inlineCss: boolean;
   resolvedConfig: ResolvedConfig | undefined;
   isDev: boolean | undefined;
+  evaluator: SurimiEvaluator | undefined;
   /** Normalize dependency paths so collectDependentModules can match changed files. Set by core plugin. */
   normalizeDependencyId?: (dependencyId: string, ownerId: string) => string;
+  getCompilationResult?: (id: string, options?: { source?: string }) => Promise<CompileResult>;
 }
 
 export interface SurimiOptions {
@@ -34,4 +38,11 @@ export interface SurimiOptions {
    * @default false
    */
   inlineCss?: boolean;
+
+  /**
+   * Decide which host plugins are seeded into surimi's owned evaluation server.
+   * The default keeps every plugin except surimi's own. Use this to drop plugins that misbehave
+   * inside a secondary, websocket-less server (middleware/websocket-dependent plugins, etc.).
+   */
+  pluginFilter?: (plugin: Plugin) => boolean;
 }

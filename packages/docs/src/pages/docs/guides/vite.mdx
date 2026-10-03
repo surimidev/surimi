@@ -53,6 +53,15 @@ export default defineConfig({
        * default:
        */
       inlineCss: false,
+
+      /**
+       * Decide which of your other Vite plugins run inside surimi's internal
+       * evaluation server. By default every plugin (except surimi's own) is
+       * included, so aliases and custom resolvers keep working inside `.css.ts`
+       * files. Drop plugins that misbehave in a secondary, websocket-less server.
+       * default:
+       */
+      pluginFilter: undefined,
     }),
   ],
 });
@@ -60,7 +69,13 @@ export default defineConfig({
 
 ## Under the hood...
 
-...the Vite plugin uses the `@surimi/compiler` package to compile your `.css.ts` files.
-It hooks into Vite's module resolution and transformation pipeline to process the files on demand during development and build time.
+...the plugin evaluates `.css.ts` files in an internal Vite server (a "module runner"). Your `.css.ts`
+files therefore participate in the full Vite ecosystem: path aliases, `?raw` / `?url` imports, plain
+CSS imports, and other plugins' resolvers all work inside them. The `@surimi/compiler` package
+(used by the CLI and standalone builds) shares the same extraction logic, so both produce identical
+output.
 
-When you import a `.css.ts` file, the plugin compiles it to CSS and either inlines it into the JavaScript module (if `inlineCss` is `true`) or emits a separate CSS file and imports it as a virtual module (if `inlineCss` is `false`).
+> [!WARNING]
+> The internal evaluation server always runs in development mode. Avoid branching on
+> `import.meta.env.DEV` or `import.meta.env.MODE` inside `.css.ts` files — the build output is
+> evaluated with development semantics either way.

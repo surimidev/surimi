@@ -37,6 +37,12 @@ export interface CompileResult {
   js: string;
   /** List of file dependencies. Can be used for HMR, watch mode etc. */
   dependencies: string[];
+  /**
+   * Canonical absolute paths of bare (query-less) side-effect asset imports (e.g. plain `.css`)
+   * that must be re-emitted as imports in the client output. Query/value imports (`?raw`, `?url`,
+   * `?inline`) are deliberately excluded: their content is already baked into `css`/`js`.
+   */
+  sideEffectDependencies?: string[];
   /** Duration of the compilation in milliseconds */
   duration: number;
 }
