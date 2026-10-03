@@ -46,8 +46,7 @@ function initFs() {
     '/node_modules/surimi/index.js': surimiCode,
     // Re-export from the same bundled module so subpaths share the SurimiContext singleton.
     '/node_modules/surimi/conditional.js': "export { when } from './index.js';",
-    '/node_modules/surimi/theme.js':
-      "export { createTheme, defineTokens, token } from './index.js';",
+    '/node_modules/surimi/theme.js': "export { createTheme, defineTokens, token } from './index.js';",
   });
 }
 

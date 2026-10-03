@@ -9,9 +9,10 @@ export default defineConfig({
 
   publish: {
     access: 'public',
+    buildCmd: 'pnpm build',
   },
   changelog: {
     rootChangelog: false,
-    formatCmd: 'pnpm format *.md',
+    formatCmd: 'pnpm format --write packages/*/CHANGELOG.md',
   },
 });
