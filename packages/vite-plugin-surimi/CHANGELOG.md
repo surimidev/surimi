@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.9.0...v0.9.1
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.9.0...v0.9.1)
+
+### 🩹 Fixes
+
+- Vite plugin builds ([#102](https://github.com/surimidev/surimi/pull/102))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
+
 ## v0.8.0...v0.9.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/v0.8.0...v0.9.0)
