@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "@surimi/typescript-config": "workspace:*",
-    "parsel-js": "^1.2.2",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
