@@ -35,7 +35,6 @@
     "@surimi/ast": "workspace:*",
     "@surimi/common": "workspace:*",
     "@surimi/parsers": "workspace:*",
-    "csstype": "catalog:prod",
     "ts-mixer": "^6.0.4"
   },
   "devDependencies": {

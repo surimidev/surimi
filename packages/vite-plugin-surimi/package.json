@@ -54,6 +54,6 @@
   },
   "peerDependencies": {
     "surimi": "workspace:*",
-    "vite": "catalog:build"
+    "vite": "catalog:peers"
   }
 }

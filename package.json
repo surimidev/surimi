@@ -29,18 +29,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:tooling",
-    "@playwright/test": "catalog:test",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
-    "@vitest/browser": "catalog:test",
     "@vitest/coverage-v8": "catalog:test",
-    "@vitest/ui": "catalog:test",
     "concurrently": "catalog:script",
     "knip": "catalog:tooling",
-    "libphonenumber-js": "^1.13.7",
     "relizy": "catalog:utils",
     "taze": "catalog:script",
-    "tinyexec": "catalog:script",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
