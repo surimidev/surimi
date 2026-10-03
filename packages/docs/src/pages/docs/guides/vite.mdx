@@ -58,7 +58,8 @@ export default defineConfig({
        * Decide which of your other Vite plugins run inside surimi's internal
        * evaluation server. By default every plugin (except surimi's own) is
        * included, so aliases and custom resolvers keep working inside `.css.ts`
-       * files. Drop plugins that misbehave in a secondary, websocket-less server.
+       * files. Only their `resolveId`, `load` and `transform` hooks run there.
+       * Drop plugins whose transforms misbehave in a secondary server.
        * default:
        */
       pluginFilter: undefined,

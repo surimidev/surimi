@@ -44,8 +44,27 @@ function isDevelopmentSurimiFile(id: string): boolean {
   return DEV_SURIMI_PACKAGES.some(pkgPath => id.includes(pkgPath));
 }
 
+const MODULE_PIPELINE_HOOKS = ['resolveId', 'load', 'transform'] as const;
+
+/**
+ * Host plugin instances are already configured by the host. Only their module pipeline hooks may run
+ * here: re-running lifecycle hooks (`config`, `configResolved`, `buildStart`, ...) with this server's
+ * serve-mode config clobbers their shared state, e.g. Astro's content store flips to its dev path.
+ */
+function isolateHostPlugin(plugin: Plugin): Plugin {
+  const isolated: Plugin = { name: plugin.name };
+  if (plugin.enforce) isolated.enforce = plugin.enforce;
+  for (const hook of MODULE_PIPELINE_HOOKS) {
+    if (plugin[hook]) Object.assign(isolated, { [hook]: plugin[hook] });
+  }
+  return isolated;
+}
+
 function filterUserPlugins(plugins: Plugin[], pluginFilter: (plugin: Plugin) => boolean): Plugin[] {
-  return plugins.flat().filter((plugin): plugin is Plugin => pluginFilter(plugin));
+  return plugins
+    .flat()
+    .filter((plugin): plugin is Plugin => pluginFilter(plugin))
+    .map(isolateHostPlugin);
 }
 
 function createPrefixAliasPlugin(prefixAliases: Record<string, string>): Plugin {
@@ -205,7 +224,7 @@ export class SurimiEvaluator {
     const hostConfig = this.options.resolvedConfig;
     const prefixAliases = this.options.prefixAliases;
     const plugins: Plugin[] = [
-      ...filterUserPlugins(this.options.userPlugins ?? hostConfig?.plugins.flat() ?? [], this.pluginFilter),
+      ...filterUserPlugins(this.options.userPlugins ?? [], this.pluginFilter),
       ...(prefixAliases && Object.keys(prefixAliases).length > 0 ? [createPrefixAliasPlugin(prefixAliases)] : []),
       createSurimiCssTsResolvePlugin(),
       createVirtualSourcesPlugin(this.virtualSources),
