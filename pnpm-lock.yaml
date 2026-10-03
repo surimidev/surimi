@@ -552,9 +552,6 @@ importers:
       '@surimi/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript-config
-      surimi:
-        specifier: workspace:*
-        version: link:../surimi
       tsdown:
         specifier: catalog:build
         version: 0.23.0(oxc-resolver@11.24.2)(typescript@7.0.2)

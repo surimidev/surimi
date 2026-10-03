@@ -1,7 +1,10 @@
-import { createTheme, defineTokens, type Token, token } from '@surimi/theme';
-
-import { media, Surimi, select, style } from 'surimi';
+import { SurimiContext as Surimi } from '@surimi/common';
+import { createSelectorBuilderFromString, StyleBuilder } from '@surimi/core';
 import { beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
+
+import { createTheme, defineTokens, type Token, token } from '../src';
+
+const select = (selector: string) => createSelectorBuilderFromString([selector], Surimi.root, Surimi.root);
 
 beforeEach(() => {
   Surimi.clear();
@@ -151,7 +154,6 @@ describe('createTheme', () => {
     const dark = createTheme(tokens, { background: '#111', text: '#eee' });
 
     select('[data-theme="dark"]').use(dark);
-    media().prefersColorScheme('dark').select(':root').use(dark);
 
     expect(Surimi.build()).toBe(`\
 @property --background {
@@ -166,12 +168,6 @@ describe('createTheme', () => {
 [data-theme="dark"] {
     --background: #111;
     --text: #eee;
-}
-@media ( prefers-color-scheme : dark ) {
-    :root {
-        --background: #111;
-        --text: #eee;
-    }
 }`);
   });
 
@@ -196,7 +192,7 @@ describe('createTheme', () => {
     const tokens = defineTokens({ background: '#fff' });
     const dark = createTheme(tokens, { background: '#111' });
 
-    select('.card').style(style({ padding: '1rem' }).extend(dark));
+    select('.card').style(new StyleBuilder(Surimi.root, { padding: '1rem' }).extend(dark));
 
     expect(Surimi.build()).toContain('--background: #111');
     expect(Surimi.build()).toContain('padding: 1rem');
