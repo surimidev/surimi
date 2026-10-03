@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.8.0...v0.9.0
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.8.0...v0.9.0)
+
+No relevant changes for this release
+
+
 ## v0.7.0...v0.8.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/v0.7.0...v0.8.0)

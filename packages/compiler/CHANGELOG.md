@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.8.0...v0.9.0
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.8.0...v0.9.0)
+
+### 🚀 Enhancements
+
+- **vite:** Decouple vite plugin from compiler ([#97](https://github.com/surimidev/surimi/pull/97))
+
+  * feat(vite): decouple vite plugin from compiler
+  This decouples vite plugin and compiler, eliminating the need for rolldown and, more importantly,
+  enabling surimi files to benefit from the full vite ecosystem, like importing css files,
+  better exports, HMR, etc.
+  This does make some things simpler, but now we have to manage the secondary vite server
+  for code execution etc. which is another thing to handle
+  * fix: improve side-effect handling
+  * fix(vite): keep node_modules css side effects
+  - emit bare css imports from node_modules (were dropped)
+  - share DEV_SURIMI_PACKAGES via @surimi/compiler
+  - expose pluginFilter option
+  - add hmr + dev-close lifecycle tests
+
+
+### 🩹 Fixes
+
+- Build and types, switch to ts7 ([#100](https://github.com/surimidev/surimi/pull/100))
+
+  * fix: build and types, switch to ts7
+  * fix: build order
+
+
+### 🏡 Chore
+
+- Deps update and build warning fixes ([#96](https://github.com/surimidev/surimi/pull/96))
+- Deps updates ([#98](https://github.com/surimidev/surimi/pull/98))
+
+  * chore: deps updates
+  * fix: proper semver ranges for peer deps
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
+
 ## v0.7.0...v0.8.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/v0.7.0...v0.8.0)

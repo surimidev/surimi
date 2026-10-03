@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.8.0...v0.9.0
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.8.0...v0.9.0)
+
+### 🚀 Enhancements
+
+- **core:** Add view-transition builders ([#93](https://github.com/surimidev/surimi/pull/93))
+- Add theme utils ([#95](https://github.com/surimidev/surimi/pull/95))
+
+### 🩹 Fixes
+
+- **core:** ⚠️  Custom property syntax issues ([#94](https://github.com/surimidev/surimi/pull/94))
+
+### 🏡 Chore
+
+- Deps updates ([#98](https://github.com/surimidev/surimi/pull/98))
+
+  * chore: deps updates
+  * fix: proper semver ranges for peer deps
+
+
+#### ⚠️ Breaking Changes
+
+- **core:** ⚠️  Custom property syntax issues ([#94](https://github.com/surimidev/surimi/pull/94))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
+
 ## v0.7.0...v0.8.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/v0.7.0...v0.8.0)

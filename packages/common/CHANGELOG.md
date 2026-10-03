@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.8.0...v0.9.0
+
+[compare changes](https://github.com/surimidev/surimi/compare/v0.8.0...v0.9.0)
+
+### 🚀 Enhancements
+
+- **core:** Add view-transition builders ([#93](https://github.com/surimidev/surimi/pull/93))
+
+### ❤️ Contributors
+
+- Janis Jansen ([@janis-me](https://github.com/janis-me))
+
+
 ## v0.7.0...v0.8.0
 
 [compare changes](https://github.com/surimidev/surimi/compare/v0.7.0...v0.8.0)
