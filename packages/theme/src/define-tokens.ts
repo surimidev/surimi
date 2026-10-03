@@ -12,8 +12,14 @@ export interface DefineTokensOptions {
 
 type Declarations = Record<string, TokenValue>;
 
+/** Segments of a custom property name. Anything else is invalid CSS and would be dropped by the browser. */
+const NAME_PATTERN = /^[-_a-zA-Z0-9\u00A0-\uFFFF]+$/;
+
 function toKebabCase(key: string): string {
-  return key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .toLowerCase();
 }
 
 function isValue(node: TokenValue | TokenTree): node is TokenValue {
@@ -38,19 +44,32 @@ function createToken(name: string, node: TokenValue | TokenDefinition): Token {
   return new CustomPropertyBuilder(SurimiContext.root, name, { syntax, inherits, initialValue: String(value) });
 }
 
-function build(tree: TokenTree, path: string[], declarations: Declarations): TokenGroup {
+function build(tree: TokenTree, path: string[], declarations: Declarations, seen: Map<string, string>): TokenGroup {
   const group: Record<string, Token | TokenGroup> = {};
 
   for (const [key, node] of Object.entries(tree)) {
-    const nextPath = [...path, toKebabCase(key)];
+    const keyPath = [...path, key];
 
     if (node instanceof TokenDefinition || isValue(node)) {
-      const name = `--${nextPath.join('-')}`;
+      const name = `--${keyPath.map(toKebabCase).join('-')}`;
+
+      if (!NAME_PATTERN.test(name)) {
+        throw new Error(
+          `Invalid token name "${name}". Names may only contain letters, digits, hyphens and underscores`,
+        );
+      }
+
+      const firstKey = seen.get(name);
+
+      if (firstKey !== undefined) {
+        throw new Error(`Duplicate token name "${name}" from keys "${firstKey}" and "${keyPath.join('.')}"`);
+      }
+      seen.set(name, keyPath.join('.'));
 
       group[key] = createToken(name, node);
       declarations[name] = node instanceof TokenDefinition ? node.value : node;
     } else {
-      group[key] = build(node, nextPath, declarations);
+      group[key] = build(node, keyPath, declarations, seen);
     }
   }
 
@@ -74,7 +93,7 @@ function build(tree: TokenTree, path: string[], declarations: Declarations): Tok
  */
 export function defineTokens<T extends TokenTree>(values: T, options: DefineTokensOptions = {}): Tokens<T> {
   const declarations: Declarations = {};
-  const tokens = build(values, options.prefix ? [toKebabCase(options.prefix)] : [], declarations);
+  const tokens = build(values, options.prefix ? [options.prefix] : [], declarations, new Map());
 
   if (Object.keys(declarations).length > 0) {
     createSelectorBuilderFromString([':root'], SurimiContext.root, SurimiContext.root).style(

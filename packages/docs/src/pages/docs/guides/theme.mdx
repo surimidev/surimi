@@ -126,7 +126,7 @@ A typed `token()` needs a literal default, because CSS does not allow `var()` in
 
 ## `createTheme`
 
-`createTheme(tokens, values)` returns a style with new values for the tokens you list. Leave a token out and it keeps the value it inherits. Values are type-checked against the tokens, so a typo is a compile error.
+`createTheme(tokens, values)` returns a style with new values for the tokens you list. Leave a token out and it keeps the value it inherits. Values are checked against the tokens, so a typo is a compile error and, for themes built at runtime, a thrown error.
 
 ```ts
 const dark = createTheme(tokens, {
@@ -161,6 +161,7 @@ const brand = createTheme(tokens, {
 
 ## Limitations
 
-- Names are not hashed or scoped. Two `defineTokens` calls that use the same name write the same property.
+- Names are not hashed or scoped. Redefining a `token()` with different values throws, but two plain `defineTokens` calls with the same name just write the same property twice.
+- Token names have to be valid CSS. Keys with spaces or dots throw, and so do two keys that kebab-case to the same name (like `textMuted` and `'text-muted'`).
 - Defaults always go on `:root`. To scope them elsewhere, also create a theme with the defaults and apply it there.
 - `createTheme` does not check values against a token's `syntax`. The browser does that for you. An invalid value for a typed token is ignored.

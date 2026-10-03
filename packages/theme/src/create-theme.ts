@@ -6,12 +6,22 @@ import type { ThemeValues, TokenGroup, TokenValue } from '#types';
 
 type ValueTree = { [key: string]: TokenValue | ValueTree | undefined };
 
-function collect(tokens: TokenGroup, values: ValueTree, declarations: Record<string, TokenValue>) {
+function collect(tokens: TokenGroup, values: ValueTree, declarations: Record<string, TokenValue>, path: string) {
   for (const [key, value] of Object.entries(values)) {
+    const keyPath = `${path}${path ? '.' : ''}${key}`;
+
+    if (value === undefined) {
+      continue;
+    }
+
+    if (value === null) {
+      throw new TypeError(`Expected a value or group for "${keyPath}", got null`);
+    }
+
     const ref = tokens[key];
 
-    if (value === undefined || ref === undefined) {
-      continue;
+    if (ref === undefined) {
+      throw new Error(`Unknown token "${keyPath}"`);
     }
 
     const isValue = typeof value !== 'object' || value instanceof CustomPropertyBuilder;
@@ -22,8 +32,10 @@ function collect(tokens: TokenGroup, values: ValueTree, declarations: Record<str
       }
 
       declarations[ref.name] = value;
-    } else if (!isValue) {
-      collect(ref, value, declarations);
+    } else if (isValue) {
+      throw new TypeError(`Expected a group for "${keyPath}", got a value`);
+    } else {
+      collect(ref, value, declarations, keyPath);
     }
   }
 }
@@ -43,7 +55,7 @@ function collect(tokens: TokenGroup, values: ValueTree, declarations: Record<str
 export function createTheme<T extends TokenGroup>(tokens: T, values: ThemeValues<T>): StyleBuilder {
   const declarations: Record<string, TokenValue> = {};
 
-  collect(tokens, values as ValueTree, declarations);
+  collect(tokens, values as ValueTree, declarations, '');
 
   return new StyleBuilder(SurimiContext.root, declarations as CssProperties);
 }
