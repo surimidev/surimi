@@ -35,7 +35,7 @@ export function createCompile(api: RolldownApi) {
     );
     const duration = Date.now() - startTime;
 
-    return result ? { ...result, duration } : undefined;
+    return { ...result, duration };
   }
 
   function compileWatch(options: CompileOptions, watchOptions: WatchOptions): ReturnType<RolldownApi['watch']> {

@@ -121,7 +121,9 @@ select('.block-b').style({ color: 'blue' });`,
       );
 
       expect(createSpy).toHaveBeenCalledTimes(1);
-      results.forEach((result, i) => expect(result.css).toContain(`.race-${i}`));
+      results.forEach((result, i) => {
+        expect(result.css).toContain(`.race-${i}`);
+      });
     } finally {
       createSpy.mockRestore();
       await evaluator.close();
