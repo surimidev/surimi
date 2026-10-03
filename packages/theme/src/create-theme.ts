@@ -1,130 +1,49 @@
-import { type AssignVarsTarget, assignVars } from '#assign-vars';
-import { defineVars } from '#define-vars';
-import type { ModeName, ThemeVarsFromTokens } from '#types';
-import { extractVarLeafMeta, isThemeValueLeaf } from '#utils';
+import type { CssProperties } from '@surimi/common';
+import { SurimiContext } from '@surimi/common';
+import { CustomPropertyBuilder, StyleBuilder } from '@surimi/core';
 
-export interface CreateThemeOptions<
-  TModes extends Record<string, AssignVarsTarget | AssignVarsTarget[]>,
-  TTokens extends Record<string, unknown>,
-> {
-  prefix?: string;
-  modes: TModes;
-  tokens: TTokens;
-  registerProperties?: boolean;
-}
+import type { ThemeValues, TokenGroup, TokenValue } from '#types';
 
-function deriveShapeFromTokens(
-  tokens: Record<string, unknown>,
-  modeNames: ReadonlySet<string>,
-): Record<string, unknown> {
-  const shape: Record<string, unknown> = {};
+type ValueTree = { [key: string]: TokenValue | ValueTree | undefined };
 
-  for (const [key, value] of Object.entries(tokens)) {
-    if (typeof value !== 'object' || value === null) {
+function collect(tokens: TokenGroup, values: ValueTree, declarations: Record<string, TokenValue>) {
+  for (const [key, value] of Object.entries(values)) {
+    const ref = tokens[key];
+
+    if (value === undefined || ref === undefined) {
       continue;
     }
 
-    const node = value as Record<string, unknown>;
+    const isValue = typeof value !== 'object' || value instanceof CustomPropertyBuilder;
 
-    if (isThemeValueLeaf(node, modeNames)) {
-      const meta = extractVarLeafMeta(node);
-      shape[key] = Object.keys(meta).length > 0 ? meta : null;
-      continue;
-    }
-
-    shape[key] = deriveShapeFromTokens(node, modeNames);
-  }
-
-  return shape;
-}
-
-function sliceModeValues(
-  tokens: Record<string, unknown>,
-  modeNames: ReadonlySet<string>,
-  mode: string,
-): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(tokens)) {
-    if (typeof value !== 'object' || value === null) {
-      continue;
-    }
-
-    const node = value as Record<string, unknown>;
-
-    if (isThemeValueLeaf(node, modeNames)) {
-      if (mode in node) {
-        result[key] = node[mode];
+    if (ref instanceof CustomPropertyBuilder) {
+      if (!isValue) {
+        throw new TypeError(`Expected a value for ${ref.name}, got a group`);
       }
 
-      continue;
-    }
-
-    const nested = sliceModeValues(node, modeNames, mode);
-
-    if (Object.keys(nested).length > 0) {
-      result[key] = nested;
+      declarations[ref.name] = value;
+    } else if (!isValue) {
+      collect(ref, value, declarations);
     }
   }
-
-  return result;
-}
-
-function normalizeTargets(target: AssignVarsTarget | AssignVarsTarget[]): AssignVarsTarget[] {
-  return Array.isArray(target) ? target : [target];
 }
 
 /**
- * Define tokens with per-mode values and emit CSS in one step.
- * Registers each token once (`@property` when `registerProperties` is true), then assigns
- * values per mode to the configured targets (selectors, attributes, media queries, …).
+ * Create a theme with new values for some of your tokens. Returns a style,
+ * so you decide where it applies by using it on a selector.
  *
  * @example
  * ```ts
- * const theme = createTheme({
- *   modes: {
- *     light: ':root',
- *     dark: '[data-theme="dark"]',
- *   },
- *   tokens: {
- *     bg: { app: { light: '#fff', dark: '#111', syntax: '<color>' } },
- *   },
- * });
+ * const dark = createTheme(tokens, { background: '#111', text: '#eee' });
  *
- * select('body').style({ background: theme.bg.app });
+ * select('[data-theme="dark"]').use(dark);
+ * media().prefersColorScheme('dark').select(':root').use(dark);
  * ```
  */
-export function createTheme<
-  const TModes extends Record<string, AssignVarsTarget | AssignVarsTarget[]>,
-  const TTokens extends Record<string, unknown>,
->(
-  options: CreateThemeOptions<TModes, TTokens>,
-): ThemeVarsFromTokens<TTokens, ModeName<TModes>> {
-  const { prefix = '', modes, tokens, registerProperties = true } = options;
-  const modeNames = Object.keys(modes);
-  const modeNameSet = new Set(modeNames);
-  const baseMode = modeNames[0];
+export function createTheme<T extends TokenGroup>(tokens: T, values: ThemeValues<T>): StyleBuilder {
+  const declarations: Record<string, TokenValue> = {};
 
-  if (!baseMode) {
-    throw new Error('createTheme requires at least one mode');
-  }
+  collect(tokens, values as ValueTree, declarations);
 
-  const shape = deriveShapeFromTokens(tokens, modeNameSet);
-
-  const vars = defineVars(shape, {
-    prefix,
-    registerProperties,
-    initialValues: sliceModeValues(tokens, modeNameSet, baseMode),
-  }) as ThemeVarsFromTokens<TTokens, ModeName<TModes>>;
-
-  for (const mode of modeNames) {
-    const values = sliceModeValues(tokens, modeNameSet, mode);
-    const targets = normalizeTargets(modes[mode] as AssignVarsTarget | AssignVarsTarget[]);
-
-    for (const target of targets) {
-      assignVars(vars as Record<string, unknown>, target, values);
-    }
-  }
-
-  return vars;
+  return new StyleBuilder(SurimiContext.root, declarations as CssProperties);
 }

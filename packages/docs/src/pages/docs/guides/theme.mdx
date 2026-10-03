@@ -1,0 +1,166 @@
+---
+title: Theming
+category: guides
+categoryOrderId: 20
+layout: "#layouts/Docs/Docs.astro"
+---
+
+# {frontmatter.title}
+
+`surimi/theme` has two ideas:
+
+- **Tokens** are your design decisions: named CSS custom properties with a default value. `defineTokens` declares them.
+- **Themes** are new values for some of those tokens. `createTheme` creates one, and you apply it to any selector with `.use()`.
+
+```ts
+import { media, select } from 'surimi';
+import { createTheme, defineTokens, token } from 'surimi/theme';
+
+export const tokens = defineTokens({
+  background: token('#fff', '<color>'),
+  text: '#111',
+});
+
+export const dark = createTheme(tokens, {
+  background: '#111',
+  text: '#eee',
+});
+
+select('[data-theme="dark"]').use(dark);
+
+select('body').style({
+  background: tokens.background,
+  color: tokens.text,
+});
+```
+
+```css
+@property --background {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #fff;
+}
+:root {
+    --background: #fff;
+    --text: #111;
+}
+[data-theme="dark"] {
+    --background: #111;
+    --text: #eee;
+}
+body {
+    background: var(--background);
+    color: var(--text);
+}
+```
+
+There is no "light" theme. The defaults are the light theme. You can create any number of themes, in any file, and apply them wherever you want.
+
+For a single variable, [`property()`](/playground?lecture=7-theme) from `surimi` is enough.
+
+## `defineTokens`
+
+`defineTokens(values, options?)` takes the default value of every token and returns an object of tokens with the same shape. Each token compiles to `var(--name)`, so it works as any style value.
+
+The defaults are set on `:root`. Every key is a token name, nothing is reserved.
+
+### Typed tokens
+
+A plain value is just a custom property. Wrap it in `token()` to also register it as [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property). The browser then knows its type: values that don't match are rejected, and the value can be animated.
+
+```ts
+defineTokens({
+  background: token('#fff', '<color>'),
+  radius: token('4px', { syntax: '<length>', inherits: false }),
+  shadow: '0 1px 2px #0002',
+});
+```
+
+`token(value, options)`:
+
+- `value` is the default. It also becomes the `initial-value`.
+- `options` is a [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax) string, or `{ syntax, inherits }`. `syntax` defaults to `'*'`, `inherits` to `true`.
+
+Values are written as-is. Numbers get no unit, so write `'4px'`, not `4`, when you need pixels.
+
+### Nesting
+
+Nested objects group tokens. The name is the kebab-cased path:
+
+```ts
+export const tokens = defineTokens({
+  color: {
+    surface: '#fff',
+    textMuted: '#666',
+  },
+  space: { 1: '4px', 2: '8px' },
+});
+
+tokens.color.textMuted; // var(--color-text-muted)
+tokens.space[2]; // var(--space-2)
+```
+
+`prefix` is prepended to every name: `defineTokens(values, { prefix: 'ds' })` turns `background` into `--ds-background`.
+
+### Aliases
+
+A token can be the value of another token. This is how semantic tokens point at a palette:
+
+```ts
+const palette = defineTokens({ gray: { 1: '#fcfcfd', 12: '#1c2024' } });
+
+export const tokens = defineTokens({
+  background: palette.gray[1],
+  text: palette.gray[12],
+});
+```
+
+```css
+:root {
+    --background: var(--gray-1);
+    --text: var(--gray-12);
+}
+```
+
+A typed `token()` needs a literal default, because CSS does not allow `var()` in `initial-value`. `token(palette.gray[1], '<color>')` throws.
+
+## `createTheme`
+
+`createTheme(tokens, values)` returns a style with new values for the tokens you list. Leave a token out and it keeps the value it inherits. Values are type-checked against the tokens, so a typo is a compile error.
+
+```ts
+const dark = createTheme(tokens, {
+  background: palette.gray[12],
+  text: palette.gray[1],
+});
+```
+
+Nothing is emitted until you use the theme. It's a normal surimi style, so it goes wherever styles go:
+
+```ts
+// a toggle
+select('[data-theme="dark"]').use(dark);
+
+// the OS setting
+media().prefersColorScheme('dark').select(':root').use(dark);
+
+// one part of the page
+select('.inverted').use(dark);
+
+// together with other styles
+select('.card').style(style({ padding: '1rem' }).extend(dark));
+```
+
+Nested tokens take nested values:
+
+```ts
+const brand = createTheme(tokens, {
+  color: { textMuted: '#4b3f72' },
+});
+```
+
+## Limitations
+
+- Names are not hashed or scoped. Two `defineTokens` calls that use the same name write the same property.
+- Defaults always go on `:root`. To scope them elsewhere, also create a theme with the defaults and apply it there.
+- `createTheme` does not check values against a token's `syntax`. The browser does that for you. An invalid value for a typed token is ignored.

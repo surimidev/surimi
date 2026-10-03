@@ -1,19 +1,27 @@
 # @surimi/theme
 
-CSS-only theming utilities for Surimi: define token contracts, assign values per mode, and wire light/dark (or arbitrary modes) without boilerplate.
+Design tokens and themes for Surimi, as plain CSS custom properties.
 
 ```ts
-import { createTheme } from '@surimi/theme';
+import { media, select } from 'surimi';
+import { createTheme, defineTokens, token } from 'surimi/theme';
 
-const theme = createTheme({
-  modes: {
-    light: ':root',
-    dark: '[data-theme="dark"]',
-  },
-  tokens: {
-    bg: { app: { light: '#fff', dark: '#111', syntax: '<color>' } },
-  },
+export const tokens = defineTokens({
+  background: token('#fff', '<color>'),
+  text: '#111',
 });
+
+export const dark = createTheme(tokens, {
+  background: '#111',
+  text: '#eee',
+});
+
+select('[data-theme="dark"]').use(dark);
+media().prefersColorScheme('dark').select(':root').use(dark);
 ```
 
-See `defineVars`, `assignVars`, and `createTheme` exports.
+- `defineTokens` declares tokens with their default values (on `:root`) and returns `var(--…)` refs.
+- `token(value, syntax)` registers a token as a typed `@property`.
+- `createTheme` returns a style with new values for some tokens. Apply it anywhere with `.use()`.
+
+See the [theming guide](https://surimi.dev/docs/guides/theme).

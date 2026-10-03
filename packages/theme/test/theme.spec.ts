@@ -1,174 +1,111 @@
-import { assignVars, createTheme, defineVars, token } from '@surimi/theme';
+import { createTheme, defineTokens, type Token, token } from '@surimi/theme';
 
-import { media, Surimi, select } from 'surimi';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { media, Surimi, select, style } from 'surimi';
+import { beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 
-describe('setVars', () => {
-  beforeEach(() => {
-    Surimi.clear();
-  });
-
-  it('should set custom properties using token refs as keys', () => {
-    const vars = defineVars({ text: null }, { prefix: 'ds', registerProperties: false });
-
-    select(':root').setVars([[vars.text, '#111']]);
-
-    expect(Surimi.build()).toBe(`\
-:root {
-    --ds-text: #111;
-}`);
-  });
+beforeEach(() => {
+  Surimi.clear();
 });
 
-describe('defineVars', () => {
-  beforeEach(() => {
-    Surimi.clear();
-  });
+describe('defineTokens', () => {
+  it('should set defaults on :root and return var refs', () => {
+    const tokens = defineTokens({ background: '#fff', text: '#111' });
 
-  it('should treat null and token as equivalent contract leaves', () => {
-    const fromNull = defineVars({ a: null }, { prefix: 'x', registerProperties: false });
-    const fromToken = defineVars({ b: token }, { prefix: 'x', registerProperties: false });
-
-    select(':root').setVars([
-      [fromNull.a, '#111'],
-      [fromToken.b, '#222'],
-    ]);
-
+    expect(tokens.background.build()).toBe('var(--background)');
+    expectTypeOf(tokens.text).toEqualTypeOf<Token>();
     expect(Surimi.build()).toBe(`\
 :root {
-    --x-a: #111;
-    --x-b: #222;
+    --background: #fff;
+    --text: #111;
 }`);
   });
 
-  it('should register @property for each token by default', () => {
-    defineVars(
-      {
-        bg: { app: null },
-        text: { default: { syntax: '<color>' } },
-      },
-      { initialValues: { text: { default: '#111' } } },
-    );
+  it('should register token() leaves as @property with the default as initial value', () => {
+    defineTokens({
+      background: token('#fff', '<color>'),
+      radius: token(4, { syntax: '<number>', inherits: false }),
+      text: '#111',
+    });
 
-    expect(Surimi.build()).toContain('@property --bg-app');
-    expect(Surimi.build()).toContain('@property --text-default');
-    expect(Surimi.build()).toContain("syntax: '<color>'");
-    expect(Surimi.build()).toContain('initial-value: #111');
+    expect(Surimi.build()).toMatchSnapshot();
   });
 
-  it('should throw when registering typed syntax without an initial value', () => {
-    expect(() =>
-      defineVars({
-        text: { default: { syntax: '<color>' } },
-      }),
-    ).toThrow(/requires an initial-value/);
+  it('should kebab-case nested paths and the prefix', () => {
+    const tokens = defineTokens({ fontSize: { small: '0.875rem', large: '2rem' } }, { prefix: 'myApp' });
+
+    expect(tokens.fontSize.large.build()).toBe('var(--my-app-font-size-large)');
+    expect(Surimi.build()).toContain('--my-app-font-size-small: 0.875rem');
   });
 
-  it('should not register @property when registerProperties is false', () => {
-    defineVars({ bg: { app: null } }, { registerProperties: false });
+  it('should alias other tokens', () => {
+    const palette = defineTokens({ gray: { 1: '#fcfcfd' } });
+    const tokens = defineTokens({ background: palette.gray[1], border: token(palette.gray[1]) });
 
-    expect(Surimi.build()).toBe('');
+    expect(tokens.background.build()).toBe('var(--background)');
+    expect(Surimi.build()).toContain('--background: var(--gray-1)');
+    expect(Surimi.build()).toContain('@property --border');
   });
 
-  it('should not register tokens with explicit syntax when registerProperties is false', () => {
-    defineVars({ text: { default: { syntax: '<color>' } } }, { registerProperties: false });
+  it('should reject a typed token with an alias default', () => {
+    const palette = defineTokens({ gray: '#fcfcfd' });
 
-    expect(Surimi.build()).toBe('');
-  });
-});
-
-describe('assignVars', () => {
-  beforeEach(() => {
-    Surimi.clear();
+    expect(() => defineTokens({ background: token(palette.gray, '<color>') })).toThrow(/literal default/);
   });
 
-  it('should assign values without re-registering @property', () => {
-    const vars = defineVars({ bg: { app: null } });
+  it('should allow any key, including syntax and inherits', () => {
+    const tokens = defineTokens({ syntax: 'a', inherits: { syntax: 'b' } });
 
-    assignVars(vars, ':root', { bg: { app: '#fff' } });
-
-    const css = Surimi.build();
-    expect(css).toContain('@property --bg-app');
-    expect(css).toContain(':root');
-    expect(css).toContain('--bg-app: #fff');
-    expect(css.match(/@property --bg-app/g)?.length).toBe(1);
+    expect(tokens.inherits.syntax.build()).toBe('var(--inherits-syntax)');
   });
 });
 
 describe('createTheme', () => {
-  beforeEach(() => {
+  it('should apply values wherever it is used', () => {
+    const tokens = defineTokens({ background: token('#fff', '<color>'), text: '#111' });
+    const dark = createTheme(tokens, { background: '#111', text: '#eee' });
+
+    select('[data-theme="dark"]').use(dark);
+    media().prefersColorScheme('dark').select(':root').use(dark);
+
+    expect(Surimi.build()).toMatchSnapshot();
+  });
+
+  it('should support partial and nested values and aliases', () => {
+    const tokens = defineTokens({ text: { primary: '#111', muted: '#666' }, accent: '#0090ff' });
+    const brand = createTheme(tokens, { text: { muted: tokens.accent } });
+
+    select('.brand').use(brand);
+
+    expect(Surimi.build()).toContain(`.brand {
+    --text-muted: var(--accent);
+}`);
+  });
+
+  it('should compose with core styles', () => {
+    const tokens = defineTokens({ background: '#fff' });
+    const dark = createTheme(tokens, { background: '#111' });
+
+    select('.card').style(style({ padding: '1rem' }).extend(dark));
+
+    expect(Surimi.build()).toContain('--background: #111');
+    expect(Surimi.build()).toContain('padding: 1rem');
+  });
+
+  it('should only emit CSS when used', () => {
+    const tokens = defineTokens({ background: '#fff' });
     Surimi.clear();
+
+    createTheme(tokens, { background: '#111' });
+
+    expect(Surimi.build()).toBe('');
   });
 
-  it('should emit base mode on :root and dark mode on attribute selector', () => {
-    const theme = createTheme({
-      modes: {
-        light: ':root',
-        dark: '[data-theme="dark"]',
-      },
-      tokens: {
-        bg: {
-          app: { light: '#fff', dark: '#111', syntax: '<color>' },
-        },
-        text: {
-          default: { light: '#111', dark: '#eee' },
-        },
-      },
-    });
+  it('should type values against the tokens', () => {
+    const tokens = defineTokens({ text: { primary: '#111' } });
 
-    const css = Surimi.build();
-
-    expect(css).toContain('@property --bg-app');
-    expect(css).toContain('initial-value: #fff');
-    expect(css).toContain(':root');
-    expect(css).toContain('--bg-app: #fff');
-    expect(css).toContain('[data-theme="dark"]');
-    expect(css).toContain('--bg-app: #111');
-    expect(css).toContain('--text-default: #eee');
-    expect(theme.bg.app.build()).toBe('var(--bg-app)');
-    expect(css).toMatchSnapshot();
-  });
-
-  it('should support partial mode overrides', () => {
-    createTheme({
-      modes: {
-        light: ':root',
-        dark: '[data-theme="dark"]',
-      },
-      tokens: {
-        bg: {
-          app: { light: '#fff', dark: '#111' },
-          canvas: { light: '#eee' },
-        },
-      },
-    });
-
-    const css = Surimi.build();
-    const darkBlock = css.match(/\[data-theme="dark"\]\s*\{([^}]*)\}/)?.[1] ?? '';
-
-    expect(css).toContain('--bg-app: #111');
-    expect(css).toContain('--bg-canvas: #eee');
-    expect(darkBlock).not.toContain('--bg-canvas');
-    expect(css).toMatchSnapshot();
-  });
-
-  it('should assign values through media query targets', () => {
-    createTheme({
-      modes: {
-        light: ':root',
-        dark: media().prefersColorScheme('dark'),
-      },
-      tokens: {
-        bg: {
-          app: { light: '#fff', dark: '#111' },
-        },
-      },
-    });
-
-    const css = Surimi.build();
-
-    expect(css).toContain('prefers-color-scheme');
-    expect(css).toContain('--bg-app: #111');
-    expect(css).toMatchSnapshot();
+    // @ts-expect-error `primry` is not a token
+    createTheme(tokens, { text: { primry: '#000' } });
+    // @ts-expect-error a token needs a value, not a group
+    expect(() => createTheme(tokens, { text: { primary: { dark: '#000' } } })).toThrow(/--text-primary/);
   });
 });
