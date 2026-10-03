@@ -6,6 +6,7 @@ export {
   COMPILER_PLUGIN_NAME,
   createSurimiTransformPlugin,
   createVirtualSourcePlugin,
+  DEV_SURIMI_PACKAGES,
   extractSurimiResult,
   isSerializable,
   SURIMI_CSS_EXPORT_NAME,

@@ -1,8 +1,8 @@
-import { COMPILER_PLUGIN_NAME, SURIMI_CSS_EXPORT_NAME } from './constants';
+import { COMPILER_PLUGIN_NAME, DEV_SURIMI_PACKAGES, SURIMI_CSS_EXPORT_NAME } from './constants';
 import { extractSurimiResult, type SurimiModule } from './extract';
 import type { CompileOptions } from './types';
 
-export { COMPILER_PLUGIN_NAME, SURIMI_CSS_EXPORT_NAME } from './constants';
+export { COMPILER_PLUGIN_NAME, DEV_SURIMI_PACKAGES, SURIMI_CSS_EXPORT_NAME } from './constants';
 export { extractSurimiResult, isSerializable, type SurimiModule } from './extract';
 
 /** Base64-encode UTF-8 string; works in Node (Buffer) and browser (TextEncoder + btoa). */
@@ -17,14 +17,6 @@ function toBase64Utf8(str: string): string {
   }
   return btoa(binary);
 }
-
-const DEV_SURIMI_PACKAGES = [
-  '/packages/surimi',
-  '/packages/common',
-  '/packages/parsers',
-  '/packages/core',
-  '/packages/conditional',
-];
 
 export function createSurimiTransformPlugin(include: CompileOptions['include'], exclude: CompileOptions['exclude']) {
   return {

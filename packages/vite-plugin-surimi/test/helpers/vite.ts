@@ -87,6 +87,7 @@ export async function writeFixture(files: Record<string, string>): Promise<Fixtu
 }
 
 export function baseViteConfig(root: string, options: SurimiOptions = {}, extra: InlineConfig = {}): InlineConfig {
+  const { plugins: extraPlugins, ...restExtra } = extra;
   return {
     configFile: false,
     root,
@@ -96,10 +97,10 @@ export function baseViteConfig(root: string, options: SurimiOptions = {}, extra:
     },
     resolve: {
       ...testResolveConfig(),
-      ...(extra.resolve ?? {}),
+      ...(restExtra.resolve ?? {}),
     },
-    plugins: [surimiPlugin(options)],
-    ...extra,
+    plugins: [surimiPlugin(options), ...(extraPlugins ?? [])],
+    ...restExtra,
   };
 }
 

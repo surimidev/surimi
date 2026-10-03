@@ -1,21 +1,17 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import type { CompileResult } from '@surimi/compiler';
-import { createSurimiTransformPlugin, extractSurimiResult, type SurimiModule } from '@surimi/compiler';
+import {
+  createSurimiTransformPlugin,
+  DEV_SURIMI_PACKAGES,
+  extractSurimiResult,
+  type SurimiModule,
+} from '@surimi/compiler';
 import type { InlineConfig, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { createServer, createServerModuleRunner, normalizePath } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { normalizeModuleId } from './normalize-module-id.js';
-
-const DEV_SURIMI_PACKAGES = [
-  '/packages/surimi',
-  '/packages/common',
-  '/packages/parsers',
-  '/packages/core',
-  '/packages/conditional',
-  '/packages/theme',
-];
 
 const VUE_BLOCK_INCLUDE = '**/*.__surimi_*.css.ts';
 
@@ -144,17 +140,22 @@ function collectDependencies(server: ViteDevServer, entryId: string, root: strin
 
       const hadQuery = importedId.includes('?');
       const cleanId = importedId.split('?')[0] ?? importedId;
-      if (cleanId.includes('node_modules')) continue;
+      const isNodeModules = cleanId.includes('node_modules');
       if (isDevelopmentSurimiFile(cleanId)) continue;
       if (cleanId.startsWith('\0')) continue;
 
-      const normalizedImport = normalizeModuleId(cleanId, root);
-      deps.add(normalizedImport);
-
+      // Bare css imports are side effects no matter where they live: the SSR evaluator resolves
+      // plain CSS files to empty modules, so node_modules styles must be re-imported by the
+      // generated JS or they silently vanish from the final output.
       if (!hadQuery && SIDE_EFFECT_ASSET_REGEX.test(cleanId)) {
-        sideEffects.add(normalizedImport);
+        sideEffects.add(normalizeModuleId(cleanId, root));
       }
 
+      // node_modules stays out of watch/HMR deps (not user-editable) and is never traversed further.
+      if (isNodeModules) continue;
+
+      const normalizedImport = normalizeModuleId(cleanId, root);
+      deps.add(normalizedImport);
       visit(normalizedImport);
     }
   };

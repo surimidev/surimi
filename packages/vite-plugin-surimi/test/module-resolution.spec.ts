@@ -190,4 +190,26 @@ select('.main').style({ color: 'red' });
     const unique = new Set(result.dependencies);
     expect(unique.size).toBe(result.dependencies.length);
   });
+
+  it('re-emits bare css imports from node_modules as side-effect CSS', async () => {
+    const result = await buildApp({
+      'node_modules/fake-pkg/package.json': `{"name": "fake-pkg", "version": "0.0.0"}`,
+      'node_modules/fake-pkg/styles.css': `.vendor { margin: 0; }`,
+      'src/styles.css.ts': `import { select } from 'surimi';
+import 'fake-pkg/styles.css';
+
+select('.local').style({ color: 'red' });
+`,
+      'src/main.ts': `import './styles.css.ts';
+export {};
+`,
+    });
+    onTestFinished(() => result.cleanup());
+
+    const allCss = result.cssAssets.join('\n');
+    expect(allCss).toContain('.local');
+    // The evaluator resolves plain CSS to an empty module, so the vendor sheet only lands in the
+    // output when the generated JS re-imports it as a side effect.
+    expect(allCss).toContain('.vendor');
+  });
 });

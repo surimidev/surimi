@@ -70,16 +70,14 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         exclude,
         resolvedConfig: ctx.resolvedConfig,
         userPlugins: ctx.resolvedConfig.plugins.flat(),
+        ...(options.pluginFilter ? { pluginFilter: options.pluginFilter } : {}),
       });
     }
 
     return ctx.evaluator;
   };
 
-  const getCompilationResult = async (
-    id: string,
-    options: { source?: string } = {},
-  ): Promise<CompileResult> => {
+  const getCompilationResult = async (id: string, options: { source?: string } = {}): Promise<CompileResult> => {
     const normalizedId = normalizeModuleId(id, ctx.resolvedConfig?.root);
 
     if (!ctx.compilationCache.has(normalizedId)) {
@@ -249,7 +247,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
 
         if (validId?.endsWith(VIRTUAL_CSS_SUFFIX)) {
           const absoluteId =
-            importer && !path.isAbsolute(validId) ? resolveRelativeToImporter(validId) : toAbsoluteModuleId(validId, root);
+            importer && !path.isAbsolute(validId)
+              ? resolveRelativeToImporter(validId)
+              : toAbsoluteModuleId(validId, root);
           return withQuery(absoluteId);
         }
 
