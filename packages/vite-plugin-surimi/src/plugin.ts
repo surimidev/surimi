@@ -1,6 +1,6 @@
 import path from 'node:path';
 import type { CompileResult } from '@surimi/compiler';
-import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin } from 'vite';
+import type { EnvironmentModuleGraph, EnvironmentModuleNode, Plugin, PluginOption } from 'vite';
 import { createFilter } from 'vite';
 
 import { VIRTUAL_CSS_REGEX, VIRTUAL_CSS_SUFFIX, VIRTUAL_SURIMI_PATH_REGEX } from './constants.js';
@@ -41,6 +41,8 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   };
 
   const filesWatched = new Set<string>();
+  /** Plugins registered by the host (user or framework), as opposed to ones Vite adds internally. */
+  let hostPlugins = new Set<Plugin>();
 
   const normalizeDependencyId = (dependencyId: string, ownerId: string): string => {
     const cleanId = dependencyId.split('?')[0] ?? dependencyId;
@@ -69,7 +71,7 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
         include,
         exclude,
         resolvedConfig: ctx.resolvedConfig,
-        userPlugins: ctx.resolvedConfig.plugins.flat(),
+        userPlugins: ctx.resolvedConfig.plugins.filter(plugin => hostPlugins.has(plugin)),
         ...(options.pluginFilter ? { pluginFilter: options.pluginFilter } : {}),
       });
     }
@@ -169,7 +171,9 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
 
   const corePlugin: Plugin = {
     name: 'vite-plugin-surimi',
-    config(config) {
+    async config(config) {
+      hostPlugins = await collectPlugins(config.plugins);
+
       if (config.build?.ssr) {
         return {
           build: {
@@ -345,6 +349,16 @@ export default function surimiPlugin(options: SurimiOptions = {}): Plugin[] {
   };
 
   return [corePlugin, createVuePlugin(ctx)];
+}
+
+async function collectPlugins(option: PluginOption, into = new Set<Plugin>()): Promise<Set<Plugin>> {
+  const resolved = await option;
+  if (Array.isArray(resolved)) {
+    for (const nested of resolved) await collectPlugins(nested, into);
+  } else if (resolved) {
+    into.add(resolved);
+  }
+  return into;
 }
 
 function collectModulesForInvalidation(

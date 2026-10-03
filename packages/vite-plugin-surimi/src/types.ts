@@ -41,8 +41,9 @@ export interface SurimiOptions {
 
   /**
    * Decide which host plugins are seeded into surimi's owned evaluation server.
-   * The default keeps every plugin except surimi's own. Use this to drop plugins that misbehave
-   * inside a secondary, websocket-less server (middleware/websocket-dependent plugins, etc.).
+   * The default keeps every plugin registered by you or your framework except surimi's own (Vite's
+   * internal plugins are never seeded). Seeded plugins only contribute their `resolveId`, `load`
+   * and `transform` hooks. Use this to drop plugins whose transforms misbehave there.
    */
   pluginFilter?: (plugin: Plugin) => boolean;
 }
