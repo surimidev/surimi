@@ -69,7 +69,7 @@
     "vitest": "catalog:test"
   },
   "peerDependencies": {
-    "vite": "catalog:build"
+    "vite": "catalog:peers"
   },
   "peerDependenciesMeta": {
     "vite": {

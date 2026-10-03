@@ -26,6 +26,10 @@ catalogs:
     astro: ^7.3.5
     cssnano: ^8.0.2
     postcss: ^8.5.15
+  peers:
+    "@rolldown/browser": ^1.1.2
+    rolldown: ^1.1.2
+    vite: ^8.0.16
   prod:
     csstype: ^3.2.3
   script:

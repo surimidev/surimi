@@ -63,8 +63,8 @@
     "vitest": "catalog:test"
   },
   "peerDependencies": {
-    "@rolldown/browser": "catalog:build",
-    "rolldown": "catalog:build",
+    "@rolldown/browser": "catalog:peers",
+    "rolldown": "catalog:peers",
     "surimi": "workspace:*"
   },
   "peerDependenciesMeta": {
