@@ -17,7 +17,6 @@ export {
   type CompileResult,
   compile,
   compileWatch,
-  type RolldownWatcher,
   type RolldownWatcherEvent,
   type WatchOptions,
 } from './index.node';

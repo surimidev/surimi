@@ -12,7 +12,7 @@ catalogs:
     "@rolldown/browser": 1.2.12
     rolldown: 1.2.12
     tsdown: ^0.23.0
-    typescript: ^6.0.3
+    typescript: ^7.0.2
     vite: 8.3.2
   docs:
     "@astrojs/markdown-remark": ^7.3.1

@@ -1,12 +1,12 @@
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { compileWatch, type RolldownWatcher } from '../../src';
+import { compileWatch } from '../../src';
 
 const fixturesDir = path.resolve(__dirname, '../fixtures');
 
 describe('Compiler Watch Mode', () => {
-  let watcher: RolldownWatcher | null = null;
+  let watcher: ReturnType<typeof compileWatch> | null = null;
 
   afterEach(async () => {
     // Clean up watcher after each test
