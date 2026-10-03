@@ -54,15 +54,17 @@
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
+    "@rolldown/browser": "catalog:build",
     "@surimi/typescript-config": "workspace:*",
     "@types/node": "catalog:types",
+    "rolldown": "catalog:build",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
   "peerDependencies": {
-    "@rolldown/browser": "catalog:build",
-    "rolldown": "catalog:build",
+    "@rolldown/browser": "catalog:peers",
+    "rolldown": "catalog:peers",
     "surimi": "workspace:*"
   },
   "peerDependenciesMeta": {

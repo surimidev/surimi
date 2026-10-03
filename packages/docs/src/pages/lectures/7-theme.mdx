@@ -1,51 +1,52 @@
 ---
 title: Theme & variables
-description: Typed CSS custom properties with property() and createTheme()
+description: Typed CSS custom properties with property(), defineTokens() and createTheme()
 orderId: 7
 files:
   "/index.css.ts": |
     import { select } from 'surimi';
-    import { createTheme } from 'surimi/theme';
+    import { createTheme, defineTokens, token } from 'surimi/theme';
 
-    const theme = createTheme({
-      modes: {
-        light: ':root',
-        dark: '[data-theme="dark"]',
-      },
-      tokens: {
-        bg: { app: { light: '#f5f5f5', dark: '#16171d', syntax: '<color>' } },
-        text: { default: { light: '#333', dark: '#eee', syntax: '<color>' } },
-        primary: {
-          default: { light: '#3498db', dark: '#58a6ff', syntax: '<color>' },
-          hover: { light: '#2980b9', dark: '#3995ff', syntax: '<color>' },
-        },
-      },
+    const tokens = defineTokens({
+      background: token('#f5f5f5', '<color>'),
+      text: token('#333', '<color>'),
+      primary: token('#3498db', '<color>'),
+      primaryHover: token('#2980b9', '<color>'),
     });
 
+    const dark = createTheme(tokens, {
+      background: '#16171d',
+      text: '#eee',
+      primary: '#58a6ff',
+      primaryHover: '#3995ff',
+    });
+
+    select('[data-theme="dark"]').use(dark);
+
     select('body').style({
-      background: theme.bg.app,
-      color: theme.text.default,
+      background: tokens.background,
+      color: tokens.text,
       fontFamily: 'system-ui, sans-serif',
     });
 
     select('.btn').style({
-      background: theme.primary.default,
+      background: tokens.primary,
       color: 'white',
       padding: '0.6rem 1.2rem',
       border: 'none',
       borderRadius: '8px',
       cursor: 'pointer',
     }).hover().style({
-      background: theme.primary.hover,
+      background: tokens.primaryHover,
     });
 
     select('#theme-toggle').style({
       background: 'transparent',
-      border: `1px solid ${theme.primary.default}`,
-      color: theme.primary.default,
+      border: `1px solid ${tokens.primary}`,
+      color: tokens.primary,
     }).hover().style({
-      color: theme.primary.hover,
-      borderColor: theme.primary.hover,
+      color: tokens.primaryHover,
+      borderColor: tokens.primaryHover,
     });
   "/index.html": |
     <div id="root">
@@ -73,48 +74,43 @@ select('.btn').style({ background: primary });
 // -> .btn { background: var(--primary); }
 ```
 
-The third argument is the [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax), so the browser knows the type (and can even animate it). Change `#3498db` above and the button follows.
+The third argument is the [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax), so the browser knows the type (and can even animate it).
 
-## Theming with modes
+## Tokens and themes
 
-For light/dark (or any named modes), use `createTheme` from `surimi/theme`. It registers tokens once, assigns values per mode, and returns typed refs:
+For a whole set of variables, use `surimi/theme`. `defineTokens` declares your tokens with their default values, which are set on `:root`:
 
 ```ts
-import { createTheme } from 'surimi/theme';
+import { createTheme, defineTokens, token } from 'surimi/theme';
 
-const theme = createTheme({
-  modes: {
-    light: ':root',
-    dark: '[data-theme="dark"]',
-  },
-  tokens: {
-    bg: { app: { light: '#fff', dark: '#111', syntax: '<color>' } },
-    text: { default: { light: '#111', dark: '#eee' } },
-  },
+const tokens = defineTokens({
+  background: token('#fff', '<color>'),
+  text: '#111',
 });
-
-select('body').style({ background: theme.bg.app, color: theme.text.default });
 ```
 
-Targets can be selectors, attribute toggles, or media queries — fully configurable per mode.
+Every key is a token, and `tokens.background` compiles to `var(--background)`. Wrapping a value in `token()` also registers it as a typed `@property`.
 
-In the preview iframe, flip modes by setting `data-theme` on the document root:
+A theme is a set of new values for some of those tokens. `createTheme` returns a style, so you decide where it applies with `.use()`:
 
-```html
-<script>
-  document.documentElement.setAttribute('data-theme', 'dark');
-</script>
+```ts
+const dark = createTheme(tokens, { background: '#111', text: '#eee' });
+
+select('[data-theme="dark"]').use(dark);
 ```
 
-The example above wires that to a **Toggle dark mode** button so you can see light/dark tokens swap live.
+Change a value in the example above and the button follows. The **Toggle dark mode** button sets `data-theme` on the document root, so you can see the dark theme take over live.
+
+Follow the OS setting too: `media().prefersColorScheme('dark').select(':root').use(dark)`. Writeup: [Theming](/docs/guides/theme).
 
 ## The superpower: it's just TypeScript
 
-Group tokens in an object, export them from their own file, and import them anywhere — fully typed:
+Export tokens and themes from their own file and import them anywhere, fully typed:
 
 ```ts
 // theme.css.ts
-export const theme = createTheme({ modes: { light: ':root' }, tokens: { ... } });
+export const tokens = defineTokens({ ... });
+export const dark = createTheme(tokens, { ... });
 ```
 
 (In this single-file playground we keep them inline, but in a real project each `.css.ts` emits its own CSS and shares the tokens through normal imports.)
