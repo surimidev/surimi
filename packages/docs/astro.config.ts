@@ -1,3 +1,4 @@
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { defineConfig, passthroughImageService } from 'astro/config';
@@ -62,8 +63,13 @@ export default defineConfig({
     service: passthroughImageService(),
   },
 
+  // Astro 7 defaults to Sätteri. Remark plugins still need the unified processor.
+  // compressHTML keeps v6 whitespace so inline text does not collapse.
+  compressHTML: true,
   markdown: {
-    remarkPlugins: [[remarkGithub, { repository: 'surimidev/surimi' }], blockquoteAlert, remarkEmoji],
+    processor: unified({
+      remarkPlugins: [[remarkGithub, { repository: 'surimidev/surimi' }], blockquoteAlert, remarkEmoji],
+    }),
     // Same dual-theme setup as the playground lectures: emit --shiki-light / --shiki-dark
     // vars and switch on [data-theme] in code.css.ts.
     shikiConfig: {

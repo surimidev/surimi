@@ -65,6 +65,7 @@
     "@surimi/typescript-config": "workspace:*",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
+    "vite": "catalog:build",
     "vitest": "catalog:test"
   },
   "peerDependencies": {
