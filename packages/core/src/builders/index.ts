@@ -9,6 +9,7 @@ export * from './font-face.builder';
 export * from './keyframes.builder';
 export * from './media-query.builder';
 export * from './mixin.builder';
+export { WithStyling, WithUsables } from './mixins';
 // Then selector builder (depends on mixins, but mixins will be tree-shaken properly)
 export * from './selector.builder';
 export * from './style.builder';
