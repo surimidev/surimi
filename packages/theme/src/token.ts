@@ -1,24 +1,22 @@
-import type { SyntaxValue } from '@surimi/common';
-
-import type { Token } from '#types';
+import type { TokenValue } from '#types';
 
 declare const tokenBrand: unique symbol;
 
-export interface TokenOptions<S extends string = string> {
+export interface TokenOptions {
   /** `@property` syntax, e.g. `'<color>'`. Defaults to `'*'`. */
-  syntax?: S | undefined;
+  syntax?: string | undefined;
   /** Defaults to `true`. */
   inherits?: boolean | undefined;
 }
 
-export class TokenDefinition<TValue = string | number> {
-  declare readonly [tokenBrand]: TValue;
+export class TokenDefinition {
+  declare readonly [tokenBrand]: true;
 
-  readonly value: TValue | Token;
+  readonly value: TokenValue;
   readonly syntax: string;
   readonly inherits: boolean;
 
-  constructor(value: TValue | Token, { syntax = '*', inherits = true }: TokenOptions = {}) {
+  constructor(value: TokenValue, { syntax = '*', inherits = true }: TokenOptions = {}) {
     this.value = value;
     this.syntax = syntax;
     this.inherits = inherits;
@@ -27,7 +25,7 @@ export class TokenDefinition<TValue = string | number> {
 
 /**
  * Declare a token that also gets an `@property` rule, for `defineTokens`.
- * The value is the default and becomes the `initial-value`, so it must match the syntax.
+ * The value is the default and becomes the `initial-value`.
  * Plain values work too, they just don't get an `@property`.
  *
  * @example
@@ -38,9 +36,6 @@ export class TokenDefinition<TValue = string | number> {
  * });
  * ```
  */
-export function token<const S extends string = '*'>(
-  value: NoInfer<SyntaxValue<S>> | Token,
-  options?: S | TokenOptions<S>,
-): TokenDefinition<SyntaxValue<S>> {
+export function token(value: TokenValue, options?: string | TokenOptions): TokenDefinition {
   return new TokenDefinition(value, typeof options === 'string' ? { syntax: options } : options);
 }

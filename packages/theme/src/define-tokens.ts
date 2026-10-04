@@ -1,6 +1,6 @@
 import type { CssProperties } from '@surimi/common';
 import { SurimiContext } from '@surimi/common';
-import { CustomPropertyBuilder, createSelectorBuilderFromString } from '@surimi/core';
+import { CustomPropertyBuilder, type CustomPropertyOptions, createSelectorBuilderFromString } from '@surimi/core';
 
 import { TokenDefinition } from '#token';
 import type { Token, TokenGroup, Tokens, TokenTree, TokenValue } from '#types';
@@ -10,32 +10,34 @@ export interface DefineTokensOptions {
   prefix?: string | undefined;
 }
 
-type Declarations = Record<string, string>;
+interface Entry {
+  group: Record<string, Token | TokenGroup>;
+  key: string;
+  name: string;
+  options: CustomPropertyOptions<TokenValue>;
+  value: string;
+}
 
 /** Defaults already set on `:root`, by name. */
 const defaults = new WeakMap<typeof SurimiContext.root, Map<string, string>>();
 
-function isValue(node: TokenValue | TokenDefinition<unknown> | TokenTree): node is TokenValue {
+function isValue(node: TokenValue | TokenDefinition | TokenTree): node is TokenValue {
   return typeof node !== 'object' || node instanceof CustomPropertyBuilder;
 }
 
-function createToken(name: string, node: TokenValue | TokenDefinition<unknown>): Token<unknown> {
+function toOptions(node: TokenValue | TokenDefinition): CustomPropertyOptions<TokenValue> {
   if (!(node instanceof TokenDefinition)) {
-    return new CustomPropertyBuilder(SurimiContext.root, name, { register: false });
+    return { register: false };
   }
 
   const { value, syntax, inherits } = node;
   const isAlias = value instanceof CustomPropertyBuilder;
 
-  return new CustomPropertyBuilder(SurimiContext.root, name, {
-    syntax,
-    inherits,
-    initialValue: isAlias && syntax === '*' ? undefined : value,
-  });
+  return { syntax, inherits, initialValue: isAlias && syntax === '*' ? undefined : value };
 }
 
-function build(tree: TokenTree, path: string[], declarations: Declarations, seen: Map<string, string>): TokenGroup {
-  const group: Record<string, Token<unknown> | TokenGroup> = {};
+function collect(tree: TokenTree, path: string[], entries: Entry[], seen: Map<string, string>): TokenGroup {
+  const group: Record<string, Token | TokenGroup> = {};
 
   for (const [key, node] of Object.entries(tree)) {
     const keyPath = [...path, key];
@@ -49,10 +51,12 @@ function build(tree: TokenTree, path: string[], declarations: Declarations, seen
       }
       seen.set(name, keyPath.join('.'));
 
-      group[key] = createToken(name, node);
-      declarations[name] = String(node instanceof TokenDefinition ? node.value : node);
+      const value = String(node instanceof TokenDefinition ? node.value : node);
+      // Reserves the key position, the token is only created once everything is valid
+      group[key] = undefined as never;
+      entries.push({ group, key, name, options: toOptions(node), value });
     } else {
-      group[key] = build(node, keyPath, declarations, seen);
+      group[key] = collect(node, keyPath, entries, seen);
     }
   }
 
@@ -75,31 +79,36 @@ function build(tree: TokenTree, path: string[], declarations: Declarations, seen
  * ```
  */
 export function defineTokens<T extends TokenTree>(values: T, options: DefineTokensOptions = {}): Tokens<T> {
-  const declarations: Declarations = {};
-  const tokens = build(values, options.prefix ? [options.prefix] : [], declarations, new Map());
+  const root = SurimiContext.root;
+  const entries: Entry[] = [];
+  const tokens = collect(values, options.prefix ? [options.prefix] : [], entries, new Map());
+  const existing = defaults.get(root) ?? new Map<string, string>();
 
-  let existing = defaults.get(SurimiContext.root);
-  if (!existing) {
-    existing = new Map();
-    defaults.set(SurimiContext.root, existing);
-  }
+  for (const { name, options: propertyOptions, value } of entries) {
+    CustomPropertyBuilder.validate(root, name, propertyOptions);
 
-  for (const [name, value] of Object.entries(declarations)) {
     const previous = existing.get(name);
 
-    if (previous === undefined) {
-      existing.set(name, value);
-    } else if (previous === value) {
-      delete declarations[name];
-    } else {
+    if (previous !== undefined && previous !== value) {
       throw new Error(`Conflicting default for ${name}: existing ${previous} vs new ${value}`);
     }
   }
 
+  const declarations: Record<string, string> = {};
+
+  for (const { group, key, name, options: propertyOptions, value } of entries) {
+    group[key] = new CustomPropertyBuilder(root, name, propertyOptions) as Token;
+
+    if (!existing.has(name)) {
+      existing.set(name, value);
+      declarations[name] = value;
+    }
+  }
+
+  defaults.set(root, existing);
+
   if (Object.keys(declarations).length > 0) {
-    createSelectorBuilderFromString([':root'], SurimiContext.root, SurimiContext.root).style(
-      declarations as CssProperties,
-    );
+    createSelectorBuilderFromString([':root'], root, root).style(declarations as CssProperties);
   }
 
   return tokens as Tokens<T>;

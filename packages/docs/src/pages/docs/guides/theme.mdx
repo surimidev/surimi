@@ -81,8 +81,6 @@ defineTokens({
 - `value` is the default. It also becomes the `initial-value`.
 - `options` is a [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax) string, or `{ syntax, inherits }`. `syntax` defaults to `'*'`, `inherits` to `true`.
 
-The syntax types the value. `token('4', '<length>')` is a compile error and throws, `'4px'` works. Same for keywords: `token('small', 'small | large')` only accepts `'small'` and `'large'`, also in themes. Colors only get hints, any string is accepted.
-
 Values are written as-is. Numbers get no unit, so write `'4px'`, not `4`, when you need pixels.
 
 ### Nesting
@@ -166,4 +164,4 @@ const brand = createTheme(tokens, {
 - Names are not hashed or scoped. Defining the same name again with the same values is fine, with different values it throws.
 - Token names have to be valid CSS. Keys with spaces or dots throw, and so do two keys that end up with the same name (like `text: { muted }` and `'text-muted'`).
 - Defaults always go on `:root`. To scope them elsewhere, also create a theme with the defaults and apply it there.
-- `createTheme` checks values against a token's `syntax` only at compile time. At runtime the browser ignores an invalid value for a typed token.
+- Values are not checked against a token's `syntax`. The browser does that for you and ignores invalid values.

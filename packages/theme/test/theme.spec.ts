@@ -126,6 +126,26 @@ describe('defineTokens', () => {
     );
   });
 
+  it('should not emit anything when a call fails', () => {
+    const base = defineTokens({ x: '#fff', y: token('1px', '<length>') });
+    const before = Surimi.build();
+
+    expect(() => defineTokens({ a: token('#000', '<color>'), x: token('#000', '<color>') })).toThrow(
+      /Conflicting default for --x/,
+    );
+    expect(() => defineTokens({ b: token('#000', '<color>'), y: token('2px', '<length>') })).toThrow(
+      /Conflicting @property definition for --y/,
+    );
+    expect(() => defineTokens({ c: '#000', 'd e': '#000' })).toThrow(/Invalid custom property name/);
+    expect(() => defineTokens({ c: '#000', d: token(base.x, '<color>') })).toThrow(/literal initial-value/);
+    expect(Surimi.build()).toBe(before);
+
+    defineTokens({ a: token('#111', '<color>'), c: '#111' });
+
+    expect(Surimi.build()).toContain('initial-value: #111');
+    expect(Surimi.build()).toContain('--c: #111');
+  });
+
   it('should set an identical default only once', () => {
     const a = defineTokens({ background: '#fff' });
     const b = defineTokens({ background: '#fff', text: '#111' });
@@ -136,19 +156,6 @@ describe('defineTokens', () => {
     --background: #fff;
     --text: #111;
 }`);
-  });
-
-  it('should type and check token values against the syntax', () => {
-    const tokens = defineTokens({ radius: token('4px', '<length>'), size: token('small', 'small | large') });
-
-    expectTypeOf(tokens.size).toEqualTypeOf<Token<'small' | 'large'>>();
-    // @ts-expect-error not a length
-    expect(() => defineTokens({ space: token('4', '<length>') })).toThrow(/does not match syntax '<length>'/);
-    // @ts-expect-error not one of the keywords
-    createTheme(tokens, { size: 'huge' });
-    // @ts-expect-error not a length
-    createTheme(tokens, { radius: 'red' });
-    createTheme(tokens, { radius: '8px', size: 'large' });
   });
 
   it('should throw on names that are not valid CSS', () => {
