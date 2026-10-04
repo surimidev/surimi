@@ -255,16 +255,20 @@ export function fontFace(properties: FontFaceProperties) {
   return new FontFaceBuilder(properties, SurimiContext.root, SurimiContext.root);
 }
 
+export type PropertyOptions = {
+  name: string;
+  syntax?: string;
+  inherits?: boolean;
+} & ({ initialValue: string | number; register?: true } | { initialValue?: never; register: false });
+
 /**
  * Create and register a custom CSS property.
  * You can pass either individual parameters or an options object.
  *
  * If not specified, `syntax` defaults to `*` and `inherits` to `true`.
  *
- * The options-object form accepts an optional `register` flag. When `register: false`
- * the token is created and can be used as a value reference (`var(--name)`), but no
- * `@property` rule is emitted. Useful when you want to defer registration or share a
- * token reference across files without re-registering it.
+ * With `register: false` you only get a reference (`var(--name)`), no `@property` is emitted.
+ * Useful to use a property that is defined somewhere else.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/@property
  *
@@ -273,58 +277,30 @@ export function fontFace(properties: FontFaceProperties) {
  * @param syntax Any supported syntax value, see ([syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax))
  * @param inherits Whether the property inherits its value from its parent, see ([inherits](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/inherits))
  */
-export function property<TValue = string & {}>(
+export function property(
   name: string,
-  initialValue: TValue,
+  initialValue: string | number,
   syntax?: string,
   inherits?: boolean,
-): CustomPropertyBuilder<TValue>;
-export function property<TValue = string & {}>(options: {
-  name: string;
-  initialValue: TValue;
-  syntax?: string;
-  inherits?: boolean;
-  register?: boolean;
-}): CustomPropertyBuilder<TValue>;
-export function property<TValue = string & {}>(
-  nameOrOptions:
-    | string
-    | {
-        name: string;
-        initialValue: TValue;
-        syntax?: string;
-        inherits?: boolean;
-        register?: boolean;
-      },
-  initialValue?: TValue,
-  syntax = '*',
-  inherits = true,
-): CustomPropertyBuilder<TValue> {
+): CustomPropertyBuilder;
+export function property(options: PropertyOptions): CustomPropertyBuilder;
+export function property(
+  nameOrOptions: string | PropertyOptions,
+  initialValue?: string | number,
+  syntax?: string,
+  inherits?: boolean,
+): CustomPropertyBuilder {
   if (typeof nameOrOptions === 'string') {
-    if (initialValue == null || syntax == null || inherits == null) {
-      throw new Error('Missing parameter(s)');
+    if (initialValue === undefined) {
+      throw new Error(`Missing initial value for property ${nameOrOptions}`);
     }
 
-    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, {
-      syntax,
-      inherits,
-      initialValue,
-    });
-  } else {
-    const { name, syntax = '*', inherits = true, initialValue, register } = nameOrOptions;
-    const options: {
-      syntax: string;
-      inherits: boolean;
-      initialValue: TValue;
-      register?: boolean;
-    } = { syntax, inherits, initialValue };
-
-    if (register !== undefined) {
-      options.register = register;
-    }
-
-    return new CustomPropertyBuilder(SurimiContext.root, name, options);
+    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, { syntax, inherits, initialValue });
   }
+
+  const { name, ...options } = nameOrOptions;
+
+  return new CustomPropertyBuilder(SurimiContext.root, name, options);
 }
 
 /**

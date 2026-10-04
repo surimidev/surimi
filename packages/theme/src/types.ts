@@ -3,7 +3,7 @@ import type { CustomPropertyBuilder } from '@surimi/core';
 import type { TokenDefinition } from '#token';
 
 /** A design token. Stringifies to `var(--name)`, so you can use it as any style value. */
-export type Token = CustomPropertyBuilder<string>;
+export type Token = CustomPropertyBuilder;
 
 /** A value a token can hold. A token as value aliases it (`var(--other)`). Numbers get no unit. */
 export type TokenValue = string | number | Token;

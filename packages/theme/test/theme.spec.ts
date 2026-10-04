@@ -48,14 +48,14 @@ describe('defineTokens', () => {
 }`);
   });
 
-  it('should kebab-case nested paths and the prefix', () => {
+  it('should join nested paths and the prefix as is', () => {
     const tokens = defineTokens({ fontSize: { small: '0.875rem', large: '2rem' } }, { prefix: 'myApp' });
 
-    expect(tokens.fontSize.large.build()).toBe('var(--my-app-font-size-large)');
+    expect(tokens.fontSize.large.build()).toBe('var(--myApp-fontSize-large)');
     expect(Surimi.build()).toBe(`\
 :root {
-    --my-app-font-size-small: 0.875rem;
-    --my-app-font-size-large: 2rem;
+    --myApp-fontSize-small: 0.875rem;
+    --myApp-fontSize-large: 2rem;
 }`);
   });
 
@@ -96,29 +96,66 @@ describe('defineTokens', () => {
   it('should reject a typed token with an alias default', () => {
     const palette = defineTokens({ gray: '#fcfcfd' });
 
-    expect(() => defineTokens({ background: token(palette.gray, '<color>') })).toThrow(/literal default/);
+    expect(() => defineTokens({ background: token(palette.gray, '<color>') })).toThrow(/literal initial-value/);
   });
 
-  it('should kebab-case acronym names', () => {
-    const tokens = defineTokens({ URLValue: 'https://surimi.dev', APIKey: 'key' });
-
-    expect(tokens.URLValue.build()).toBe('var(--url-value)');
-    expect(tokens.APIKey.build()).toBe('var(--api-key)');
-  });
-
-  it('should not collide acronyms with lowercase keys', () => {
+  it('should keep the case of keys', () => {
     const tokens = defineTokens({ URLValue: 'a', urlvalue: 'b' });
 
-    expect(tokens.URLValue.build()).toBe('var(--url-value)');
+    expect(tokens.URLValue.build()).toBe('var(--URLValue)');
     expect(tokens.urlvalue.build()).toBe('var(--urlvalue)');
+    expect(Surimi.build()).toBe(`\
+:root {
+    --URLValue: a;
+    --urlvalue: b;
+}`);
   });
 
   it('should throw when two keys produce the same name', () => {
-    expect(() => defineTokens({ textMuted: '#666', 'text-muted': '#999' })).toThrow(/--text-muted/);
-    expect(() => defineTokens({ fontSize: { large: '1rem' }, 'font-size': { large: '2rem' } })).toThrow(
+    expect(() => defineTokens({ text: { muted: '#666' }, 'text-muted': '#999' })).toThrow(/--text-muted/);
+    expect(() => defineTokens({ font: { size: { large: '1rem' } }, 'font-size': { large: '2rem' } })).toThrow(
       /--font-size-large/,
     );
-    expect(() => defineTokens({ URLValue: 'a', 'url-value': 'b' })).toThrow(/--url-value/);
+  });
+
+  it('should throw when a default is redefined with a different value', () => {
+    defineTokens({ background: '#fff' });
+
+    expect(() => defineTokens({ background: '#000' })).toThrow(
+      /Conflicting default for --background: existing #fff vs new #000/,
+    );
+  });
+
+  it('should not emit anything when a call fails', () => {
+    const base = defineTokens({ x: '#fff', y: token('1px', '<length>') });
+    const before = Surimi.build();
+
+    expect(() => defineTokens({ a: token('#000', '<color>'), x: token('#000', '<color>') })).toThrow(
+      /Conflicting default for --x/,
+    );
+    expect(() => defineTokens({ b: token('#000', '<color>'), y: token('2px', '<length>') })).toThrow(
+      /Conflicting @property definition for --y/,
+    );
+    expect(() => defineTokens({ c: '#000', 'd e': '#000' })).toThrow(/Invalid custom property name/);
+    expect(() => defineTokens({ c: '#000', d: token(base.x, '<color>') })).toThrow(/literal initial-value/);
+    expect(Surimi.build()).toBe(before);
+
+    defineTokens({ a: token('#111', '<color>'), c: '#111' });
+
+    expect(Surimi.build()).toContain('initial-value: #111');
+    expect(Surimi.build()).toContain('--c: #111');
+  });
+
+  it('should set an identical default only once', () => {
+    const a = defineTokens({ background: '#fff' });
+    const b = defineTokens({ background: '#fff', text: '#111' });
+
+    expect(a.background.build()).toBe(b.background.build());
+    expect(Surimi.build()).toBe(`\
+:root {
+    --background: #fff;
+    --text: #111;
+}`);
   });
 
   it('should throw on names that are not valid CSS', () => {

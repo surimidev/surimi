@@ -1,6 +1,6 @@
 import type { CssContainer, CssRoot } from '@surimi/ast';
-import type { CssProperties, ValidSelector } from '@surimi/common';
-import { CoreBuilder, createDeclarationsFromProperties, type SelectorBuilder, StyleBuilder } from '@surimi/core';
+import type { ValidSelector } from '@surimi/common';
+import { CoreBuilder, type SelectorBuilder, WithUsables } from '@surimi/core';
 import type { Tokenize } from '@surimi/parsers';
 import { tokenize } from '@surimi/parsers';
 
@@ -31,7 +31,7 @@ interface ConditionGroup {
  *
  * This is returned after calling a pseudo-class method on ConditionalBuilder.
  */
-export class ConditionalSelectorBuilder<TCondition extends string> extends CoreBuilder<Tokenize<TCondition>> {
+export class ConditionalSelectorBuilder<TCondition extends string> extends WithUsables<TCondition> {
   /**
    * Select an element that should be styled when the condition is met.
    * Uses html as the container for :has() to ensure it works with any DOM structure.
@@ -55,24 +55,6 @@ export class ConditionalSelectorBuilder<TCondition extends string> extends CoreB
     const newContext = tokenize(newSelector);
 
     return new ConditionalSelectorBuilder<typeof newSelector>(newContext, this._container, this._cssRoot);
-  }
-
-  /**
-   * Apply CSS properties to the conditional selector.
-   * Creates the necessary CSS rule and declarations.
-   */
-  public style(styles: CssProperties | StyleBuilder): this {
-    if (styles instanceof StyleBuilder) {
-      return this.style(styles.build());
-    }
-
-    const rule = this.getOrCreateRule();
-    const declarations = createDeclarationsFromProperties(styles);
-    declarations.forEach(decl => {
-      rule.append(decl);
-    });
-
-    return this;
   }
 }
 

@@ -3,10 +3,13 @@ import type { CamelCaseToKebabCase, CssProperties } from '@surimi/common';
 
 import { CustomPropertyBuilder } from '#builders/custom-property.builder';
 
-export function formatPropertyName<T extends string>(property: T): CamelCaseToKebabCase<T> {
-  if (property.length === 0) return property as never;
+/** Custom properties are case-sensitive, so `--fooBar` is kept as is. */
+export function formatPropertyName<T extends string>(
+  property: T,
+): T extends `--${string}` ? T : CamelCaseToKebabCase<T> {
+  if (property.length === 0 || property.startsWith('--')) return property as never;
 
-  return property.replace(/([A-Z])/g, '-$1').toLowerCase() as CamelCaseToKebabCase<T>;
+  return property.replace(/([A-Z])/g, '-$1').toLowerCase() as never;
 }
 
 export function formatPropertyValue(value: unknown): string {
@@ -38,17 +41,17 @@ export function createDeclarationsFromProperties(properties: CssProperties): Css
   const declarations: CssDeclaration[] = [];
 
   for (const [property, value] of Object.entries(properties)) {
-    if (value != null) {
-      const formattedProperty = formatPropertyName(property);
-      const formattedValue = value instanceof CustomPropertyBuilder ? value.build() : formatPropertyValue(value);
-
-      declarations.push(
-        decl({
-          prop: formattedProperty,
-          value: formattedValue,
-        }),
-      );
+    if (value === undefined) {
+      continue;
     }
+
+    if (value === null) {
+      throw new TypeError(`Expected a value for "${property}", got null. Omit the key or use undefined`);
+    }
+
+    const formattedValue = value instanceof CustomPropertyBuilder ? value.build() : formatPropertyValue(value);
+
+    declarations.push(decl({ prop: formatPropertyName(property), value: formattedValue }));
   }
 
   return declarations;

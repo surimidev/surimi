@@ -51,9 +51,30 @@ describe('Custom Property Builder', () => {
   });
 
   it('should not emit @property when register is false', () => {
-    property({ name: 'quiet', initialValue: '#000', register: false });
+    const quiet = property({ name: 'quiet', register: false });
 
+    expect(quiet.build()).toBe('var(--quiet)');
     expect(Surimi.build()).toBe('');
+  });
+
+  it('should reject an initial value on an unregistered property', () => {
+    // @ts-expect-error the initial value would be dropped
+    expect(() => property({ name: 'quiet', initialValue: '#000', register: false })).toThrow(/not registered/);
+  });
+
+  it('should keep the name case', () => {
+    expect(property('fontSize', '1rem').build()).toBe('var(--fontSize)');
+  });
+
+  it('should throw on names that are not valid CSS', () => {
+    expect(() => property('foo bar', '0')).toThrow(/Invalid custom property name "--foo bar"/);
+    expect(() => property('--', '0')).toThrow(/Invalid custom property name/);
+  });
+
+  it('should reject another property as typed initial value', () => {
+    const base = property('base', '#000', '<color>');
+
+    expect(() => property('derived', base as never, '<color>')).toThrow(/literal initial-value/);
   });
 
   it('should dedupe identical @property registrations', () => {

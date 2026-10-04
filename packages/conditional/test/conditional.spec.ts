@@ -1,5 +1,5 @@
 import { SurimiContext } from '@surimi/common';
-import { createSelectorBuilderFromString } from '@surimi/core';
+import { createSelectorBuilderFromString, StyleBuilder } from '@surimi/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { when } from '../src';
@@ -12,6 +12,16 @@ describe('ConditionalBuilder', () => {
   describe('Basic Conditional Selectors', () => {
     it('should create conditional selector with hover state', () => {
       when('.button').hovered().select('.container').style({ color: 'red' });
+
+      expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
+    color: red;
+}`);
+    });
+
+    it('should apply a style with use()', () => {
+      const button = new StyleBuilder(SurimiContext.root, { color: 'red' });
+
+      when('.button').hovered().select('.container').use(button);
 
       expect(SurimiContext.build()).toBe(`:where(html):has(.button:hover) .container {
     color: red;
