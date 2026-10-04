@@ -2,6 +2,7 @@ import type {
   ArrayWithAtLeastOneItem,
   CssProperties,
   FontFaceProperties,
+  SyntaxValue,
   ValidSelector,
   ViewTransitionNavigation,
 } from '@surimi/common';
@@ -255,16 +256,21 @@ export function fontFace(properties: FontFaceProperties) {
   return new FontFaceBuilder(properties, SurimiContext.root, SurimiContext.root);
 }
 
+export type PropertyOptions<S extends string = '*'> = {
+  name: string;
+  syntax?: S;
+  inherits?: boolean;
+} & ({ initialValue: NoInfer<SyntaxValue<S>>; register?: true } | { initialValue?: never; register: false });
+
 /**
  * Create and register a custom CSS property.
  * You can pass either individual parameters or an options object.
  *
  * If not specified, `syntax` defaults to `*` and `inherits` to `true`.
+ * The initial value is typed and checked against the syntax.
  *
- * The options-object form accepts an optional `register` flag. When `register: false`
- * the token is created and can be used as a value reference (`var(--name)`), but no
- * `@property` rule is emitted. Useful when you want to defer registration or share a
- * token reference across files without re-registering it.
+ * With `register: false` you only get a reference (`var(--name)`), no `@property` is emitted.
+ * Useful to use a property that is defined somewhere else.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/@property
  *
@@ -273,58 +279,32 @@ export function fontFace(properties: FontFaceProperties) {
  * @param syntax Any supported syntax value, see ([syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax))
  * @param inherits Whether the property inherits its value from its parent, see ([inherits](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/inherits))
  */
-export function property<TValue = string & {}>(
+export function property<const S extends string = '*'>(
   name: string,
-  initialValue: TValue,
-  syntax?: string,
+  initialValue: NoInfer<SyntaxValue<S>>,
+  syntax?: S,
   inherits?: boolean,
-): CustomPropertyBuilder<TValue>;
-export function property<TValue = string & {}>(options: {
-  name: string;
-  initialValue: TValue;
-  syntax?: string;
-  inherits?: boolean;
-  register?: boolean;
-}): CustomPropertyBuilder<TValue>;
-export function property<TValue = string & {}>(
-  nameOrOptions:
-    | string
-    | {
-        name: string;
-        initialValue: TValue;
-        syntax?: string;
-        inherits?: boolean;
-        register?: boolean;
-      },
-  initialValue?: TValue,
-  syntax = '*',
-  inherits = true,
-): CustomPropertyBuilder<TValue> {
+): CustomPropertyBuilder<SyntaxValue<S>>;
+export function property<const S extends string = '*'>(
+  options: PropertyOptions<S>,
+): CustomPropertyBuilder<SyntaxValue<S>>;
+export function property<const S extends string = '*'>(
+  nameOrOptions: string | PropertyOptions<S>,
+  initialValue?: NoInfer<SyntaxValue<S>>,
+  syntax?: S,
+  inherits?: boolean,
+): CustomPropertyBuilder<SyntaxValue<S>> {
   if (typeof nameOrOptions === 'string') {
-    if (initialValue == null || syntax == null || inherits == null) {
-      throw new Error('Missing parameter(s)');
+    if (initialValue === undefined) {
+      throw new Error(`Missing initial value for property ${nameOrOptions}`);
     }
 
-    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, {
-      syntax,
-      inherits,
-      initialValue,
-    });
-  } else {
-    const { name, syntax = '*', inherits = true, initialValue, register } = nameOrOptions;
-    const options: {
-      syntax: string;
-      inherits: boolean;
-      initialValue: TValue;
-      register?: boolean;
-    } = { syntax, inherits, initialValue };
-
-    if (register !== undefined) {
-      options.register = register;
-    }
-
-    return new CustomPropertyBuilder(SurimiContext.root, name, options);
+    return new CustomPropertyBuilder(SurimiContext.root, nameOrOptions, { syntax, inherits, initialValue });
   }
+
+  const { name, ...options } = nameOrOptions;
+
+  return new CustomPropertyBuilder<SyntaxValue<S>>(SurimiContext.root, name, options);
 }
 
 /**
