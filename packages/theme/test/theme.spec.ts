@@ -48,14 +48,14 @@ describe('defineTokens', () => {
 }`);
   });
 
-  it('should kebab-case nested paths and the prefix', () => {
+  it('should join nested paths and the prefix as is', () => {
     const tokens = defineTokens({ fontSize: { small: '0.875rem', large: '2rem' } }, { prefix: 'myApp' });
 
-    expect(tokens.fontSize.large.build()).toBe('var(--my-app-font-size-large)');
+    expect(tokens.fontSize.large.build()).toBe('var(--myApp-fontSize-large)');
     expect(Surimi.build()).toBe(`\
 :root {
-    --my-app-font-size-small: 0.875rem;
-    --my-app-font-size-large: 2rem;
+    --myApp-fontSize-small: 0.875rem;
+    --myApp-fontSize-large: 2rem;
 }`);
   });
 
@@ -96,29 +96,59 @@ describe('defineTokens', () => {
   it('should reject a typed token with an alias default', () => {
     const palette = defineTokens({ gray: '#fcfcfd' });
 
-    expect(() => defineTokens({ background: token(palette.gray, '<color>') })).toThrow(/literal default/);
+    expect(() => defineTokens({ background: token(palette.gray, '<color>') })).toThrow(/literal initial-value/);
   });
 
-  it('should kebab-case acronym names', () => {
-    const tokens = defineTokens({ URLValue: 'https://surimi.dev', APIKey: 'key' });
-
-    expect(tokens.URLValue.build()).toBe('var(--url-value)');
-    expect(tokens.APIKey.build()).toBe('var(--api-key)');
-  });
-
-  it('should not collide acronyms with lowercase keys', () => {
+  it('should keep the case of keys', () => {
     const tokens = defineTokens({ URLValue: 'a', urlvalue: 'b' });
 
-    expect(tokens.URLValue.build()).toBe('var(--url-value)');
+    expect(tokens.URLValue.build()).toBe('var(--URLValue)');
     expect(tokens.urlvalue.build()).toBe('var(--urlvalue)');
+    expect(Surimi.build()).toBe(`\
+:root {
+    --URLValue: a;
+    --urlvalue: b;
+}`);
   });
 
   it('should throw when two keys produce the same name', () => {
-    expect(() => defineTokens({ textMuted: '#666', 'text-muted': '#999' })).toThrow(/--text-muted/);
-    expect(() => defineTokens({ fontSize: { large: '1rem' }, 'font-size': { large: '2rem' } })).toThrow(
+    expect(() => defineTokens({ text: { muted: '#666' }, 'text-muted': '#999' })).toThrow(/--text-muted/);
+    expect(() => defineTokens({ font: { size: { large: '1rem' } }, 'font-size': { large: '2rem' } })).toThrow(
       /--font-size-large/,
     );
-    expect(() => defineTokens({ URLValue: 'a', 'url-value': 'b' })).toThrow(/--url-value/);
+  });
+
+  it('should throw when a default is redefined with a different value', () => {
+    defineTokens({ background: '#fff' });
+
+    expect(() => defineTokens({ background: '#000' })).toThrow(
+      /Conflicting default for --background: existing #fff vs new #000/,
+    );
+  });
+
+  it('should set an identical default only once', () => {
+    const a = defineTokens({ background: '#fff' });
+    const b = defineTokens({ background: '#fff', text: '#111' });
+
+    expect(a.background.build()).toBe(b.background.build());
+    expect(Surimi.build()).toBe(`\
+:root {
+    --background: #fff;
+    --text: #111;
+}`);
+  });
+
+  it('should type and check token values against the syntax', () => {
+    const tokens = defineTokens({ radius: token('4px', '<length>'), size: token('small', 'small | large') });
+
+    expectTypeOf(tokens.size).toEqualTypeOf<Token<'small' | 'large'>>();
+    // @ts-expect-error not a length
+    expect(() => defineTokens({ space: token('4', '<length>') })).toThrow(/does not match syntax '<length>'/);
+    // @ts-expect-error not one of the keywords
+    createTheme(tokens, { size: 'huge' });
+    // @ts-expect-error not a length
+    createTheme(tokens, { radius: 'red' });
+    createTheme(tokens, { radius: '8px', size: 'large' });
   });
 
   it('should throw on names that are not valid CSS', () => {

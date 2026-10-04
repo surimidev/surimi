@@ -10,55 +10,38 @@ export interface DefineTokensOptions {
   prefix?: string | undefined;
 }
 
-type Declarations = Record<string, TokenValue>;
+type Declarations = Record<string, string>;
 
-/** Segments of a custom property name. Anything else is invalid CSS and would be dropped by the browser. */
-const NAME_PATTERN = /^[-_a-zA-Z0-9\u00A0-\uFFFF]+$/;
+/** Defaults already set on `:root`, by name. */
+const defaults = new WeakMap<typeof SurimiContext.root, Map<string, string>>();
 
-function toKebabCase(key: string): string {
-  return key
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase();
-}
-
-function isValue(node: TokenValue | TokenTree): node is TokenValue {
+function isValue(node: TokenValue | TokenDefinition<unknown> | TokenTree): node is TokenValue {
   return typeof node !== 'object' || node instanceof CustomPropertyBuilder;
 }
 
-function createToken(name: string, node: TokenValue | TokenDefinition): Token {
+function createToken(name: string, node: TokenValue | TokenDefinition<unknown>): Token<unknown> {
   if (!(node instanceof TokenDefinition)) {
     return new CustomPropertyBuilder(SurimiContext.root, name, { register: false });
   }
 
   const { value, syntax, inherits } = node;
+  const isAlias = value instanceof CustomPropertyBuilder;
 
-  if (value instanceof CustomPropertyBuilder) {
-    if (syntax !== '*') {
-      throw new Error(`Token ${name} has syntax '${syntax}' and needs a literal default, not ${value.build()}`);
-    }
-
-    return new CustomPropertyBuilder(SurimiContext.root, name, { syntax, inherits });
-  }
-
-  return new CustomPropertyBuilder(SurimiContext.root, name, { syntax, inherits, initialValue: String(value) });
+  return new CustomPropertyBuilder(SurimiContext.root, name, {
+    syntax,
+    inherits,
+    initialValue: isAlias && syntax === '*' ? undefined : value,
+  });
 }
 
 function build(tree: TokenTree, path: string[], declarations: Declarations, seen: Map<string, string>): TokenGroup {
-  const group: Record<string, Token | TokenGroup> = {};
+  const group: Record<string, Token<unknown> | TokenGroup> = {};
 
   for (const [key, node] of Object.entries(tree)) {
     const keyPath = [...path, key];
 
     if (node instanceof TokenDefinition || isValue(node)) {
-      const name = `--${keyPath.map(toKebabCase).join('-')}`;
-
-      if (!NAME_PATTERN.test(name)) {
-        throw new Error(
-          `Invalid token name "${name}". Names may only contain letters, digits, hyphens and underscores`,
-        );
-      }
-
+      const name = `--${keyPath.join('-')}`;
       const firstKey = seen.get(name);
 
       if (firstKey !== undefined) {
@@ -67,7 +50,7 @@ function build(tree: TokenTree, path: string[], declarations: Declarations, seen
       seen.set(name, keyPath.join('.'));
 
       group[key] = createToken(name, node);
-      declarations[name] = node instanceof TokenDefinition ? node.value : node;
+      declarations[name] = String(node instanceof TokenDefinition ? node.value : node);
     } else {
       group[key] = build(node, keyPath, declarations, seen);
     }
@@ -78,7 +61,7 @@ function build(tree: TokenTree, path: string[], declarations: Declarations, seen
 
 /**
  * Define design tokens with their default values. The defaults are set on `:root`.
- * Names are the kebab-cased path: `{ fontSize: { large: '2rem' } }` becomes `--font-size-large`.
+ * Names are the path joined with `-`: `{ fontSize: { large: '2rem' } }` becomes `--fontSize-large`.
  * Wrap a value in `token()` to also register it as a typed `@property`.
  *
  * @example
@@ -94,6 +77,24 @@ function build(tree: TokenTree, path: string[], declarations: Declarations, seen
 export function defineTokens<T extends TokenTree>(values: T, options: DefineTokensOptions = {}): Tokens<T> {
   const declarations: Declarations = {};
   const tokens = build(values, options.prefix ? [options.prefix] : [], declarations, new Map());
+
+  let existing = defaults.get(SurimiContext.root);
+  if (!existing) {
+    existing = new Map();
+    defaults.set(SurimiContext.root, existing);
+  }
+
+  for (const [name, value] of Object.entries(declarations)) {
+    const previous = existing.get(name);
+
+    if (previous === undefined) {
+      existing.set(name, value);
+    } else if (previous === value) {
+      delete declarations[name];
+    } else {
+      throw new Error(`Conflicting default for ${name}: existing ${previous} vs new ${value}`);
+    }
+  }
 
   if (Object.keys(declarations).length > 0) {
     createSelectorBuilderFromString([':root'], SurimiContext.root, SurimiContext.root).style(

@@ -81,11 +81,13 @@ defineTokens({
 - `value` is the default. It also becomes the `initial-value`.
 - `options` is a [syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/@property/syntax) string, or `{ syntax, inherits }`. `syntax` defaults to `'*'`, `inherits` to `true`.
 
+The syntax types the value. `token('4', '<length>')` is a compile error and throws, `'4px'` works. Same for keywords: `token('small', 'small | large')` only accepts `'small'` and `'large'`, also in themes. Colors only get hints, any string is accepted.
+
 Values are written as-is. Numbers get no unit, so write `'4px'`, not `4`, when you need pixels.
 
 ### Nesting
 
-Nested objects group tokens. The name is the kebab-cased path:
+Nested objects group tokens. The name is the path joined with `-`, keys are not changed:
 
 ```ts
 export const tokens = defineTokens({
@@ -96,7 +98,7 @@ export const tokens = defineTokens({
   space: { 1: '4px', 2: '8px' },
 });
 
-tokens.color.textMuted; // var(--color-text-muted)
+tokens.color.textMuted; // var(--color-textMuted)
 tokens.space[2]; // var(--space-2)
 ```
 
@@ -161,7 +163,7 @@ const brand = createTheme(tokens, {
 
 ## Limitations
 
-- Names are not hashed or scoped. Redefining a `token()` with different values throws, but two plain `defineTokens` calls with the same name just write the same property twice.
-- Token names have to be valid CSS. Keys with spaces or dots throw, and so do two keys that kebab-case to the same name (like `textMuted` and `'text-muted'`).
+- Names are not hashed or scoped. Defining the same name again with the same values is fine, with different values it throws.
+- Token names have to be valid CSS. Keys with spaces or dots throw, and so do two keys that end up with the same name (like `text: { muted }` and `'text-muted'`).
 - Defaults always go on `:root`. To scope them elsewhere, also create a theme with the defaults and apply it there.
-- `createTheme` does not check values against a token's `syntax`. The browser does that for you. An invalid value for a typed token is ignored.
+- `createTheme` checks values against a token's `syntax` only at compile time. At runtime the browser ignores an invalid value for a typed token.
