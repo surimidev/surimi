@@ -40,6 +40,12 @@ describe('css.utils', () => {
       expect(formatPropertyName('border-color')).toBe('border-color');
       expect(formatPropertyName('font-family')).toBe('font-family');
     });
+
+    it('should keep custom property names as is', () => {
+      expect(formatPropertyName('--fooBar')).toBe('--fooBar');
+      expect(formatPropertyName('--URL')).toBe('--URL');
+      expect(createDeclarationsFromProperties({ '--fooBar': '1px' } as CssProperties)[0]?.prop).toBe('--fooBar');
+    });
   });
 
   describe('formatPropertyValue', () => {
@@ -140,10 +146,15 @@ describe('css.utils', () => {
       expect(declarations[2]?.value).toBe('16px');
     });
 
-    it('should skip null and undefined values', () => {
+    it('should throw on null values', () => {
+      expect(() => createDeclarationsFromProperties({ fontSize: null as never })).toThrow(
+        /Expected a value for "fontSize", got null/,
+      );
+    });
+
+    it('should skip undefined values', () => {
       const properties: CssProperties = {
         color: 'red',
-        fontSize: null as never,
         backgroundColor: undefined,
         margin: '10px',
       };
